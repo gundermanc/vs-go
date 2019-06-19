@@ -1,0 +1,29 @@
+<Project>
+
+  <PropertyGroup>
+    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RepoRoot>
+    <TargetFramework>net472</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    
+    <!-- Disable ridiculously pendantic VS threading warning to avoid littering ThrowIfNotOnUIThread() everywhere. -->
+    <NoWarn>$(NoWarn);VSTHRD010</NoWarn>
+
+    <!-- Output paths -->
+    <BaseOutputPath>$(RepoRoot)bin\$(MSBuildProjectName)\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+    <BaseIntermediateOutputPath>$(RepoRoot)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
+
+    <!-- Assembly metadata -->
+    <Company>Christian Gunderman</Company>
+    <Copyright>© Christian Gunderman. All rights reserved.</Copyright>
+    <Title>Go lang support for Visual Studio</Title>
+    <Product>Go lang support for Visual Studio</Product>
+  </PropertyGroup>
+
+  <!-- Standard project references -->
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" />
+  </ItemGroup>
+
+</Project>
