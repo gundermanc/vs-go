@@ -2,6 +2,7 @@
 {
     public enum LexemeType
     {
-        LineComment
+        LineComment,
+        GeneralComment
     }
 }

@@ -35,6 +35,8 @@
             {
                 case LexemeType.LineComment:
                     return PredefinedClassificationTypeNames.Comment;
+                case LexemeType.GeneralComment:
+                    return PredefinedClassificationTypeNames.Comment;
             }
 
             return PredefinedClassificationTypeNames.Other;

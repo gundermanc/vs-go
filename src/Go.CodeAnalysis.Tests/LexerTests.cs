@@ -33,5 +33,41 @@
             Assert.AreEqual(0, lexeme.Segment.Start);
             Assert.AreEqual(13, lexeme.Segment.Length);
         }
+
+        [TestMethod]
+        [Description("Ensure we can process a line comment with whitespace")]
+        public void Lexer_TryGetNext_LineCommentInWhitespace_CommentLexeme()
+        {
+            var lexer = Lexer.Create(new StringSnapshot("      // My comment\r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(6, lexeme.Segment.Start);
+            Assert.AreEqual(13, lexeme.Segment.Length);
+        }
+
+        /// <summary>
+        /// Known issue where we're not handling non-Windows line endings right.
+        /// </summary>
+        [TestMethod]
+        [Description("Ensure we can process a line comment with whitespace")]
+        public void Lexer_TryGetNext_LineCommentWithMacLineEnding_CommentLexeme()
+        {
+            var lexer = Lexer.Create(new StringSnapshot("      // My comment\r  "));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(6, lexeme.Segment.Start);
+            Assert.AreEqual(13, lexeme.Segment.Length);
+        }
+
+        [TestMethod]
+        [Description("Ensure we can process a general comment with whitespace")]
+        public void Lexer_TryGetNext_GeneralCommentInWhitespace_CommentLexeme()
+        {
+            var lexer = Lexer.Create(new StringSnapshot("    /* My comment */  \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(4, lexeme.Segment.Start);
+            Assert.AreEqual(16, lexeme.Segment.Length);
+        }
     }
 }
