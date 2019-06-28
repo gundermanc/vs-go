@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Work-around for https://github.com/dotnet/project-system/issues/2832 -->
+    <TargetFramework>$(TargetFramework)</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Go.CodeAnalysis\Go.CodeAnalysis.csproj" />
+  </ItemGroup>
+
+</Project>
