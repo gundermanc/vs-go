@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Work-around for https://github.com/dotnet/project-system/issues/2832 -->
+    <TargetFramework>$(TargetFramework)</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Go.CodeAnalysis\Go.CodeAnalysis.csproj" />
+  </ItemGroup>
+
+</Project>

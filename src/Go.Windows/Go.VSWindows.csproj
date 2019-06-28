@@ -14,7 +14,7 @@
     <RootNamespace>$(AssemblyName)</RootNamespace>
 
     <!-- VSIX configuration -->
-    <ExtensionInstallationFolder>Gunderman\Contextool</ExtensionInstallationFolder>
+    <ExtensionInstallationFolder>Go.VSWindows</ExtensionInstallationFolder>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
@@ -30,9 +30,10 @@
       <IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Text.UI" />
-    <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" />
-    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop" />
-    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Go.Editor\Go.Editor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
