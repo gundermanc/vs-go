@@ -37,6 +37,10 @@
                     return PredefinedClassificationTypeNames.Comment;
                 case LexemeType.GeneralComment:
                     return PredefinedClassificationTypeNames.Comment;
+                case LexemeType.Identifier:
+                    return PredefinedClassificationTypeNames.Identifier;
+                case LexemeType.Keyword:
+                    return PredefinedClassificationTypeNames.Keyword;
             }
 
             return PredefinedClassificationTypeNames.Other;

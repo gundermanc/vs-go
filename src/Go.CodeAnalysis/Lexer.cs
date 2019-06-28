@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Go.CodeAnalysis
+﻿namespace Go.CodeAnalysis
 {
+    using System;
+
     public sealed class Lexer
     {
         private readonly SnapshotBase currentSnapshot;
@@ -34,24 +34,159 @@ namespace Go.CodeAnalysis
 
         private bool TryConsumeLexeme(out Lexeme lexeme)
         {
-            bool consumedSomething = false;
-
             switch (this.currentSnapshot[this.currentOffset])
             {
                 // Looks like the start of a comment.
                 case '/':
                     if (this.TryConsumeLeadingSlash(out lexeme)) return true;
                     break;
+                case ' ':
+                case '\t':
+                case '\v':
+                case '\r':
+                case '\n':
+                    break;
+                default:
+                    if (this.TryConsumeKeywordOrIdentifier(out lexeme)) return true;
+                    break;
             }
 
             // Keep us moving if we didn't find anything.
-            if (!consumedSomething)
+            this.currentOffset++;
+
+            lexeme = default;
+            return false;
+        }
+
+        private bool TryConsumeKeywordOrIdentifier(out Lexeme lexeme)
+        {
+            if (this.TryConsumeSpan(this.ConsumeKeywordOrIdentifer, LexemeType.Identifier, out lexeme))
             {
-                this.currentOffset++;
+                lexeme = this.IdentifierToKeyword(lexeme);
+                return true;
             }
 
             lexeme = default;
             return false;
+        }
+
+        private Lexeme IdentifierToKeyword(Lexeme lexeme)
+        {
+            Lexeme LexemeForKeyword(string keyword)
+            {
+                if (this.SegmentEquals(lexeme.Segment, keyword))
+                {
+                    return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                }
+
+                return lexeme;
+            }
+
+            switch (lexeme.Segment[0])
+            {
+                case 'b':
+                    return LexemeForKeyword("break");
+                case 'c':
+                    if (this.SegmentEquals(lexeme.Segment, "case") ||
+                        this.SegmentEquals(lexeme.Segment, "chan") ||
+                        this.SegmentEquals(lexeme.Segment, "const") ||
+                        this.SegmentEquals(lexeme.Segment, "continue"))
+                    {
+                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                    }
+                    break;
+                case 'd':
+                    if (this.SegmentEquals(lexeme.Segment, "default") ||
+                        this.SegmentEquals(lexeme.Segment, "defer"))
+                    {
+                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                    }
+                    break;
+                case 'e':
+                    return LexemeForKeyword("else");
+                case 'f':
+                    if (this.SegmentEquals(lexeme.Segment, "fallthrough") ||
+                        this.SegmentEquals(lexeme.Segment, "for") ||
+                        this.SegmentEquals(lexeme.Segment, "func"))
+                    {
+                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                    }
+                    break;
+                case 'g':
+                    if (this.SegmentEquals(lexeme.Segment, "go") ||
+                        this.SegmentEquals(lexeme.Segment, "goto"))
+                    {
+                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                    }
+                    break;
+                case 'i':
+                    if (this.SegmentEquals(lexeme.Segment, "if") ||
+                        this.SegmentEquals(lexeme.Segment, "import") ||
+                        this.SegmentEquals(lexeme.Segment, "interface"))
+                    {
+                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                    }
+                    break;
+                case 'm':
+                    return LexemeForKeyword("map");
+                case 'p':
+                    return LexemeForKeyword("package");
+                case 'r':
+                    if (this.SegmentEquals(lexeme.Segment, "range") ||
+                        this.SegmentEquals(lexeme.Segment, "return"))
+                    {
+                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                    }
+                    break;
+                case 's':
+                    if (this.SegmentEquals(lexeme.Segment, "select") ||
+                        this.SegmentEquals(lexeme.Segment, "struct") ||
+                        this.SegmentEquals(lexeme.Segment, "switch"))
+                    {
+                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                    }
+                    break;
+                case 't':
+                    return LexemeForKeyword("type");
+                case 'v':
+                    return LexemeForKeyword("var");
+            }
+
+            return lexeme;
+        }
+
+        private bool SegmentEquals(SnapshotSegment segment, string text)
+        {
+            if (segment.Length != text.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < segment.Length; i++)
+            {
+                if (segment[i] != text[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private (int take, int skip) ConsumeKeywordOrIdentifer(int offset)
+        {
+            if (!char.IsLetter(this.currentSnapshot[offset]))
+            {
+                return (0, 0);
+            }
+
+            int i = offset + 1;
+            while (i < this.currentSnapshot.Length && char.IsLetterOrDigit(this.currentSnapshot[i]))
+            {
+                i++;
+            }
+
+            return (i - offset, 0);
         }
 
         private bool TryConsumeLeadingSlash(out Lexeme lexeme)
@@ -155,7 +290,7 @@ namespace Go.CodeAnalysis
                 return false;
             }
 
-            next = this.currentSnapshot[currentOffset + 1];
+            next = this.currentSnapshot[this.currentOffset + 1];
             return true;
         }
     }

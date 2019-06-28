@@ -3,6 +3,8 @@
     public enum LexemeType
     {
         LineComment,
-        GeneralComment
+        GeneralComment,
+        Identifier,
+        Keyword
     }
 }
