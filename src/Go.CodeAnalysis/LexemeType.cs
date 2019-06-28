@@ -5,6 +5,7 @@
         LineComment,
         GeneralComment,
         Identifier,
-        Keyword
+        Keyword,
+        String
     }
 }

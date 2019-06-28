@@ -213,5 +213,17 @@
             Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
             Assert.AreEqual(LexemeType.Keyword, lexeme.Type);
         }
+
+        [TestMethod]
+        [Description("Ensure we can process string literals")]
+        public void Lexer_TryGetNext_StringLiterals()
+        {
+            var lexer = Lexer.Create(new StringSnapshot("    \"Foo\"  "));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(4, lexeme.Segment.Start);
+            Assert.AreEqual(5, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.String, lexeme.Type);
+        }
     }
 }

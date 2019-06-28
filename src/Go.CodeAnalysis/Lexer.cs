@@ -40,6 +40,9 @@
                 case '/':
                     if (this.TryConsumeLeadingSlash(out lexeme)) return true;
                     break;
+                case '"':
+                    if (this.TryConsumeSpan(this.ConsumeStringLiteral, LexemeType.String, out lexeme)) return true;
+                    break;
                 case ' ':
                 case '\t':
                 case '\v':
@@ -189,6 +192,18 @@
             return (i - offset, 0);
         }
 
+        private (int take, int skip) ConsumeStringLiteral(int offset)
+        {
+            if (this.currentSnapshot[offset] == '"')
+            {
+                return (1, 0);
+            }
+            else
+            {
+                return (0, 0);
+            }
+        }
+
         private bool TryConsumeLeadingSlash(out Lexeme lexeme)
         {
             // Two slashes.. '//' means the start of a line comment.
@@ -230,6 +245,8 @@
             int start = this.currentOffset;
             int take = 0;
             int skip = 0;
+
+            currentOffset++;
 
             while (this.currentOffset < this.currentSnapshot.Length)
             {

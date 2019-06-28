@@ -41,6 +41,8 @@
                     return PredefinedClassificationTypeNames.Identifier;
                 case LexemeType.Keyword:
                     return PredefinedClassificationTypeNames.Keyword;
+                case LexemeType.String:
+                    return PredefinedClassificationTypeNames.String;
             }
 
             return PredefinedClassificationTypeNames.Other;
