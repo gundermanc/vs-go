@@ -8,6 +8,10 @@
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0]" />
   </Installation>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" Path="Go.CodeAnalysis.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" Path="Go.Editor.dll" />
+  </Assets>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
   </Dependencies>

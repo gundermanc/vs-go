@@ -5,4 +5,8 @@
     <TargetFramework>$(TargetFramework)</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" />
+  </ItemGroup>
+
 </Project>
