@@ -1,14 +1,15 @@
 ﻿namespace Go.CodeAnalysis
 {
-    using Microsoft.VisualStudio.Text;
-
     public struct Lexeme
     {
-        public Lexeme(SnapshotSpan span)
+        public Lexeme(SnapshotSegment segment, LexemeType type)
         {
-            this.Span = span;
+            this.Segment = segment;
+            this.Type = type;
         }
 
-        public SnapshotSpan Span { get;  }
+        public SnapshotSegment Segment { get;  }
+
+        public LexemeType Type { get; }
     }
 }

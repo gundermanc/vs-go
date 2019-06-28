@@ -10,4 +10,8 @@
     <PackageReference Include="MSTest.TestFramework" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Go.CodeAnalysis\Go.CodeAnalysis.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Go.CodeAnalysis;
-    using Microsoft.VisualStudio.Language.StandardClassification;
+    using Go.Editor.Common;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Classification;
     using Microsoft.VisualStudio.Text.Tagging;
@@ -31,12 +31,12 @@
             // TODO: make a full colorizer backed by a parse tree.
 
             // For now, just slap something together with the lexer.
-            var lexer = Lexer.Create(this.textBuffer.CurrentSnapshot);
+            var lexer = Lexer.Create(this.textBuffer.CurrentSnapshot.ToSnapshot());
             while (lexer.TryGetNextLexeme(out var lexeme))
             {
                 yield return new TagSpan<IClassificationTag>(
-                    lexeme.Span,
-                    new ClassificationTag(this.classificationRegistryService.GetClassificationType(PredefinedClassificationTypeNames.Keyword)));
+                    lexeme.Segment.ToSnapshotSpan(),
+                    new ClassificationTag(this.classificationRegistryService.GetClassificationType(lexeme.Type.ToClassificationTypeName())));
             }
         }
     }
