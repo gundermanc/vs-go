@@ -1,5 +1,7 @@
-﻿namespace Go.CodeAnalysis.Tests
+﻿namespace Go.CodeAnalysis.Tests.Lex
 {
+    using Go.CodeAnalysis.Lex;
+    using Go.CodeAnalysis.Text;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -8,6 +10,9 @@
         // TODO: missing bits of spec https://golang.org/ref/spec#Lexical_elements
         // - add semicolons to token stream.
         // - add support for string escape sequences.
+        // - add support for float literals
+        // - add support for imaginary literals
+        // - add support for 
 
         [TestMethod]
         [Description("Ensure we get nothing back from the empty string")]

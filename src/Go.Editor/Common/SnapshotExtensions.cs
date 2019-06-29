@@ -1,7 +1,8 @@
 ﻿namespace Go.Editor.Common
 {
     using System;
-    using Go.CodeAnalysis;
+    using Go.CodeAnalysis.Lex;
+    using Go.CodeAnalysis.Text;
     using Microsoft.VisualStudio.Language.StandardClassification;
     using Microsoft.VisualStudio.Text;
 
@@ -11,12 +12,12 @@
 
         public static ITextSnapshot ToTextSnapshot(this SnapshotBase snapshot)
         {
-            if (!(snapshot is TextSnapshot textSnapshot))
+            if (snapshot is TextSnapshot textSnapshot)
             {
-                throw new ArgumentException($"{nameof(snapshot)} must be of type {nameof(TextSnapshot)}");
+                return textSnapshot.Snapshot;
             }
 
-            return ((TextSnapshot)snapshot).Snapshot;
+            throw new ArgumentException($"{nameof(snapshot)} must be of type {nameof(TextSnapshot)}");
         }
 
         public static SnapshotSegment ToSegment(this SnapshotSpan snapshotSpan)

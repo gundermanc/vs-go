@@ -1,4 +1,4 @@
-﻿namespace Go.CodeAnalysis
+﻿namespace Go.CodeAnalysis.Text
 {
     public sealed class StringSnapshot : SnapshotBase
     {

@@ -1,4 +1,4 @@
-﻿namespace Go.CodeAnalysis
+﻿namespace Go.CodeAnalysis.Lex
 {
     public enum LexemeType
     {

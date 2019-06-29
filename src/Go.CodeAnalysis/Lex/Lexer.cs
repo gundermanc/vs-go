@@ -1,6 +1,7 @@
-﻿namespace Go.CodeAnalysis
+﻿namespace Go.CodeAnalysis.Lex
 {
     using System;
+    using Go.CodeAnalysis.Text;
 
     public sealed class Lexer
     {

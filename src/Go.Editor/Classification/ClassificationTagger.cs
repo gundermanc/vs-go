@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Go.CodeAnalysis;
+    using Go.CodeAnalysis.Lex;
     using Go.Editor.Common;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Classification;
