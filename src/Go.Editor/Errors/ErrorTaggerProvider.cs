@@ -7,7 +7,6 @@
     using Microsoft.VisualStudio.Utilities;
 
     [Export(typeof(ITaggerProvider))]
-    [Name("Go error tagger")]
     [ContentType(GoContentType.Name)]
     [TagType(typeof(IErrorTag))]
     internal sealed class ErrorTaggerProvider : ITaggerProvider
