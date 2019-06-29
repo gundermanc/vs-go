@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Language" />
     <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" />
     <PackageReference Include="Microsoft.VisualStudio.Text.UI" />
   </ItemGroup>
