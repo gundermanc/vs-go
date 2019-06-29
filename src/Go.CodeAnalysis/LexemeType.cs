@@ -7,6 +7,7 @@
         Identifier,
         Keyword,
         String,
-        Operator
+        Operator,
+        Integer
     }
 }

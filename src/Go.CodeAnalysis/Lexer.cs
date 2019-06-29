@@ -98,8 +98,38 @@
                 case '\n':
                     break;
                 default:
-                    if (this.TryConsumeKeywordOrIdentifier(out lexeme)) return true;
+                    if (this.TryConsumeKeywordLiteralOrIdentifier(out lexeme)) return true;
                     break;
+            }
+
+            lexeme = default;
+            return false;
+        }
+
+        private bool TryConsumeKeywordLiteralOrIdentifier(out Lexeme lexeme)
+        {
+            if (char.IsDigit(this.currentSnapshot[this.currentOffset]))
+            {
+                return this.TryConsumeInteger(out lexeme);
+            }
+            else
+            {
+                return this.TryConsumeKeywordOrIdentifier(out lexeme);
+            }
+        }
+
+        private bool TryConsumeInteger(out Lexeme lexeme)
+        {
+            int start = this.currentOffset;
+            int i;
+            for (i = this.currentOffset; i < this.currentSnapshot.Length && char.IsDigit(this.currentSnapshot[i]); i++);
+
+            var length = i - start;
+            if (length > 0)
+            {
+                this.currentOffset += length;
+                lexeme = new Lexeme(new SnapshotSegment(this.currentSnapshot, start, length), LexemeType.Integer);
+                return true;
             }
 
             lexeme = default;

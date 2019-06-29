@@ -440,5 +440,19 @@
             Assert.AreEqual(2, lexeme.Segment.Length);
             Assert.AreEqual(LexemeType.Operator, lexeme.Type);
         }
+
+        [TestMethod]
+        [Description("Ensure we can process multi character operators")]
+        public void Lexer_TryGetNext_IntegerLiteral()
+        {
+            var lexer = Lexer.Create(new StringSnapshot("  1234567890 "));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(10, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Integer, lexeme.Type);
+
+            Assert.IsFalse(lexer.TryGetNextLexeme(out _));
+        }
     }
 }

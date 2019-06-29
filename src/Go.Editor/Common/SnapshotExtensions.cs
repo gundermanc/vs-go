@@ -45,6 +45,8 @@
                     return PredefinedClassificationTypeNames.String;
                 case LexemeType.Operator:
                     return PredefinedClassificationTypeNames.Operator;
+                case LexemeType.Integer:
+                    return PredefinedClassificationTypeNames.Literal;
             }
 
             return PredefinedClassificationTypeNames.Other;
