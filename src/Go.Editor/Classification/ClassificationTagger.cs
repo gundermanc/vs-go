@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using Go.CodeAnalysis;
     using Go.CodeAnalysis.Lex;
     using Go.Editor.Common;
     using Microsoft.VisualStudio.Text;
@@ -23,6 +22,8 @@
             this.textBuffer = textBuffer;
         }
 
+        // TODO: raise Tags changed. For now, things work well enough simply by virtue of
+        // typing causing a tag fetch on layout change.
 #pragma warning disable 0067
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 #pragma warning restore 0067
