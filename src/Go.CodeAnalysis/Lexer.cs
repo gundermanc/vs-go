@@ -26,6 +26,11 @@
                 {
                     return true;
                 }
+                else
+                {
+                    // Keep us moving if we didn't find anything.
+                    this.currentOffset++;
+                }
             }
 
             lexeme = default;
@@ -36,10 +41,32 @@
         {
             switch (this.currentSnapshot[this.currentOffset])
             {
-                // Looks like the start of a comment.
+                case '+':
+                case '-':
+                case '*':
+                case '&':
+                case '|':
+                case '^':
+                case '<':
+                case '>':
+                case '=':
+                case '!':
+                case '(':
+                case ')':
+                case '[':
+                case ']':
+                case '{':
+                case '}':
+                case ',':
+                case ';':
+                case '.':
+                case ':':
+                    lexeme = new Lexeme(new SnapshotSegment(this.currentSnapshot, this.currentOffset++, 1), LexemeType.Operator);
+                    return true;
                 case '/':
                     if (this.TryConsumeLeadingSlash(out lexeme)) return true;
-                    break;
+                    lexeme = new Lexeme(new SnapshotSegment(this.currentSnapshot, this.currentOffset++, 1), LexemeType.Operator);
+                    return true;
                 case '"':
                     if (this.TryConsumeSpan(this.ConsumeStringLiteral, LexemeType.String, out lexeme)) return true;
                     break;
@@ -53,9 +80,6 @@
                     if (this.TryConsumeKeywordOrIdentifier(out lexeme)) return true;
                     break;
             }
-
-            // Keep us moving if we didn't find anything.
-            this.currentOffset++;
 
             lexeme = default;
             return false;

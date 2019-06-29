@@ -5,6 +5,11 @@
     [TestClass]
     public class LexerTests
     {
+        // TODO: missing bits of spec https://golang.org/ref/spec#Lexical_elements
+        // - add semicolons to token stream.
+        // - add support for string escape sequences.
+        // - add support for multi-character operators.
+
         [TestMethod]
         [Description("Ensure we get nothing back from the empty string")]
         public void Lexer_TryGetNext_Empty_NoLexemes()
@@ -19,8 +24,7 @@
         public void Lexer_TryGetNext_BlankLines_NoLexemes()
         {
             var lexer = Lexer.Create(new StringSnapshot(string.Empty));
-
-            Assert.IsFalse(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.IsFalse(lexer.TryGetNextLexeme(out _));
         }
 
         [TestMethod]
@@ -224,6 +228,139 @@
             Assert.AreEqual(4, lexeme.Segment.Start);
             Assert.AreEqual(5, lexeme.Segment.Length);
             Assert.AreEqual(LexemeType.String, lexeme.Type);
+        }
+
+        [TestMethod]
+        [Description("Ensure we can process single character operators")]
+        public void Lexer_TryGetNext_SingleCharOperators()
+        {
+            var lexer = Lexer.Create(new StringSnapshot(" + - * / & | ^ < > = ! ( ) [ ] { } , ; . :"));
+
+            // +
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(1, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // -
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(3, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // *
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(5, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // /
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(7, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // &
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(9, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // |
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(11, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // ^
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(13, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // <
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(15, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // >
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(17, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // =
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(19, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // !
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(21, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // (
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(23, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // )
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(25, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // [
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(27, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // ]
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(29, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // {
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(31, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // }
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(33, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // ,
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(35, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // ;
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(37, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // .
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(39, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            // :
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(41, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
         }
     }
 }

@@ -6,6 +6,7 @@
         GeneralComment,
         Identifier,
         Keyword,
-        String
+        String,
+        Operator
     }
 }
