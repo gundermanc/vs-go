@@ -42,13 +42,37 @@
             switch (this.currentSnapshot[this.currentOffset])
             {
                 case '+':
+                    if (this.TryConsumeMultiCharacterSymbol('+', '=', out lexeme)) return true;
+                    goto Symbol;
                 case '-':
+                    if (this.TryConsumeMultiCharacterSymbol('-', '=', out lexeme)) return true;
+                    goto Symbol;
                 case '*':
+                    if (this.TryConsumeMultiCharacterSymbol('*', '=', out lexeme)) return true;
+                    goto Symbol;
+                case '/':
+                    if (this.TryConsumeMultiCharacterSymbol('/', '=', out lexeme)) return true;
+                    if (this.TryConsumeLeadingSlash(out lexeme)) return true;
+                    goto Symbol;
+                case '%':
+                    if (this.TryConsumeMultiCharacterSymbol('%', '=', out lexeme)) return true;
+                    goto Symbol;
                 case '&':
+                    if (this.TryConsumeMultiCharacterSymbol('&', '^', out lexeme)) return true;
+                    if (this.TryConsumeMultiCharacterSymbol('&', '=', out lexeme)) return true;
+                    goto Symbol;
                 case '|':
+                    if (this.TryConsumeMultiCharacterSymbol('|', '=', out lexeme)) return true;
+                    goto Symbol;
                 case '^':
+                    if (this.TryConsumeMultiCharacterSymbol('^', '=', out lexeme)) return true;
+                    goto Symbol;
                 case '<':
+                    if (this.TryConsumeMultiCharacterSymbol('<', '<', out lexeme)) return true;
+                    goto Symbol;
                 case '>':
+                    if (this.TryConsumeMultiCharacterSymbol('>', '>', out lexeme)) return true;
+                    goto Symbol;
                 case '=':
                 case '!':
                 case '(':
@@ -61,10 +85,7 @@
                 case ';':
                 case '.':
                 case ':':
-                    lexeme = new Lexeme(new SnapshotSegment(this.currentSnapshot, this.currentOffset++, 1), LexemeType.Operator);
-                    return true;
-                case '/':
-                    if (this.TryConsumeLeadingSlash(out lexeme)) return true;
+                Symbol:
                     lexeme = new Lexeme(new SnapshotSegment(this.currentSnapshot, this.currentOffset++, 1), LexemeType.Operator);
                     return true;
                 case '"':
@@ -198,6 +219,23 @@
             }
 
             return true;
+        }
+
+        private bool TryConsumeMultiCharacterSymbol(char first, char second, out Lexeme lexeme)
+        {
+            if (this.currentSnapshot[this.currentOffset] == first &&
+                this.TryPeekNext(out var next) &&
+                next == second)
+            {
+                lexeme = new Lexeme(new SnapshotSegment(this.currentSnapshot, this.currentOffset, 2), LexemeType.Operator);
+                this.currentOffset += 2;
+                return true;
+            }
+            else
+            {
+                lexeme = default;
+                return false;
+            }
         }
 
         private (int take, int skip) ConsumeKeywordOrIdentifer(int offset)
