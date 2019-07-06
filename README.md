@@ -10,6 +10,10 @@ In progress Go language service for Visual Studio.
 - TextMate-based outlining and structure guides.
 - Colorized + formatted documentation tooltips via `gogetdoc.exe`.
 
+## Getting started
+- Install the Go development SDK
+- Install gofmt and gogetdoc.
+
 ## Roadmap
 
 See https://github.com/gundermanc/vs-go/issues/1 for the roadmap discussion.
