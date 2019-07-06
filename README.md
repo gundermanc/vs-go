@@ -8,6 +8,7 @@ In progress Go language service for Visual Studio.
 - Very early prototype of colorization via lexing the file. See roadmap for more information.
 - Proof of concept error squiggles for syntax (non-semantic) errors using `gofmt.exe -e`.
 - TextMate-based outlining and structure guides.
+- Non-colored documentation tooltips via `gogetdoc.exe`.
 
 ## Roadmap
 

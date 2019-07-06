@@ -1,5 +1,6 @@
 ﻿namespace Go.Editor.Intellisense.QuickInfo
 {
+    using System;
     using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
@@ -8,10 +9,13 @@
 
     internal sealed class AsyncQuickInfoSource : IAsyncQuickInfoSource
     {
+        private readonly ITextDocumentFactoryService textDocumentFactoryService;
         private readonly ITextBuffer textBuffer;
 
-        public AsyncQuickInfoSource(ITextBuffer textBuffer)
+        public AsyncQuickInfoSource(ITextDocumentFactoryService textDocumentFactoryService, ITextBuffer textBuffer)
         {
+            this.textDocumentFactoryService = textDocumentFactoryService
+                ?? throw new ArgumentNullException(nameof(textDocumentFactoryService));
             this.textBuffer = textBuffer;
         }
 
@@ -29,25 +33,27 @@
 
             // TODO: running tools on events is going to be a common need. Abstract to a base class.
             // TODO: eliminate '.exe' for VS Mac compat.
-            var snapshotText = snapshot.GetText();
 
-            // Get actual file name.
-            // TODO: this isn't working yet.
-            var gogetdocStartInfo = new ProcessStartInfo("gogetdoc.exe", $@"-pos C:\repos\vs-go\test-fodder\hello-world.go:#{triggerPosition}")
+            // Get actual file path.
+            if (!this.textDocumentFactoryService.TryGetTextDocument(this.textBuffer, out var textDocument))
+            {
+                return Task.FromResult(default(QuickInfoItem));
+            }
+            var documentPath = textDocument.FilePath;
+
+            // TODO: there's an unfortunate constraint of 'gogetdoc' that it is unable to fetch
+            // docs for files outside of your GOPATH. Investigate this further and see if we can
+            // set a temp path to get stuff working for loose files.
+            var gogetdocStartInfo = new ProcessStartInfo("gogetdoc.exe", $"-pos \"{documentPath}:#{triggerPosition}\"")
             {
                 CreateNoWindow = true,
                 UseShellExecute = false,
-                RedirectStandardInput = true,
+                RedirectStandardInput = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
 
-            gogetdocStartInfo.Environment.Add("GOPATH", @"C:\repos\vs-go\test-fodder");
-
             var process = Process.Start(gogetdocStartInfo);
-            process.StandardInput.AutoFlush = true;
-            process.StandardInput.Write(snapshotText);
-            process.StandardInput.Close();
 
             var output = process.StandardOutput.ReadToEnd();
             var error = process.StandardError.ReadToEnd();
