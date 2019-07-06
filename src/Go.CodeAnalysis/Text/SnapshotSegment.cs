@@ -1,6 +1,7 @@
 ﻿namespace Go.CodeAnalysis.Text
 {
     using System;
+    using System.Text;
 
     public struct SnapshotSegment
     {
@@ -31,5 +32,20 @@
         public int Start { get; }
 
         public int Length { get; }
+
+        public string GetText()
+        {
+            if (this.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            var stringBuilder = new StringBuilder();
+            for (int i = 0; i < this.Length; i++)
+            {
+                stringBuilder.Append(this[i]);
+            }
+            return stringBuilder.ToString();
+        }
     }
 }

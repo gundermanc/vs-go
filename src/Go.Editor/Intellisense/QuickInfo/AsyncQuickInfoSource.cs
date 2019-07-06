@@ -4,8 +4,10 @@
     using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
+    using Go.Editor.Common;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Adornments;
 
     internal sealed class AsyncQuickInfoSource : IAsyncQuickInfoSource
     {
@@ -35,6 +37,7 @@
             // TODO: eliminate '.exe' for VS Mac compat.
 
             // Get actual file path.
+            // TODO: is this a UI thread affinitized call?
             if (!this.textDocumentFactoryService.TryGetTextDocument(this.textBuffer, out var textDocument))
             {
                 return Task.FromResult(default(QuickInfoItem));
@@ -44,7 +47,7 @@
             // TODO: there's an unfortunate constraint of 'gogetdoc' that it is unable to fetch
             // docs for files outside of your GOPATH. Investigate this further and see if we can
             // set a temp path to get stuff working for loose files.
-            var gogetdocStartInfo = new ProcessStartInfo("gogetdoc.exe", $"-pos \"{documentPath}:#{triggerPosition}\"")
+            var gogetdocStartInfo = new ProcessStartInfo("gogetdoc.exe", $"-json -pos \"{documentPath}:#{triggerPosition}\"")
             {
                 CreateNoWindow = true,
                 UseShellExecute = false,
@@ -58,8 +61,23 @@
             var output = process.StandardOutput.ReadToEnd();
             var error = process.StandardError.ReadToEnd();
 
+            object tipData;
+            if (!string.IsNullOrEmpty(output))
+            {
+                var responseData = GoGetDocJsonDataContract.ReadToObject(output);
+                tipData = new ContainerElement(
+                    ContainerElementStyle.Stacked | ContainerElementStyle.VerticalPadding,
+                    $"import {responseData.Import}".ToClassifiedTextElement(),
+                    responseData.Declaration.ToClassifiedTextElement(),
+                    responseData.Documentation.ToPlainTextClassifiedTextElement());
+            }
+            else
+            {
+                tipData = error;
+            }
+
             // TODO: async wrapper for all of these calls to other processes.
-            return Task.FromResult(new QuickInfoItem(span, output + error));
+            return Task.FromResult(new QuickInfoItem(span, tipData));
         }
     }
 }
