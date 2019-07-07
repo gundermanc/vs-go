@@ -5,7 +5,6 @@
 
     public sealed class Lexer
     {
-        private readonly SnapshotBase currentSnapshot;
         private int currentOffset;
 
         public static Lexer Create(SnapshotBase currentSnapshot)
@@ -15,16 +14,21 @@
 
         private Lexer(SnapshotBase currentSnapshot, int currentOffset)
         {
-            this.currentSnapshot = currentSnapshot;
+            this.Snapshot = currentSnapshot;
             this.currentOffset = currentOffset;
         }
 
+        public SnapshotBase Snapshot { get; }
+
+        public Lexeme CurrentLexeme { get; private set; }
+
         public bool TryGetNextLexeme(out Lexeme lexeme)
         {
-            while (this.currentOffset < this.currentSnapshot.Length)
+            while (this.currentOffset < this.Snapshot.Length)
             {
                 if (this.TryConsumeLexeme(out lexeme))
                 {
+                    this.CurrentLexeme = lexeme;
                     return true;
                 }
                 else
@@ -34,18 +38,21 @@
                 }
             }
 
+            this.CurrentLexeme = default;
             lexeme = default;
             return false;
         }
 
         private bool TryConsumeLexeme(out Lexeme lexeme)
         {
-            switch (this.currentSnapshot[this.currentOffset])
+            switch (this.Snapshot[this.currentOffset])
             {
                 case '+':
+                    if (this.TryConsumeMultiCharacterSymbol('+', '+', out lexeme)) return true;
                     if (this.TryConsumeMultiCharacterSymbol('+', '=', out lexeme)) return true;
                     goto Symbol;
                 case '-':
+                    if (this.TryConsumeMultiCharacterSymbol('-', '-', out lexeme)) return true;
                     if (this.TryConsumeMultiCharacterSymbol('-', '=', out lexeme)) return true;
                     goto Symbol;
                 case '*':
@@ -83,20 +90,27 @@
                 case '{':
                 case '}':
                 case ',':
-                case ';':
                 case '.':
                 case ':':
                 Symbol:
-                    lexeme = new Lexeme(new SnapshotSegment(this.currentSnapshot, this.currentOffset++, 1), LexemeType.Operator);
+                    lexeme = new Lexeme(new SnapshotSegment(this.Snapshot, this.currentOffset++, 1), LexemeType.Operator);
                     return true;
                 case '"':
                     if (this.TryConsumeSpan(this.ConsumeStringLiteral, LexemeType.String, out lexeme)) return true;
                     break;
+                case ';':
+                    lexeme = new Lexeme(new SnapshotSegment(this.Snapshot, this.currentOffset++, 1), LexemeType.Semicolon);
+                    return true;
+                case '\r':
+                    // This is a bit awkward.. the semi-colon will be between the \r and \n
+                    // but that shouldn't impact parsing.
+                    if (this.TryInsertSemicolon(out lexeme)) return true;
+                    break;
+                case '\n':
+                    break;
                 case ' ':
                 case '\t':
                 case '\v':
-                case '\r':
-                case '\n':
                     break;
                 default:
                     if (this.TryConsumeKeywordLiteralOrIdentifier(out lexeme)) return true;
@@ -107,9 +121,42 @@
             return false;
         }
 
+        private bool TryInsertSemicolon(out Lexeme lexeme)
+        {
+            if (this.TryPeekNext(out var next) && next == '\n')
+            {
+                this.currentOffset++;
+            }
+
+            switch (this.CurrentLexeme.Type)
+            {
+                case LexemeType.Keyword:
+                    if (this.CurrentLexeme.Segment.Equals(Keywords.Break) ||
+                        this.CurrentLexeme.Segment.Equals(Keywords.Continue) ||
+                        this.CurrentLexeme.Segment.Equals(Keywords.FallThrough) ||
+                        this.CurrentLexeme.Segment.Equals(Keywords.Return)) goto case LexemeType.Identifier;
+                    break;
+                case LexemeType.Operator:
+                    if (this.CurrentLexeme.Segment.Equals("++") ||
+                        this.CurrentLexeme.Segment.Equals("--") ||
+                        this.CurrentLexeme.Segment.Equals(")") ||
+                        this.CurrentLexeme.Segment.Equals("]") ||
+                        this.CurrentLexeme.Segment.Equals("}")) goto case LexemeType.Identifier;
+                        break;
+                case LexemeType.Identifier:
+                case LexemeType.Integer:
+                case LexemeType.String:
+                    lexeme = new Lexeme(new SnapshotSegment(this.Snapshot, this.currentOffset, 0), LexemeType.Semicolon);
+                    return true;
+            }
+
+            lexeme = default;
+            return false;
+        }
+
         private bool TryConsumeKeywordLiteralOrIdentifier(out Lexeme lexeme)
         {
-            if (char.IsDigit(this.currentSnapshot[this.currentOffset]))
+            if (char.IsDigit(this.Snapshot[this.currentOffset]))
             {
                 return this.TryConsumeInteger(out lexeme);
             }
@@ -123,13 +170,13 @@
         {
             int start = this.currentOffset;
             int i;
-            for (i = this.currentOffset; i < this.currentSnapshot.Length && char.IsDigit(this.currentSnapshot[i]); i++);
+            for (i = this.currentOffset; i < this.Snapshot.Length && char.IsDigit(this.Snapshot[i]); i++);
 
             var length = i - start;
             if (length > 0)
             {
                 this.currentOffset += length;
-                lexeme = new Lexeme(new SnapshotSegment(this.currentSnapshot, start, length), LexemeType.Integer);
+                lexeme = new Lexeme(new SnapshotSegment(this.Snapshot, start, length), LexemeType.Integer);
                 return true;
             }
 
@@ -153,7 +200,7 @@
         {
             Lexeme LexemeForKeyword(string keyword)
             {
-                if (this.SegmentEquals(lexeme.Segment, keyword))
+                if (lexeme.Segment.Equals(keyword))
                 {
                     return new Lexeme(lexeme.Segment, LexemeType.Keyword);
                 }
@@ -164,19 +211,19 @@
             switch (lexeme.Segment[0])
             {
                 case 'b':
-                    return LexemeForKeyword("break");
+                    return LexemeForKeyword(Keywords.Break);
                 case 'c':
-                    if (this.SegmentEquals(lexeme.Segment, "case") ||
-                        this.SegmentEquals(lexeme.Segment, "chan") ||
-                        this.SegmentEquals(lexeme.Segment, "const") ||
-                        this.SegmentEquals(lexeme.Segment, "continue"))
+                    if (lexeme.Segment.Equals(Keywords.Case) ||
+                        lexeme.Segment.Equals(Keywords.Chan) ||
+                        lexeme.Segment.Equals(Keywords.Const) ||
+                        lexeme.Segment.Equals(Keywords.Continue))
                     {
                         return new Lexeme(lexeme.Segment, LexemeType.Keyword);
                     }
                     break;
                 case 'd':
-                    if (this.SegmentEquals(lexeme.Segment, "default") ||
-                        this.SegmentEquals(lexeme.Segment, "defer"))
+                    if (lexeme.Segment.Equals(Keywords.Default) ||
+                        lexeme.Segment.Equals(Keywords.Defer))
                     {
                         return new Lexeme(lexeme.Segment, LexemeType.Keyword);
                     }
@@ -184,24 +231,24 @@
                 case 'e':
                     return LexemeForKeyword("else");
                 case 'f':
-                    if (this.SegmentEquals(lexeme.Segment, "fallthrough") ||
-                        this.SegmentEquals(lexeme.Segment, "for") ||
-                        this.SegmentEquals(lexeme.Segment, "func"))
+                    if (lexeme.Segment.Equals(Keywords.FallThrough) ||
+                        lexeme.Segment.Equals(Keywords.For) ||
+                        lexeme.Segment.Equals(Keywords.Func))
                     {
                         return new Lexeme(lexeme.Segment, LexemeType.Keyword);
                     }
                     break;
                 case 'g':
-                    if (this.SegmentEquals(lexeme.Segment, "go") ||
-                        this.SegmentEquals(lexeme.Segment, "goto"))
+                    if (lexeme.Segment.Equals(Keywords.Go) ||
+                        lexeme.Segment.Equals(Keywords.GoTo))
                     {
                         return new Lexeme(lexeme.Segment, LexemeType.Keyword);
                     }
                     break;
                 case 'i':
-                    if (this.SegmentEquals(lexeme.Segment, "if") ||
-                        this.SegmentEquals(lexeme.Segment, "import") ||
-                        this.SegmentEquals(lexeme.Segment, "interface"))
+                    if (lexeme.Segment.Equals(Keywords.If) ||
+                        lexeme.Segment.Equals(Keywords.Import) ||
+                        lexeme.Segment.Equals(Keywords.Interface))
                     {
                         return new Lexeme(lexeme.Segment, LexemeType.Keyword);
                     }
@@ -211,16 +258,16 @@
                 case 'p':
                     return LexemeForKeyword("package");
                 case 'r':
-                    if (this.SegmentEquals(lexeme.Segment, "range") ||
-                        this.SegmentEquals(lexeme.Segment, "return"))
+                    if (lexeme.Segment.Equals(Keywords.Range) ||
+                        lexeme.Segment.Equals(Keywords.Return))
                     {
                         return new Lexeme(lexeme.Segment, LexemeType.Keyword);
                     }
                     break;
                 case 's':
-                    if (this.SegmentEquals(lexeme.Segment, "select") ||
-                        this.SegmentEquals(lexeme.Segment, "struct") ||
-                        this.SegmentEquals(lexeme.Segment, "switch"))
+                    if (lexeme.Segment.Equals(Keywords.Select) ||
+                        lexeme.Segment.Equals(Keywords.Struct) ||
+                        lexeme.Segment.Equals(Keywords.Switch))
                     {
                         return new Lexeme(lexeme.Segment, LexemeType.Keyword);
                     }
@@ -234,31 +281,13 @@
             return lexeme;
         }
 
-        private bool SegmentEquals(SnapshotSegment segment, string text)
-        {
-            if (segment.Length != text.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < segment.Length; i++)
-            {
-                if (segment[i] != text[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         private bool TryConsumeMultiCharacterSymbol(char first, char second, out Lexeme lexeme)
         {
-            if (this.currentSnapshot[this.currentOffset] == first &&
+            if (this.Snapshot[this.currentOffset] == first &&
                 this.TryPeekNext(out var next) &&
                 next == second)
             {
-                lexeme = new Lexeme(new SnapshotSegment(this.currentSnapshot, this.currentOffset, 2), LexemeType.Operator);
+                lexeme = new Lexeme(new SnapshotSegment(this.Snapshot, this.currentOffset, 2), LexemeType.Operator);
                 this.currentOffset += 2;
                 return true;
             }
@@ -271,13 +300,13 @@
 
         private (int take, int skip) ConsumeKeywordOrIdentifer(int offset)
         {
-            if (!char.IsLetter(this.currentSnapshot[offset]))
+            if (!char.IsLetter(this.Snapshot[offset]))
             {
                 return (0, 0);
             }
 
             int i = offset + 1;
-            while (i < this.currentSnapshot.Length && char.IsLetterOrDigit(this.currentSnapshot[i]))
+            while (i < this.Snapshot.Length && char.IsLetterOrDigit(this.Snapshot[i]))
             {
                 i++;
             }
@@ -287,7 +316,7 @@
 
         private (int take, int skip) ConsumeStringLiteral(int offset)
         {
-            if (this.currentSnapshot[offset] == '"')
+            if (this.Snapshot[offset] == '"')
             {
                 return (1, 0);
             }
@@ -319,7 +348,7 @@
 
         private (int take, int skip) ConsumeEndComment(int offset)
         {
-            if (this.currentSnapshot[offset] == '*' &&
+            if (this.Snapshot[offset] == '*' &&
                 this.TryPeekNext(out var next) &&
                 next == '/')
             {
@@ -341,7 +370,7 @@
 
             currentOffset++;
 
-            while (this.currentOffset < this.currentSnapshot.Length)
+            while (this.currentOffset < this.Snapshot.Length)
             {
                 (take, skip) = consumeFunc(this.currentOffset);
                 if (take > 0 || skip > 0)
@@ -357,7 +386,7 @@
             var segmentLength = this.currentOffset - start;
             if (segmentLength > 0)
             {
-                var segment = new SnapshotSegment(this.currentSnapshot, start, segmentLength);
+                var segment = new SnapshotSegment(this.Snapshot, start, segmentLength);
                 lexeme = new Lexeme(segment, type);
                 this.currentOffset += skip;
                 return true;
@@ -371,7 +400,7 @@
 
         private (int take, int skip) ConsumeEndLine(int offset)
         {
-            if (this.currentSnapshot[offset] == '\r')
+            if (this.Snapshot[offset] == '\r')
             {
                 if (this.TryPeekNext(out var next) && next == '\n')
                 {
@@ -382,7 +411,7 @@
                     return (0, 1);
                 }
             }
-            else if (this.currentSnapshot[offset] == '\n')
+            else if (this.Snapshot[offset] == '\n')
             {
                 return (0, 1);
             }
@@ -394,13 +423,13 @@
 
         private bool TryPeekNext(out char next)
         {
-            if (this.currentOffset + 1 >= this.currentSnapshot.Length)
+            if (this.currentOffset + 1 >= this.Snapshot.Length)
             {
                 next = default;
                 return false;
             }
 
-            next = this.currentSnapshot[this.currentOffset + 1];
+            next = this.Snapshot[this.currentOffset + 1];
             return true;
         }
     }

@@ -44,6 +44,7 @@
                     return PredefinedClassificationTypeNames.Keyword;
                 case LexemeType.String:
                     return PredefinedClassificationTypeNames.String;
+                case LexemeType.Semicolon:
                 case LexemeType.Operator:
                     return PredefinedClassificationTypeNames.Operator;
                 case LexemeType.Integer:

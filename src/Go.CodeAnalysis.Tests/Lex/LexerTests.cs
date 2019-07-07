@@ -8,19 +8,16 @@
     public class LexerTests
     {
         // TODO: missing bits of spec https://golang.org/ref/spec#Lexical_elements
-        // - add semicolons to token stream.
         // - add support for string escape sequences.
         // - add support for float literals
         // - add support for imaginary literals
-        // - add support for 
 
         [TestMethod]
         [Description("Ensure we get nothing back from the empty string")]
         public void Lexer_TryGetNext_Empty_NoLexemes()
         {
             var lexer = Lexer.Create(new StringSnapshot(string.Empty));
-
-            Assert.IsFalse(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.IsFalse(lexer.TryGetNextLexeme(out _));
         }
 
         [TestMethod]
@@ -97,8 +94,6 @@
             Assert.AreEqual(12, lexeme.Segment.Start);
             Assert.AreEqual(6, lexeme.Segment.Length);
             Assert.AreEqual(LexemeType.Identifier, lexeme.Type);
-
-            Assert.IsFalse(lexer.TryGetNextLexeme(out _));
         }
 
         [TestMethod]
@@ -358,7 +353,7 @@
             Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
             Assert.AreEqual(39, lexeme.Segment.Start);
             Assert.AreEqual(1, lexeme.Segment.Length);
-            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
 
             // .
             Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
@@ -458,6 +453,205 @@
             Assert.AreEqual(LexemeType.Integer, lexeme.Type);
 
             Assert.IsFalse(lexer.TryGetNextLexeme(out _));
+        }
+
+        [TestMethod]
+        [Description("Verify correct placement of implicit semi-colons in token stream")]
+        public void Lexer_TryGetNext_ImplicitSemicolonPlacement()
+        {
+            // From: https://golang.org/ref/spec#Semicolons
+            // When the input is broken into tokens, a semicolon is automatically inserted
+            // into the token stream immediately after a line's final token if that token is
+            // - an identifier
+            // - an integer, floating-point, imaginary, rune, or string literal
+            // - one of the keywords break, continue, fallthrough, or return
+            // - one of the operators and punctuation ++, --, ), ], or }
+
+            // TODO: support for floating-point, imaginary, rune.
+
+
+            // - an identifier
+            var lexer = Lexer.Create(new StringSnapshot("  foobar \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(6, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Identifier, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(10, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+
+            // - an integer
+            lexer = Lexer.Create(new StringSnapshot("  123456 \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(6, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Integer, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(10, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+
+            // - a string literal
+            lexer = Lexer.Create(new StringSnapshot("  \"hello\" \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(7, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.String, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(11, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+
+            // - break
+            lexer = Lexer.Create(new StringSnapshot("  break \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(5, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Keyword, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(9, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+
+            // - continue
+            lexer = Lexer.Create(new StringSnapshot("  continue \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(8, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Keyword, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(12, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+
+            // - fallthrough
+            lexer = Lexer.Create(new StringSnapshot("  fallthrough \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(11, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Keyword, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(15, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+
+            // - return
+            lexer = Lexer.Create(new StringSnapshot("  return \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(6, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Keyword, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(10, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+
+            // - operator ++
+            lexer = Lexer.Create(new StringSnapshot("  ++ \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(2, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(6, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+
+            // - operator --
+            lexer = Lexer.Create(new StringSnapshot("  -- \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(2, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(6, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+
+            // - operator )
+            lexer = Lexer.Create(new StringSnapshot("  ) \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(5, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+            // - operator ]
+            lexer = Lexer.Create(new StringSnapshot("  ] \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(5, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+            // - operator ]
+            lexer = Lexer.Create(new StringSnapshot("  } \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Operator, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(5, lexeme.Segment.Start);
+            Assert.AreEqual(0, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+        }
+
+        [TestMethod]
+        [Description("Verify correct placement of explicit semi-colons in token stream")]
+        public void Lexer_TryGetNext_ExplicitSemicolonPlacement()
+        {
+            // - an identifier
+            var lexer = Lexer.Create(new StringSnapshot("  foobar; \r\n"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(2, lexeme.Segment.Start);
+            Assert.AreEqual(6, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Identifier, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(8, lexeme.Segment.Start);
+            Assert.AreEqual(1, lexeme.Segment.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
         }
     }
 }

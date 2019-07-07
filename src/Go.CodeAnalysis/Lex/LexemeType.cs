@@ -8,6 +8,7 @@
         Keyword,
         String,
         Operator,
+        Semicolon,
         Integer
     }
 }
