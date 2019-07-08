@@ -5,14 +5,24 @@ In progress Go language service for Visual Studio.
 
 ## Done
 
-- Very early prototype of colorization via lexing the file. See roadmap for more information.
-- Proof of concept error squiggles for syntax (non-semantic) errors using `gofmt.exe -e`.
-- TextMate-based outlining and structure guides.
-- Colorized + formatted documentation tooltips via `gogetdoc.exe`.
+### Editor Features
+- Very early prototype of colorization via lexing the file.
+- Error squiggles (only for some `gofmt.exe` provided errors and supported parse cases).
+- Outlining and structure guides (only for supported parse cases).
+- Colorized + formatted documentation tooltips via `gogetdoc.exe` (currently requires files to be in GOPATH directory).
+- Smart-indent (only for supported parse cases).
+
+### Supported Parse Cases
+
+- Package declarations
+- Top level functions with no parameters, no return type, and no body content.
 
 ## Getting started
-- Install the Go development SDK
+- Install the Go development SDK.
 - Install gofmt and gogetdoc.
+- Build in Visual Studio 2019 16.1+.
+- Copy src/test-fodder to your GOPATH directory.
+- Open the file in the experimental VS instance.
 
 ## Roadmap
 
