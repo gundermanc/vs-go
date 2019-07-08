@@ -35,6 +35,8 @@
 
         public int End => this.Start + this.Length;
 
+        public bool ContainsPosition(int position) => this.Start <= position && this.End > position;
+
         public string GetText()
         {
             if (this.Length == 0)

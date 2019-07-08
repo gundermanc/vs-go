@@ -8,7 +8,8 @@
 
     public sealed class FunctionDeclarationNode : ParseNode
     {
-        public FunctionDeclarationNode(SnapshotSegment extent, SnapshotSegment functionNameExtent, BlockNode blockNode) : base(extent, ImmutableArray<ParseNode>.Empty)
+        public FunctionDeclarationNode(SnapshotSegment extent, SnapshotSegment functionNameExtent, BlockNode blockNode)
+            : base(extent, ImmutableArray.Create<ParseNode>(blockNode))
         {
             this.FunctionNameExtent = functionNameExtent;
             this.BlockNode = blockNode;

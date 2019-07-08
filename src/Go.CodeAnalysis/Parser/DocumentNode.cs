@@ -9,7 +9,7 @@
     public sealed class DocumentNode : ParseNode
     {
         public DocumentNode(SnapshotSegment extent, PackageDeclarationNode packageDeclaration, DocumentBodyNode documentBodyNode)
-            : base(extent, ImmutableArray<ParseNode>.Empty)
+            : base(extent, ImmutableArray.Create<ParseNode>(packageDeclaration, documentBodyNode))
         {
             this.PackageDeclaration = packageDeclaration;
             this.DocumentBody = documentBodyNode;
