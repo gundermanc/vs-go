@@ -24,6 +24,23 @@
             return true;
         }
 
+        public static bool IsCorrectLexemeOperatorOrReportError(this Lexer lexer, char op, IList<Error> errors)
+        {
+            if (!lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Operator, errors))
+            {
+                return false;
+            }
+
+            if (!lexer.CurrentLexeme.Extent.TryGetSingleChar(out var c) && c == op)
+            {
+                var message = string.Format(Strings.Error_UnexpectedKeyword, lexer.CurrentLexeme.Extent.GetText(), op);
+                errors.Add(new Error(lexer.CurrentLexeme.Extent, message));
+                return false;
+            }
+
+            return true;
+        }
+
         public static bool IsCorrectLexemeKeywordOrReportError(this Lexer lexer, string keyword, IList<Error> errors)
         {
             if (!lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Keyword, errors))
@@ -31,10 +48,10 @@
                 return false;
             }
 
-            if (!lexer.CurrentLexeme.Segment.Equals(keyword))
+            if (!lexer.CurrentLexeme.Extent.Equals(keyword))
             {
-                var message = string.Format(Strings.Error_UnexpectedKeyword, lexer.CurrentLexeme.Segment.GetText(), keyword);
-                errors.Add(new Error(lexer.CurrentLexeme.Segment, message));
+                var message = string.Format(Strings.Error_UnexpectedKeyword, lexer.CurrentLexeme.Extent.GetText(), keyword);
+                errors.Add(new Error(lexer.CurrentLexeme.Extent, message));
                 return false;
             }
 
@@ -46,7 +63,7 @@
             if (lexer.CurrentLexeme.Type != type)
             {
                 var message = string.Format(Strings.Error_UnexpectedLexmeTypeFormatString, lexer.CurrentLexeme.Type, type);
-                errors.Add(new Error(lexer.CurrentLexeme.Segment, message));
+                errors.Add(new Error(lexer.CurrentLexeme.Extent, message));
                 lexer.TryConsumeToEndOfStatementOrReportError(errors);
                 return false;
             }
@@ -61,7 +78,7 @@
             if (lexer.CurrentLexeme.Type != LexemeType.Semicolon)
             {
                 var message = string.Format(Strings.Error_UnexpectedLexmeTypeFormatString, lexer.CurrentLexeme.Type, LexemeType.Semicolon);
-                errors.Add(new Error(new SnapshotSegment(), message));
+                errors.Add(new Error(lexer.CurrentLexeme.Extent, message));
                 return false;
             }
 

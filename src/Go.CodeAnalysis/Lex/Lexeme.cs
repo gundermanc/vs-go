@@ -6,11 +6,11 @@
     {
         public Lexeme(SnapshotSegment segment, LexemeType type)
         {
-            this.Segment = segment;
+            this.Extent = segment;
             this.Type = type;
         }
 
-        public SnapshotSegment Segment { get;  }
+        public SnapshotSegment Extent { get;  }
 
         public LexemeType Type { get; }
     }

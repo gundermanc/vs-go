@@ -37,7 +37,7 @@
             while (lexer.TryGetNextLexeme(out var lexeme))
             {
                 yield return new TagSpan<IClassificationTag>(
-                    lexeme.Segment.ToSnapshotSpan(),
+                    lexeme.Extent.ToSnapshotSpan(),
                     new ClassificationTag(this.classificationRegistryService.GetClassificationType(lexeme.Type.ToClassificationTypeName())));
             }
         }

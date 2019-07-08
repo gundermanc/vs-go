@@ -8,12 +8,16 @@
 
     public sealed class DocumentNode : ParseNode
     {
-        public DocumentNode(SnapshotSegment extent, PackageDeclarationNode packageDeclaration) : base(extent, ImmutableArray<ParseNode>.Empty)
+        public DocumentNode(SnapshotSegment extent, PackageDeclarationNode packageDeclaration, DocumentBodyNode documentBodyNode)
+            : base(extent, ImmutableArray<ParseNode>.Empty)
         {
             this.PackageDeclaration = packageDeclaration;
+            this.DocumentBody = documentBodyNode;
         }
 
         public PackageDeclarationNode PackageDeclaration { get; }
+
+        public DocumentBodyNode DocumentBody { get; }
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out DocumentNode parseNode)
         {
@@ -23,7 +27,15 @@
                 return false;
             }
 
-            parseNode = new DocumentNode(lexer.Snapshot.Extent, packageDeclarationNode);
+            DocumentBodyNode documentBodyNode = null;
+
+            if (lexer.TryGetNextLexeme(out _) && !DocumentBodyNode.TryParse(lexer, errors, out documentBodyNode))
+            {
+                parseNode = null;
+                return false;
+            }
+
+            parseNode = new DocumentNode(lexer.Snapshot.Extent, packageDeclarationNode, documentBodyNode);
             return true;
         }
     }

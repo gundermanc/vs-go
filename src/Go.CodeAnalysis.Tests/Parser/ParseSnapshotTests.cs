@@ -50,5 +50,70 @@
             Assert.AreEqual(snapshot.Extent, parseSnapshot.RootNode.PackageDeclaration.Extent);
             Assert.AreEqual(new SnapshotSegment(snapshot, 8, 4), parseSnapshot.RootNode.PackageDeclaration.PackageNameExtent);
         }
+
+        [TestMethod]
+        public void ParseSnapshot_FunctionDeclaration_KeywordOnly()
+        {
+            var snapshot = new StringSnapshot("package main\r\n\r\nfunc");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual("Unexpected end of file", parseSnapshot.Errors[0].Message);
+            Assert.AreEqual(new SnapshotSegment(snapshot, 19, 1), parseSnapshot.Errors[0].Extent);
+            Assert.AreEqual(0, parseSnapshot.RootNode.Children.Length);
+            Assert.AreEqual(snapshot.Extent, parseSnapshot.RootNode.Extent);
+        }
+
+        [TestMethod]
+        public void ParseSnapshot_FunctionDeclaration_KeywordAndNameOnly()
+        {
+            var snapshot = new StringSnapshot("package main\r\n\r\nfunc main");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual("Unexpected lexeme type Semicolon. Expected lexeme type Operator.", parseSnapshot.Errors[0].Message);
+            Assert.AreEqual(new SnapshotSegment(snapshot, 25, 0), parseSnapshot.Errors[0].Extent);
+            Assert.AreEqual(0, parseSnapshot.RootNode.Children.Length);
+            Assert.AreEqual(snapshot.Extent, parseSnapshot.RootNode.Extent);
+        }
+
+        [TestMethod]
+        public void ParseSnapshot_FunctionDeclaration_UpToOpenParen()
+        {
+            var snapshot = new StringSnapshot("package main\r\n\r\nfunc main(");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual("Unexpected end of file", parseSnapshot.Errors[0].Message);
+            Assert.AreEqual(new SnapshotSegment(snapshot, 25, 1), parseSnapshot.Errors[0].Extent);
+            Assert.AreEqual(0, parseSnapshot.RootNode.Children.Length);
+            Assert.AreEqual(snapshot.Extent, parseSnapshot.RootNode.Extent);
+        }
+
+        [TestMethod]
+        public void ParseSnapshot_FunctionDeclaration_UpToCloseParen()
+        {
+            var snapshot = new StringSnapshot("package main\r\n\r\nfunc main()");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual("Unexpected lexeme type Semicolon. Expected lexeme type Operator.", parseSnapshot.Errors[0].Message);
+            Assert.AreEqual(new SnapshotSegment(snapshot, 27, 0), parseSnapshot.Errors[0].Extent);
+            Assert.AreEqual(0, parseSnapshot.RootNode.Children.Length);
+            Assert.AreEqual(snapshot.Extent, parseSnapshot.RootNode.Extent);
+        }
+
+        [TestMethod]
+        public void ParseSnapshot_FunctionDeclaration_UpToOpenBrace()
+        {
+            var snapshot = new StringSnapshot("package main\r\n\r\nfunc main() {");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual("Unexpected end of file", parseSnapshot.Errors[0].Message);
+            Assert.AreEqual(new SnapshotSegment(snapshot, 28, 1), parseSnapshot.Errors[0].Extent);
+            Assert.AreEqual(0, parseSnapshot.RootNode.Children.Length);
+            Assert.AreEqual(snapshot.Extent, parseSnapshot.RootNode.Extent);
+        }
+
+        [TestMethod]
+        public void ParseSnapshot_FunctionDeclaration_Basic()
+        {
+            var snapshot = new StringSnapshot("package main\r\n\r\nfunc main() { }");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual(0, parseSnapshot.Errors.Length);
+            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children.Length);
+            //Assert.AreEqual(, parseSnapshot.RootNode.DocumentBody.Children[0].);
+        }
     }
 }

@@ -19,7 +19,7 @@
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out PackageDeclarationNode parseNode)
         {
-            var start = lexer.CurrentLexeme.Segment.Start;
+            var start = lexer.CurrentLexeme.Extent.Start;
 
             if (!lexer.IsCorrectLexemeKeywordOrReportError(Keywords.Package, errors) ||
                 !lexer.TryGetNextLexemeOrReportError(errors, out _))
@@ -34,10 +34,20 @@
                 return false;
             }
 
-            var statementExtent = new SnapshotSegment(lexer.CurrentLexeme.Segment.Snapshot, start, lexer.CurrentLexeme.Segment.End - start);
+            var packageNameExtent = lexer.CurrentLexeme.Extent;
+
+            if (!lexer.TryGetNextLexemeOrReportError(errors, out _) ||
+                !lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Semicolon, errors))
+            {
+                parseNode = null;
+                return false;
+            }
+
+            var statementExtent = new SnapshotSegment(lexer.CurrentLexeme.Extent.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
+
             parseNode = new PackageDeclarationNode(
                 statementExtent,
-                lexer.CurrentLexeme.Segment);
+                packageNameExtent);
 
             return true;
         }

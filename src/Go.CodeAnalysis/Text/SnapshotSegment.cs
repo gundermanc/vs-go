@@ -27,7 +27,7 @@
 
         public SnapshotBase Snapshot { get; }
 
-        public char this[int offset] => Snapshot[this.Start + offset];
+        public char this[int offset] => this.Snapshot[this.Start + offset];
 
         public int Start { get; }
 
@@ -86,5 +86,7 @@
                 this.Start == other.Start &&
                 this.Length == other.Length;
         }
+
+        public override string ToString() => $"[{this.Start}, {this.End}): {this.GetText()}";
     }
 }

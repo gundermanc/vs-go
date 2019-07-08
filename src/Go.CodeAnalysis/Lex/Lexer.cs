@@ -38,7 +38,14 @@
                 }
             }
 
-            this.CurrentLexeme = default;
+            // Ensure trailing semi-colon if there's no end-line.
+            if (this.TryInsertSemicolon(out lexeme))
+            {
+                this.CurrentLexeme = lexeme;
+                return true;
+            }
+
+            //this.CurrentLexeme = default;
             lexeme = default;
             return false;
         }
@@ -131,17 +138,17 @@
             switch (this.CurrentLexeme.Type)
             {
                 case LexemeType.Keyword:
-                    if (this.CurrentLexeme.Segment.Equals(Keywords.Break) ||
-                        this.CurrentLexeme.Segment.Equals(Keywords.Continue) ||
-                        this.CurrentLexeme.Segment.Equals(Keywords.FallThrough) ||
-                        this.CurrentLexeme.Segment.Equals(Keywords.Return)) goto case LexemeType.Identifier;
+                    if (this.CurrentLexeme.Extent.Equals(Keywords.Break) ||
+                        this.CurrentLexeme.Extent.Equals(Keywords.Continue) ||
+                        this.CurrentLexeme.Extent.Equals(Keywords.FallThrough) ||
+                        this.CurrentLexeme.Extent.Equals(Keywords.Return)) goto case LexemeType.Identifier;
                     break;
                 case LexemeType.Operator:
-                    if (this.CurrentLexeme.Segment.Equals("++") ||
-                        this.CurrentLexeme.Segment.Equals("--") ||
-                        this.CurrentLexeme.Segment.Equals(")") ||
-                        this.CurrentLexeme.Segment.Equals("]") ||
-                        this.CurrentLexeme.Segment.Equals("}")) goto case LexemeType.Identifier;
+                    if (this.CurrentLexeme.Extent.Equals("++") ||
+                        this.CurrentLexeme.Extent.Equals("--") ||
+                        this.CurrentLexeme.Extent.Equals(")") ||
+                        this.CurrentLexeme.Extent.Equals("]") ||
+                        this.CurrentLexeme.Extent.Equals("}")) goto case LexemeType.Identifier;
                         break;
                 case LexemeType.Identifier:
                 case LexemeType.Integer:
@@ -200,57 +207,57 @@
         {
             Lexeme LexemeForKeyword(string keyword)
             {
-                if (lexeme.Segment.Equals(keyword))
+                if (lexeme.Extent.Equals(keyword))
                 {
-                    return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                    return new Lexeme(lexeme.Extent, LexemeType.Keyword);
                 }
 
                 return lexeme;
             }
 
-            switch (lexeme.Segment[0])
+            switch (lexeme.Extent[0])
             {
                 case 'b':
                     return LexemeForKeyword(Keywords.Break);
                 case 'c':
-                    if (lexeme.Segment.Equals(Keywords.Case) ||
-                        lexeme.Segment.Equals(Keywords.Chan) ||
-                        lexeme.Segment.Equals(Keywords.Const) ||
-                        lexeme.Segment.Equals(Keywords.Continue))
+                    if (lexeme.Extent.Equals(Keywords.Case) ||
+                        lexeme.Extent.Equals(Keywords.Chan) ||
+                        lexeme.Extent.Equals(Keywords.Const) ||
+                        lexeme.Extent.Equals(Keywords.Continue))
                     {
-                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                        return new Lexeme(lexeme.Extent, LexemeType.Keyword);
                     }
                     break;
                 case 'd':
-                    if (lexeme.Segment.Equals(Keywords.Default) ||
-                        lexeme.Segment.Equals(Keywords.Defer))
+                    if (lexeme.Extent.Equals(Keywords.Default) ||
+                        lexeme.Extent.Equals(Keywords.Defer))
                     {
-                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                        return new Lexeme(lexeme.Extent, LexemeType.Keyword);
                     }
                     break;
                 case 'e':
                     return LexemeForKeyword("else");
                 case 'f':
-                    if (lexeme.Segment.Equals(Keywords.FallThrough) ||
-                        lexeme.Segment.Equals(Keywords.For) ||
-                        lexeme.Segment.Equals(Keywords.Func))
+                    if (lexeme.Extent.Equals(Keywords.FallThrough) ||
+                        lexeme.Extent.Equals(Keywords.For) ||
+                        lexeme.Extent.Equals(Keywords.Func))
                     {
-                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                        return new Lexeme(lexeme.Extent, LexemeType.Keyword);
                     }
                     break;
                 case 'g':
-                    if (lexeme.Segment.Equals(Keywords.Go) ||
-                        lexeme.Segment.Equals(Keywords.GoTo))
+                    if (lexeme.Extent.Equals(Keywords.Go) ||
+                        lexeme.Extent.Equals(Keywords.GoTo))
                     {
-                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                        return new Lexeme(lexeme.Extent, LexemeType.Keyword);
                     }
                     break;
                 case 'i':
-                    if (lexeme.Segment.Equals(Keywords.If) ||
-                        lexeme.Segment.Equals(Keywords.Import) ||
-                        lexeme.Segment.Equals(Keywords.Interface))
+                    if (lexeme.Extent.Equals(Keywords.If) ||
+                        lexeme.Extent.Equals(Keywords.Import) ||
+                        lexeme.Extent.Equals(Keywords.Interface))
                     {
-                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                        return new Lexeme(lexeme.Extent, LexemeType.Keyword);
                     }
                     break;
                 case 'm':
@@ -258,18 +265,18 @@
                 case 'p':
                     return LexemeForKeyword("package");
                 case 'r':
-                    if (lexeme.Segment.Equals(Keywords.Range) ||
-                        lexeme.Segment.Equals(Keywords.Return))
+                    if (lexeme.Extent.Equals(Keywords.Range) ||
+                        lexeme.Extent.Equals(Keywords.Return))
                     {
-                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                        return new Lexeme(lexeme.Extent, LexemeType.Keyword);
                     }
                     break;
                 case 's':
-                    if (lexeme.Segment.Equals(Keywords.Select) ||
-                        lexeme.Segment.Equals(Keywords.Struct) ||
-                        lexeme.Segment.Equals(Keywords.Switch))
+                    if (lexeme.Extent.Equals(Keywords.Select) ||
+                        lexeme.Extent.Equals(Keywords.Struct) ||
+                        lexeme.Extent.Equals(Keywords.Switch))
                     {
-                        return new Lexeme(lexeme.Segment, LexemeType.Keyword);
+                        return new Lexeme(lexeme.Extent, LexemeType.Keyword);
                     }
                     break;
                 case 't':

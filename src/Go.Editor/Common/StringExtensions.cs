@@ -14,7 +14,7 @@
             var lexer = Lexer.Create(new StringSnapshot(text));
             while (lexer.TryGetNextLexeme(out var lexeme))
             {
-                runs.Add(new ClassifiedTextRun(lexeme.Type.ToClassificationTypeName(), lexeme.Segment.GetText()));
+                runs.Add(new ClassifiedTextRun(lexeme.Type.ToClassificationTypeName(), lexeme.Extent.GetText()));
 
                 // Hack: add space in after each item since lexer swallows whitespace.
                 runs.Add(new ClassifiedTextRun(PredefinedClassificationTypeNames.Other, " "));

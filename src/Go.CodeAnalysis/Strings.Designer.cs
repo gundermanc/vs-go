@@ -86,5 +86,14 @@ namespace Go.CodeAnalysis {
                 return ResourceManager.GetString("Error_UnexpectedLexmeTypeFormatString", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected operator {0}. Expected operator {1}..
+        /// </summary>
+        internal static string Error_UnexpectedOperator {
+            get {
+                return ResourceManager.GetString("Error_UnexpectedOperator", resourceCulture);
+            }
+        }
     }
 }

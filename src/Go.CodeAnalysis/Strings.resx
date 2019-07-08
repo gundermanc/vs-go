@@ -126,4 +126,7 @@
   <data name="Error_UnexpectedLexmeTypeFormatString" xml:space="preserve">
     <value>Unexpected lexeme type {0}. Expected lexeme type {1}.</value>
   </data>
+  <data name="Error_UnexpectedOperator" xml:space="preserve">
+    <value>Unexpected operator {0}. Expected operator {1}.</value>
+  </data>
 </root>
