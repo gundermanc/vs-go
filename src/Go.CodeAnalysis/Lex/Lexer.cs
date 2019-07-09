@@ -109,11 +109,10 @@
                     lexeme = new Lexeme(new SnapshotSegment(this.Snapshot, this.currentOffset++, 1), LexemeType.Semicolon);
                     return true;
                 case '\r':
+                case '\n':
                     // This is a bit awkward.. the semi-colon will be between the \r and \n
                     // but that shouldn't impact parsing.
                     if (this.TryInsertSemicolon(out lexeme)) return true;
-                    break;
-                case '\n':
                     break;
                 case ' ':
                 case '\t':

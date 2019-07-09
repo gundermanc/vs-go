@@ -103,5 +103,14 @@
             Assert.AreEqual(0, parseSnapshot.Errors.Length);
             Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children.Length);
         }
+
+        [TestMethod]
+        public void ParseSnapshot_FunctionDeclaration_Basic_UnixLineEnding()
+        {
+            var snapshot = new StringSnapshot("package main\n\nfunc main() { }");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual(0, parseSnapshot.Errors.Length);
+            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children.Length);
+        }
     }
 }

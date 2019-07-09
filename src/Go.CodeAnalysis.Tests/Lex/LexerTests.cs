@@ -656,6 +656,62 @@
         }
 
         [TestMethod]
+        [Description("Verify correct placement of explicit semi-colons in token stream with unix line endings")]
+        public void Lexer_TryGetNext_ImplicitSemicolonPlacement_UnixLineEndings()
+        {
+            // - an identifier
+            var lexer = Lexer.Create(new StringSnapshot("package main\n\nfunc"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(0, lexeme.Extent.Start);
+            Assert.AreEqual(7, lexeme.Extent.Length);
+            Assert.AreEqual(LexemeType.Keyword, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(8, lexeme.Extent.Start);
+            Assert.AreEqual(4, lexeme.Extent.Length);
+            Assert.AreEqual(LexemeType.Identifier, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(13, lexeme.Extent.Start);
+            Assert.AreEqual(0, lexeme.Extent.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(14, lexeme.Extent.Start);
+            Assert.AreEqual(4, lexeme.Extent.Length);
+            Assert.AreEqual(LexemeType.Keyword, lexeme.Type);
+        }
+
+        [TestMethod]
+        [Description("Verify correct placement of explicit semi-colons in token stream with mac line endings")]
+        public void Lexer_TryGetNext_ImplicitSemicolonPlacement_MacLineEndings()
+        {
+            // - an identifier
+            var lexer = Lexer.Create(new StringSnapshot("package main\r\rfunc"));
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out var lexeme));
+            Assert.AreEqual(0, lexeme.Extent.Start);
+            Assert.AreEqual(7, lexeme.Extent.Length);
+            Assert.AreEqual(LexemeType.Keyword, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(8, lexeme.Extent.Start);
+            Assert.AreEqual(4, lexeme.Extent.Length);
+            Assert.AreEqual(LexemeType.Identifier, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(12, lexeme.Extent.Start);
+            Assert.AreEqual(0, lexeme.Extent.Length);
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
+
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(14, lexeme.Extent.Start);
+            Assert.AreEqual(4, lexeme.Extent.Length);
+            Assert.AreEqual(LexemeType.Keyword, lexeme.Type);
+        }
+
+        [TestMethod]
         [Description("Verify correct placement of implicit semi-colons in token stream without a trailing end-line")]
         public void Lexer_TryGetNext_ImplicitSemicolonPlacementWithoutEndLine()
         {
