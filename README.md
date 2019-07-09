@@ -1,9 +1,14 @@
-# Go lang Support for Visual Studio for Windows and Mac
+﻿# Go lang Support for Visual Studio for Windows and Mac
 In progress Go language service for Visual Studio.
 
 ![image](https://user-images.githubusercontent.com/5387680/60389194-5e446280-9a72-11e9-9269-dfcaaf349514.png)
 
 ## Done
+
+### Supported platforms:
+
+- Visual Studio 2019 16.1 for Windows
+- Visual Studio 2019 8.2.0 Preview for Mac
 
 ### Editor Features
 - Very early prototype of colorization via lexing the file.

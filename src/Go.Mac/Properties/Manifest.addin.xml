@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionModel>
+    
+    <!-- TODO: this whole file is a wild sequence of guesses -->
+
+    <Dependencies>
+        <Addin id="::MonoDevelop.TextEditor" version="8.2" />
+    </Dependencies>
+
+    <!-- Register with Visual Studio for Mac -->
+    <Runtime>
+        <Import assembly="Go.CodeAnalysis.dll" />
+        <Import assembly="Go.Editor.dll" />
+        <Import assembly="Go.Mac.dll" />
+    </Runtime>
+
+    <!-- Register with Managed Extensibility Framework (MEF) -->
+    <Extension path="/MonoDevelop/Ide/Composition">
+        <Assembly file="Go.CodeAnalysis.dll" />
+        <Assembly file="Go.Editor.dll" />
+        <Assembly file="Go.Mac.dll" />
+    </Extension>
+
+    <Extension path="/MonoDevelop/Core/MimeTypes">
+        <MimeType id="text/go" _description="GO" baseType="text/plain">
+            <File pattern="*.go" />
+        </MimeType>
+    </Extension>
+
+    <!-- 
+    Copied from: https://github.com/mono/monodevelop/pull/7905/files.
+    Ye be warned: probably not officially supported.
+    -->
+  <Extension path="/MonoDevelop/TextEditor/SupportedFileTypes">
+    <SupportedFileType id="go" extensions=".go,.f" />
+  </Extension>
+</ExtensionModel>

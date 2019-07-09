@@ -1,9 +1,10 @@
-<Project>
+﻿<Project>
 
   <PropertyGroup>
     <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RepoRoot>
     <TargetFramework>net472</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>7.2</LangVersion>
     
     <!-- Disable ridiculously pendantic VS threading warning to avoid littering ThrowIfNotOnUIThread() everywhere. -->
     <NoWarn>$(NoWarn);VSTHRD010</NoWarn>

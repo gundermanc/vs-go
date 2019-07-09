@@ -1,0 +1,29 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Go.Mac", "Go.Mac\Go.Mac.csproj", "{A7773DF1-9C2C-4133-971C-D5181C689D01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Go.Editor", "Go.Editor\Go.Editor.csproj", "{F0F1F6AF-D813-4A00-B879-64341457CA31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Go.CodeAnalysis", "Go.CodeAnalysis\Go.CodeAnalysis.csproj", "{D54077D6-7C3B-4F5F-97F9-FDBBCC38483E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7773DF1-9C2C-4133-971C-D5181C689D01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7773DF1-9C2C-4133-971C-D5181C689D01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7773DF1-9C2C-4133-971C-D5181C689D01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7773DF1-9C2C-4133-971C-D5181C689D01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0F1F6AF-D813-4A00-B879-64341457CA31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0F1F6AF-D813-4A00-B879-64341457CA31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0F1F6AF-D813-4A00-B879-64341457CA31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0F1F6AF-D813-4A00-B879-64341457CA31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D54077D6-7C3B-4F5F-97F9-FDBBCC38483E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D54077D6-7C3B-4F5F-97F9-FDBBCC38483E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D54077D6-7C3B-4F5F-97F9-FDBBCC38483E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D54077D6-7C3B-4F5F-97F9-FDBBCC38483E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
