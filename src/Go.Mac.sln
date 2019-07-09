@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Go.Editor", "Go.Editor\Go.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Go.CodeAnalysis", "Go.CodeAnalysis\Go.CodeAnalysis.csproj", "{D54077D6-7C3B-4F5F-97F9-FDBBCC38483E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Go.CodeAnalysis.Tests", "Go.CodeAnalysis.Tests\Go.CodeAnalysis.Tests.csproj", "{27334C2B-9C80-4957-965C-6867FEF9614E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,5 +27,9 @@ Global
 		{D54077D6-7C3B-4F5F-97F9-FDBBCC38483E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D54077D6-7C3B-4F5F-97F9-FDBBCC38483E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D54077D6-7C3B-4F5F-97F9-FDBBCC38483E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27334C2B-9C80-4957-965C-6867FEF9614E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27334C2B-9C80-4957-965C-6867FEF9614E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27334C2B-9C80-4957-965C-6867FEF9614E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27334C2B-9C80-4957-965C-6867FEF9614E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

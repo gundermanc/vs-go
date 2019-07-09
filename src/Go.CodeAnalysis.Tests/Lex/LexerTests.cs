@@ -452,7 +452,8 @@
             Assert.AreEqual(10, lexeme.Extent.Length);
             Assert.AreEqual(LexemeType.Integer, lexeme.Type);
 
-            Assert.IsFalse(lexer.TryGetNextLexeme(out _));
+            Assert.IsTrue(lexer.TryGetNextLexeme(out lexeme));
+            Assert.AreEqual(LexemeType.Semicolon, lexeme.Type);
         }
 
         [TestMethod]
