@@ -23,7 +23,7 @@
 
             // TODO: parse statements.
 
-            if (!lexer.TryGetNextLexemeOrReportError(errors, out _) ||
+            if (!lexer.TryAdvanceLexemeOrReportError(errors) ||
                 !lexer.IsCorrectLexemeOperatorOrReportError('}', errors))
             {
                 parseNode = null;

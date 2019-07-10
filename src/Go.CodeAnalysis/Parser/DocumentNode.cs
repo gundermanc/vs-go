@@ -29,7 +29,7 @@
 
             DocumentBodyNode documentBodyNode = null;
 
-            if (lexer.TryGetNextLexeme(out _) && !DocumentBodyNode.TryParse(lexer, errors, out documentBodyNode))
+            if (lexer.TryAdvanceLexemeOrReportError(errors) && !DocumentBodyNode.TryParse(lexer, errors, out documentBodyNode))
             {
                 parseNode = null;
                 return false;

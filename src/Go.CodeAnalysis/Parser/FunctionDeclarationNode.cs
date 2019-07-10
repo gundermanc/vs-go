@@ -24,7 +24,7 @@
             var start = lexer.CurrentLexeme.Extent.Start;
 
             if (!lexer.IsCorrectLexemeKeywordOrReportError(Keywords.Func, errors) ||
-                !lexer.TryGetNextLexemeOrReportError(errors, out _) ||
+                !lexer.TryAdvanceLexemeOrReportError(errors) ||
                 !lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Identifier, errors))
             {
                 parseNode = null;
@@ -34,11 +34,11 @@
             var functionNameExtent = lexer.CurrentLexeme.Extent;
 
             // TODO: parse function arguments.
-            if (!lexer.TryGetNextLexemeOrReportError(errors, out _) ||
+            if (!lexer.TryAdvanceLexemeOrReportError(errors) ||
                 !lexer.IsCorrectLexemeOperatorOrReportError('(', errors) ||
-                !lexer.TryGetNextLexemeOrReportError(errors, out _) ||
+                !lexer.TryAdvanceLexemeOrReportError(errors) ||
                 !lexer.IsCorrectLexemeOperatorOrReportError(')', errors) ||
-                !lexer.TryGetNextLexemeOrReportError(errors, out _))
+                !lexer.TryAdvanceLexemeOrReportError(errors))
             {
                 parseNode = null;
                 return false;
@@ -50,7 +50,7 @@
                 return false;
             }
 
-            if (!lexer.TryGetNextLexemeOrReportError(errors, out _) ||
+            if (!lexer.TryAdvanceLexemeOrReportError(errors) ||
                 !lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Semicolon, errors))
             {
                 parseNode = null;
@@ -60,7 +60,7 @@
             var extent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
             parseNode = new FunctionDeclarationNode(extent, functionNameExtent, blockNode);
 
-            lexer.TryGetNextLexeme(out _);
+            lexer.TryAdvanceLexeme(errors);
 
             return true;
         }

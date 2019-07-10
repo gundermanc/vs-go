@@ -112,5 +112,49 @@
             Assert.AreEqual(0, parseSnapshot.Errors.Length);
             Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children.Length);
         }
+
+        [TestMethod]
+        [Description("Ensure errors are not generated with comments interleaved in code.")]
+        public void ParseSnapshot_FunctionDeclaration_Basic_InterleavedComments()
+        {
+            var snapshot = new StringSnapshot(@"
+// Line
+/* General */
+package main
+
+// Line
+/* General */
+
+func main() {
+
+// Line
+/* General */
+
+}
+
+// Line
+/* General */
+");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual(0, parseSnapshot.Errors.Length);
+            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children.Length);
+        }
+
+        [TestMethod]
+        [Description("Ensure error is thrown if brace in function is on next line")]
+        public void ParseSnapshot_FunctionDeclaration_Basic_WrappedBrace()
+        {
+            var snapshot = new StringSnapshot(@"
+package main
+
+func main()
+{
+
+}
+");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual("Unexpected lexeme type Semicolon. Expected lexeme type Operator.", parseSnapshot.Errors[0].Message);
+            Assert.AreEqual(new SnapshotSegment(snapshot, 26, 0), parseSnapshot.Errors[0].Extent);
+        }
     }
 }

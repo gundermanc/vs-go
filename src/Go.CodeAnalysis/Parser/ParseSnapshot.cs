@@ -17,7 +17,7 @@
 
             var lexer = Lexer.Create(snapshotBase);
 
-            if (lexer.TryGetNextLexemeOrReportError(errorsBuilder, out _) &&
+            if (lexer.TryAdvanceLexemeOrReportError(errorsBuilder) &&
                 DocumentNode.TryParse(lexer, errorsBuilder, out var rootNode))
             {
                 return new ParseSnapshot(rootNode, errorsBuilder.ToImmutable());

@@ -34,7 +34,7 @@
             foreach (var error in documentSnapshot.Errors)
             {
                 // TODO: support other error types.
-                errorsBuilder.Add(new TagSpan<IErrorTag>(error.Extent.ToSnapshotSpan(), new ErrorTag(PredefinedErrorTypeNames.SyntaxError, error.Message)));
+                errorsBuilder.Add(new TagSpan<IErrorTag>(error.Extent.ToSnapshotSpan(), new ErrorTag(PredefinedErrorTypeNames.CompilerError, error.Message)));
             }
 
             this.currentTags = errorsBuilder.ToImmutable();

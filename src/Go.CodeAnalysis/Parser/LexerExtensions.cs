@@ -7,21 +7,35 @@
 
     internal static class LexerExtensions
     {
-        public static bool TryGetNextLexemeOrReportError(this Lexer lexer, IList<Error> errors, out Lexeme lexeme)
+        public static bool TryAdvanceLexeme(this Lexer lexer, IList<Error> errors)
         {
-            if (!lexer.TryGetNextLexeme(out lexeme))
+            while (lexer.TryGetNextLexeme(out var lexeme))
             {
-                // Prevent out of range exception for empty files.
-                var errorSpan = lexer.Snapshot.Length > 0 ?
-                    new SnapshotSegment(lexer.Snapshot, lexer.Snapshot.Extent.End - 1, 1) :
-                    new SnapshotSegment(lexer.Snapshot, 0, 0);
-
-                errors.Add(new Error(errorSpan, Strings.Error_EndOfFile));
-                lexer.TryConsumeToEndOfStatementOrReportError(errors);
-                return false;
+                if (lexeme.Type != LexemeType.GeneralComment &&
+                    lexeme.Type != LexemeType.LineComment)
+                {
+                    return true;
+                }
             }
 
-            return true;
+            return false;
+        }
+
+        public static bool TryAdvanceLexemeOrReportError(this Lexer lexer, IList<Error> errors)
+        {
+            if (lexer.TryAdvanceLexeme(errors))
+            {
+                return true;
+            }
+
+            // Prevent out of range exception for empty files.
+            var errorSpan = lexer.Snapshot.Length > 0 ?
+                new SnapshotSegment(lexer.Snapshot, lexer.Snapshot.Extent.End - 1, 1) :
+                new SnapshotSegment(lexer.Snapshot, 0, 0);
+
+            errors.Add(new Error(errorSpan, Strings.Error_EndOfFile));
+            lexer.TryConsumeToEndOfStatementOrReportError(errors);
+            return false;
         }
 
         public static bool IsCorrectLexemeOperatorOrReportError(this Lexer lexer, char op, IList<Error> errors)
@@ -73,7 +87,7 @@
 
         public static bool TryConsumeToEndOfStatementOrReportError(this Lexer lexer, IList<Error> errors)
         {
-            while (lexer.CurrentLexeme.Type != LexemeType.Semicolon && lexer.TryGetNextLexeme(out _));
+            while (lexer.CurrentLexeme.Type != LexemeType.Semicolon && lexer.TryGetNextLexeme(out _)) { }
 
             if (lexer.CurrentLexeme.Type != LexemeType.Semicolon)
             {

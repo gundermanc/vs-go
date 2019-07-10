@@ -44,7 +44,7 @@
                         return false;
                 }
             }
-            while (lexer.TryGetNextLexeme(out _));
+            while (lexer.TryAdvanceLexeme(errors));
 
             var extent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
             parseNode = new DocumentBodyNode(extent, declarationsBuilder.ToImmutable());

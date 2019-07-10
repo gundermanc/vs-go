@@ -22,7 +22,7 @@
             var start = lexer.CurrentLexeme.Extent.Start;
 
             if (!lexer.IsCorrectLexemeKeywordOrReportError(Keywords.Package, errors) ||
-                !lexer.TryGetNextLexemeOrReportError(errors, out _))
+                !lexer.TryAdvanceLexemeOrReportError(errors))
             {
                 parseNode = null;
                 return false;
@@ -36,7 +36,7 @@
 
             var packageNameExtent = lexer.CurrentLexeme.Extent;
 
-            if (!lexer.TryGetNextLexemeOrReportError(errors, out _) ||
+            if (!lexer.TryAdvanceLexemeOrReportError(errors) ||
                 !lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Semicolon, errors))
             {
                 parseNode = null;
