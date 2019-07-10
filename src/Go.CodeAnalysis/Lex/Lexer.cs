@@ -22,6 +22,8 @@
 
         public Lexeme CurrentLexeme { get; private set; }
 
+        public bool ReachedEnd { get; private set; }
+
         public bool TryGetNextLexeme(out Lexeme lexeme)
         {
             while (this.currentOffset < this.Snapshot.Length)
@@ -45,7 +47,7 @@
                 return true;
             }
 
-            //this.CurrentLexeme = default;
+            this.ReachedEnd = true;
             lexeme = default;
             return false;
         }

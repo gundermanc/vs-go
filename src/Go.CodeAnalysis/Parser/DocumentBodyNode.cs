@@ -17,34 +17,18 @@
             var start = lexer.CurrentLexeme.Extent.Start;
             var declarationsBuilder = ImmutableArray.CreateBuilder<ParseNode>();
 
-            // Check for keywords.
-            if (!lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Keyword, errors))
+            while (!lexer.ReachedEnd)
             {
-                parseNode = null;
-                return false;
-            }
-
-            // Loop through declarations.
-            do
-            {
-                var keyword = lexer.CurrentLexeme.Extent.GetText();
-                switch (keyword)
+                if (!lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Keyword, errors) ||
+                    !lexer.IsCorrectLexemeKeywordOrReportError(Keywords.Func, errors) ||
+                    !FunctionDeclarationNode.TryParse(lexer, errors, out var funcNode))
                 {
-                    case Keywords.Func:
-                        if (!FunctionDeclarationNode.TryParse(lexer, errors, out var funcNode))
-                        {
-                            parseNode = null;
-                            return false;
-                        }
-                        declarationsBuilder.Add(funcNode);
-                        break;
-                    default:
-                        errors.Add(new Error(lexer.CurrentLexeme.Extent, string.Format(Strings.Error_UnexpectedKeyword, keyword, Keywords.Func)));
-                        parseNode = null;
-                        return false;
+                    parseNode = null;
+                    return false;
                 }
+
+                declarationsBuilder.Add(funcNode);
             }
-            while (lexer.TryAdvanceLexeme(errors));
 
             var extent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
             parseNode = new DocumentBodyNode(extent, declarationsBuilder.ToImmutable());

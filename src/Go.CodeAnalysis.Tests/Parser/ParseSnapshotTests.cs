@@ -156,5 +156,20 @@ func main()
             Assert.AreEqual("Unexpected lexeme type Semicolon. Expected lexeme type Operator.", parseSnapshot.Errors[0].Message);
             Assert.AreEqual(new SnapshotSegment(snapshot, 26, 0), parseSnapshot.Errors[0].Extent);
         }
+
+        [TestMethod]
+        [Description("Ensure proper AST with multiple elements")]
+        public void ParseSnapshot_DocumentBody_MultipleElements()
+        {
+            var snapshot = new StringSnapshot(@"
+package main
+
+func main() { }
+
+func notmain() { ]
+");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual(0, parseSnapshot.Errors.Length);
+        }
     }
 }
