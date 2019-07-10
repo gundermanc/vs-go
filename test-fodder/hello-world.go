@@ -7,6 +7,9 @@
 // Package declarations can be parsed.
 package main
 
+// Can parse import statements.
+import "fmt"
+
 // Functions with no parameters and no body contents can be too.
 // Outlining works here, so you should see structure guides and outlining regions.
 func main( /* params are not yet supported */ ) {

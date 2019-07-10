@@ -8,34 +8,54 @@
 
     public sealed class DocumentNode : ParseNode
     {
-        public DocumentNode(SnapshotSegment extent, PackageDeclarationNode packageDeclaration, DocumentBodyNode documentBodyNode)
-            : base(extent, ImmutableArray.Create<ParseNode>(packageDeclaration, documentBodyNode))
+        public DocumentNode(
+            SnapshotSegment extent,
+            PackageDeclarationNode packageDeclaration,
+            ImportsNode importsNode,
+            DocumentBodyNode documentBodyNode)
+            : base(extent, ImmutableArray.Create<ParseNode>(packageDeclaration, documentBodyNode, importsNode))
         {
             this.PackageDeclaration = packageDeclaration;
+            this.ImportsNode = importsNode;
             this.DocumentBody = documentBodyNode;
         }
 
         public PackageDeclarationNode PackageDeclaration { get; }
 
+        public ImportsNode ImportsNode { get; }
+
         public DocumentBodyNode DocumentBody { get; }
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out DocumentNode parseNode)
         {
-            if (!PackageDeclarationNode.TryParse(lexer, errors, out var packageDeclarationNode))
+            if (!PackageDeclarationNode.TryParse(lexer, errors, out var packageDeclarationNode) ||
+                !lexer.TryAdvanceLexeme())
             {
                 parseNode = null;
                 return false;
             }
 
-            DocumentBodyNode documentBodyNode = null;
-
-            if (lexer.TryAdvanceLexeme(errors) && !DocumentBodyNode.TryParse(lexer, errors, out documentBodyNode))
+            // Parse import node.
+            ImportsNode importsNode = null;
+            if (lexer.CurrentLexeme.Type == LexemeType.Keyword &&
+                lexer.CurrentLexeme.Equals(Keywords.Import) &&
+                !ImportsNode.TryParse(lexer, errors, out importsNode))
             {
                 parseNode = null;
                 return false;
             }
 
-            parseNode = new DocumentNode(lexer.Snapshot.Extent, packageDeclarationNode, documentBodyNode);
+            if (!DocumentBodyNode.TryParse(lexer, errors, out DocumentBodyNode documentBodyNode))
+            {
+                parseNode = null;
+                return false;
+            }
+
+            parseNode = new DocumentNode(
+                lexer.Snapshot.Extent,
+                packageDeclarationNode,
+                importsNode,
+                documentBodyNode);
             return true;
         }
     }

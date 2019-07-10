@@ -60,7 +60,7 @@
             var extent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
             parseNode = new FunctionDeclarationNode(extent, functionNameExtent, blockNode);
 
-            lexer.TryAdvanceLexeme(errors);
+            lexer.TryAdvanceLexeme();
 
             return true;
         }
