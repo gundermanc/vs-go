@@ -1,5 +1,7 @@
 ﻿# Go lang Support for Visual Studio for Windows and Mac
-In progress Go language service for Visual Studio.
+In progress Go language service for Visual Studio for Windows and Mac.
+
+![image](https://user-images.githubusercontent.com/5387680/60867836-91a88f00-a1e0-11e9-9dfe-49d95c269a0c.png)
 
 ![image](https://user-images.githubusercontent.com/5387680/60389194-5e446280-9a72-11e9-9269-dfcaaf349514.png)
 
