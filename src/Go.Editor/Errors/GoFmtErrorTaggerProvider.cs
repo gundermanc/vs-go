@@ -10,7 +10,9 @@
     /// Hacky stand-in for real error handling that uses Gofmt.exe for basic syntax errors.
     /// TODO: delete this once our parser is mature enough to give similar errors. For now we have both.
     /// </summary>
-    [Export(typeof(ITaggerProvider))]
+
+    // TODO: enable for Mac or remove.
+    //[Export(typeof(ITaggerProvider))]
     [ContentType(GoContentType.Name)]
     [TagType(typeof(IErrorTag))]
     internal sealed class GoFmtErrorTaggerProvider : ITaggerProvider

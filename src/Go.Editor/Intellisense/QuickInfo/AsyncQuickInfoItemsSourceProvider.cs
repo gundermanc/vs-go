@@ -6,7 +6,8 @@
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Utilities;
 
-    [Export(typeof(IAsyncQuickInfoSourceProvider))]
+    // TODO: either enable for Mac or remove.
+    //[Export(typeof(IAsyncQuickInfoSourceProvider))]
     [ContentType(GoContentType.Name)]
     internal sealed class AsyncQuickInfoItemsSourceProvider : IAsyncQuickInfoSourceProvider
     {
