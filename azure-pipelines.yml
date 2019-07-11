@@ -1,9 +1,8 @@
-
 trigger:
 - master
 
 variables:
-  solution: '**/*.sln'
+  solution: 'src/Go.Windows.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
