@@ -166,8 +166,17 @@ package main
 
 func main() { }
 
-func notmain() { ]
+func notmain() { }
 ");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual(0, parseSnapshot.Errors.Length);
+        }
+
+        [TestMethod]
+        [Description("Ensure proper AST with basic import node")]
+        public void ParseSnapshot_ImportNode_Basic()
+        {
+            var snapshot = new StringSnapshot("package main\r\nimport \"fmt\"func main() { }");
             var parseSnapshot = ParseSnapshot.Create(snapshot);
             Assert.AreEqual(0, parseSnapshot.Errors.Length);
         }
