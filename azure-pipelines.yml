@@ -9,6 +9,7 @@ variables:
 
 jobs:
 - job: Windows 
+  displayName: Build All Tasks for Windows
   timeoutInMinutes: 10
   pool: 
     vmImage: 'windows-latest'
@@ -32,6 +33,7 @@ jobs:
         configuration: '$(buildConfiguration)'
 
 - job: Mac
+  displayName: Build All Tasks for MacOS
   timeoutInMinutes: 10
   pool: 
     vmImage: 'macOS-latest'
