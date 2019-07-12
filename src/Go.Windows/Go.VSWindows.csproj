@@ -1,7 +1,6 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
 
@@ -10,11 +9,12 @@
   <PropertyGroup>
     <!-- Work-around for https://github.com/dotnet/project-system/issues/2832 -->
     <TargetFramework>$(TargetFramework)</TargetFramework>
-    <AssemblyName>Go</AssemblyName>
+    <AssemblyName>Go.Windows</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
 
     <!-- VSIX configuration -->
-    <ExtensionInstallationFolder>Go.VSWindows</ExtensionInstallationFolder>
+    <DeployExtension Condition="'$(isCIBuild)' == 'true'">false</DeployExtension>
+    <ExtensionInstallationFolder>Go.Windows</ExtensionInstallationFolder>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
