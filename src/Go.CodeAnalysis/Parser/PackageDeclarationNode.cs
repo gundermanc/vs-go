@@ -35,6 +35,7 @@
             }
 
             var packageNameExtent = lexer.CurrentLexeme.Extent;
+            var statementExtent = new SnapshotSegment(lexer.CurrentLexeme.Extent.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
 
             if (!lexer.TryAdvanceLexemeOrReportError(errors) ||
                 !lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Semicolon, errors))
@@ -42,8 +43,6 @@
                 parseNode = null;
                 return false;
             }
-
-            var statementExtent = new SnapshotSegment(lexer.CurrentLexeme.Extent.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
 
             parseNode = new PackageDeclarationNode(
                 statementExtent,
