@@ -50,6 +50,8 @@
                 return false;
             }
 
+            var extent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
+
             if (!lexer.TryAdvanceLexemeOrReportError(errors) ||
                 !lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Semicolon, errors))
             {
@@ -57,7 +59,6 @@
                 return false;
             }
 
-            var extent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
             parseNode = new FunctionDeclarationNode(extent, functionNameExtent, blockNode);
 
             lexer.TryAdvanceLexeme();

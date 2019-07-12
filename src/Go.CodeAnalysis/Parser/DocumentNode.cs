@@ -28,27 +28,31 @@
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out DocumentNode parseNode)
         {
-            if (!PackageDeclarationNode.TryParse(lexer, errors, out var packageDeclarationNode) ||
-                !lexer.TryAdvanceLexeme())
+            if (!PackageDeclarationNode.TryParse(lexer, errors, out var packageDeclarationNode))
             {
                 parseNode = null;
                 return false;
             }
 
-            // Parse import node.
             ImportsNode importsNode = null;
-            if (lexer.CurrentLexeme.Type == LexemeType.Keyword &&
-                lexer.CurrentLexeme.Equals(Keywords.Import) &&
-                !ImportsNode.TryParse(lexer, errors, out importsNode))
-            {
-                parseNode = null;
-                return false;
-            }
+            DocumentBodyNode documentBodyNode = null;
 
-            if (!DocumentBodyNode.TryParse(lexer, errors, out DocumentBodyNode documentBodyNode))
+            if (lexer.TryAdvanceLexeme())
             {
-                parseNode = null;
-                return false;
+                // Parse import node.
+                if (lexer.CurrentLexeme.Type == LexemeType.Keyword &&
+                    lexer.CurrentLexeme.Extent.Equals(Keywords.Import) &&
+                    !ImportsNode.TryParse(lexer, errors, out importsNode))
+                {
+                    parseNode = null;
+                    return false;
+                }
+
+                if (!DocumentBodyNode.TryParse(lexer, errors, out documentBodyNode))
+                {
+                    parseNode = null;
+                    return false;
+                }
             }
 
             parseNode = new DocumentNode(

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using Go.CodeAnalysis.Common;
-using Go.CodeAnalysis.Lex;
-using Go.CodeAnalysis.Text;
-
-namespace Go.CodeAnalysis.Parser
+﻿namespace Go.CodeAnalysis.Parser
 {
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using Go.CodeAnalysis.Common;
+    using Go.CodeAnalysis.Lex;
+    using Go.CodeAnalysis.Text;
+
     public sealed class ImportNode : ParseNode
     {
         public ImportNode(SnapshotSegment extent, SnapshotSegment importExtent) : base(extent, ImmutableArray<ParseNode>.Empty)
