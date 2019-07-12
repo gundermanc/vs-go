@@ -154,7 +154,7 @@ func main()
 ");
             var parseSnapshot = ParseSnapshot.Create(snapshot);
             Assert.AreEqual("Unexpected lexeme type Semicolon. Expected lexeme type Operator.", parseSnapshot.Errors[0].Message);
-            Assert.AreEqual(new SnapshotSegment(snapshot, 26, 0), parseSnapshot.Errors[0].Extent);
+            Assert.AreEqual(new SnapshotSegment(snapshot, 30, 0), parseSnapshot.Errors[0].Extent);
         }
 
         [TestMethod]
