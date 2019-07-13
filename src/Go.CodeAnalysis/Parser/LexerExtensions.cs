@@ -7,7 +7,7 @@
 
     internal static class LexerExtensions
     {
-        public static bool TryAdvanceLexeme(this Lexer lexer, IList<Error> errors)
+        public static bool TryAdvanceLexeme(this Lexer lexer)
         {
             while (lexer.TryGetNextLexeme(out var lexeme))
             {
@@ -23,7 +23,7 @@
 
         public static bool TryAdvanceLexemeOrReportError(this Lexer lexer, IList<Error> errors)
         {
-            if (lexer.TryAdvanceLexeme(errors))
+            if (lexer.TryAdvanceLexeme())
             {
                 return true;
             }

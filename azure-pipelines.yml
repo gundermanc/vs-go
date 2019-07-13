@@ -1,0 +1,63 @@
+trigger:
+- master
+
+variables:
+  isCIBuild: true
+  macSolution: 'src/Go.Mac.sln'
+  winSolution: 'src/Go.Windows.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+jobs:
+- job: Windows 
+  displayName: Build Go Extension for Visual Studio for Windows
+  timeoutInMinutes: 10
+  pool: 
+    vmImage: 'windows-latest'
+
+  steps:
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(winSolution)'
+
+    - task: MSBuild@1
+      inputs:
+        solution: '$(winSolution)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: VSTest@2
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+- job: Mac
+  displayName: Build Go Extension for Visual Studio for Mac
+  timeoutInMinutes: 10
+  pool: 
+    vmImage: 'macOS-latest'
+
+  steps:
+    - task: NuGetToolInstaller@1
+
+    - task: ShellScript@2
+      displayName: Select Mono Version
+      inputs:
+        scriptPath: tools/ChooseMonoVersion.sh
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(macSolution)'
+
+    - task: MSBuild@1
+      inputs:
+        solution: '$(macSolution)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: ShellScript@2
+      displayName: Run tests
+      inputs:
+        scriptPath: tools/RunTestsMacOS.sh

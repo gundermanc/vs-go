@@ -24,7 +24,13 @@
             }
             else
             {
-                return new ParseSnapshot(new DocumentNode(snapshotBase.Extent, packageDeclaration: null, documentBodyNode: null), errorsBuilder.ToImmutable());
+                return new ParseSnapshot(
+                    new DocumentNode(
+                        snapshotBase.Extent,
+                        packageDeclaration: null,
+                        importsNode: null,
+                        documentBodyNode: null),
+                    errorsBuilder.ToImmutable());
             }
         }
 
