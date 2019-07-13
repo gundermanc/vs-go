@@ -1,7 +1,7 @@
 ﻿namespace Go.CodeAnalysis.Text
 {
     /// <summary>
-    /// Abstract representation of a text segment.
+    /// Abstract representation of an immutable text segment.
     /// </summary>
     public abstract class SnapshotBase
     {
@@ -11,10 +11,10 @@
         }
 
         /// <summary>
-        /// Gets the character located at a specific index in the text segment.
+        /// Gets the character located at a specific position in the text segment.
         /// </summary>
-        /// <param name="offset"> Index of character in the text segment. </param>
-        /// <returns></returns>
+        /// <param name="offset"> Position of character in the text segment. </param>
+        /// <returns> Character at the specific position. </returns>
         public abstract char this[int offset] { get; }
 
         /// <summary>

@@ -3,7 +3,7 @@
     using Go.CodeAnalysis.Text;
 
     /// <summary>
-    /// Represents an item in Error List.
+    /// Represents an error in the selected text.
     /// </summary>
     public struct Error
     {

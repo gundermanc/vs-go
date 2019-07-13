@@ -7,7 +7,7 @@
     using Go.CodeAnalysis.Text;
 
     /// <summary>
-    /// Represents a parsed Go source code file.
+    /// Represents a parsed Go source code file. It is the root of an abstract syntax tree.
     /// </summary>
     public sealed class DocumentNode : ParseNode
     {
@@ -24,17 +24,17 @@
         }
 
         /// <summary>
-        /// Package declaration section.
+        /// Package declaration node.
         /// </summary>
         public PackageDeclarationNode PackageDeclaration { get; }
 
         /// <summary>
-        /// Import section.
+        /// Import node.
         /// </summary>
         public ImportsNode ImportsNode { get; }
 
         /// <summary>
-        /// Source code body section.
+        /// Source code body node.
         /// </summary>
         public DocumentBodyNode DocumentBody { get; }
 

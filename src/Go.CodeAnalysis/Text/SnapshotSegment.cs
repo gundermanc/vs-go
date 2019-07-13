@@ -4,7 +4,7 @@
     using System.Text;
 
     /// <summary>
-    /// Represents a code segment.
+    /// Represents a span of code.
     /// </summary>
     public struct SnapshotSegment : IEquatable<string>, IEquatable<SnapshotSegment>
     {
@@ -33,17 +33,18 @@
         public char this[int offset] => this.Snapshot[this.Start + offset];
 
         /// <summary>
-        /// Starting position of the code segment.
+        /// Starting position of the code span.
         /// </summary>
         public int Start { get; }
 
         /// <summary>
-        /// Length of the code segment.
+        /// Length of the code span.
         /// </summary>
         public int Length { get; }
 
         /// <summary>
-        /// Ending position of the code segment.
+        /// Ending position of the code span.
+        /// This is the position after the last charater position in the span.
         /// </summary>
         public int End => this.Start + this.Length;
 
@@ -74,10 +75,10 @@
         }
 
         /// <summary>
-        /// Returns the character representation if this code segment contains only one character.
+        /// Returns the character representation if this code span contains only one character.
         /// </summary>
-        /// <param name="c"> A character copy of this code segment. </param>
-        /// <returns> True if this code segment contains only one character. </returns>
+        /// <param name="c"> A character copy of this code span. </param>
+        /// <returns> True if this code span contains only one character. </returns>
         public bool TryGetSingleChar(out char c)
         {
             if (this.Length == 1)
@@ -91,10 +92,10 @@
         }
 
         /// <summary>
-        /// Returns whether the code segment equals to a specific string.
+        /// Returns whether the code span equals to a specific string.
         /// </summary>
-        /// <param name="text"> A string to be compared to this code segment. </param>
-        /// <returns> True if the string equals to the code segment text. </returns>
+        /// <param name="text"> A string to be compared to this code span. </param>
+        /// <returns> True if the string equals to the code span text. </returns>
         public bool Equals(string text)
         {
             if (this.Length != text.Length)
@@ -114,10 +115,10 @@
         }
 
         /// <summary>
-        /// Returns whether this code segment equals to a specific code segment.
+        /// Returns whether this code span equals to a specific code span.
         /// </summary>
-        /// <param name="other"> A code segment to be compared with this code segment. </param>
-        /// <returns> True if two code segments are the same. </returns>
+        /// <param name="other"> A code segment to be compared with this code span. </param>
+        /// <returns> True if two code spans are the same. </returns>
         public bool Equals(SnapshotSegment other)
         {
             return this.Snapshot == other.Snapshot &&

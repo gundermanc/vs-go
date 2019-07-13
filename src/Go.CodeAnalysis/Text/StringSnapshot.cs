@@ -1,12 +1,12 @@
 ﻿namespace Go.CodeAnalysis.Text
 {
     /// <summary>
-    /// A text segment based on a concrete string.
+    /// A text snapshot based on a concrete string.
     /// </summary>
     public sealed class StringSnapshot : SnapshotBase
     {
         /// <summary>
-        /// String content of this text segment.
+        /// String content of this text snapshot.
         /// </summary>
         private readonly string text;
 
