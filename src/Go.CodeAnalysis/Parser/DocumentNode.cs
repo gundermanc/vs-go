@@ -6,17 +6,29 @@
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
+    /// <summary>
+    /// Represents a parsed Go source code file.
+    /// </summary>
     public sealed class DocumentNode : ParseNode
     {
-        public DocumentNode(SnapshotSegment extent, PackageDeclarationNode packageDeclaration, DocumentBodyNode documentBodyNode)
+        public DocumentNode(
+            SnapshotSegment extent,
+            PackageDeclarationNode packageDeclaration,
+            DocumentBodyNode documentBodyNode)
             : base(extent, ImmutableArray.Create<ParseNode>(packageDeclaration, documentBodyNode))
         {
             this.PackageDeclaration = packageDeclaration;
             this.DocumentBody = documentBodyNode;
         }
 
+        /// <summary>
+        /// Package declaration section.
+        /// </summary>
         public PackageDeclarationNode PackageDeclaration { get; }
 
+        /// <summary>
+        /// Rest of the document.
+        /// </summary>
         public DocumentBodyNode DocumentBody { get; }
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out DocumentNode parseNode)
