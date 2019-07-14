@@ -3,6 +3,9 @@
     using System;
     using Go.CodeAnalysis.Text;
 
+    /// <summary>
+    /// Tokenizes a code snapshot.
+    /// </summary>
     public sealed class Lexer
     {
         private int currentOffset;

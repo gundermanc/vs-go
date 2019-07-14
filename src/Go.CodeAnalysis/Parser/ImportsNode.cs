@@ -19,11 +19,11 @@
         public static bool TryParse(Lexer lexer, IList<Error> errors, out ImportsNode parseNode)
         {
             var start = lexer.CurrentLexeme.Extent.Start;
-
             var importsBuilder = ImmutableArray.CreateBuilder<ImportNode>();
+
+            // Parse every import line or block.
             while (lexer.CurrentLexeme.Type == LexemeType.Keyword &&
                 lexer.CurrentLexeme.Extent.Equals(Keywords.Import))
-
             {
                 if (!ImportNode.TryParse(lexer, errors, out var importNode))
                 {

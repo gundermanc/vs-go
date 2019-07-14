@@ -2,6 +2,9 @@
 {
     using Go.CodeAnalysis.Text;
 
+    /// <summary>
+    /// A language token.
+    /// </summary>
     public struct Lexeme
     {
         public Lexeme(SnapshotSegment segment, LexemeType type)
@@ -10,8 +13,14 @@
             this.Type = type;
         }
 
+        /// <summary>
+        /// Text content of the token.
+        /// </summary>
         public SnapshotSegment Extent { get;  }
 
+        /// <summary>
+        /// Type of the token.
+        /// </summary>
         public LexemeType Type { get; }
     }
 }
