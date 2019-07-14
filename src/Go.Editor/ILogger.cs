@@ -1,22 +1,27 @@
 ﻿namespace Go.Editor
 {
     using System;
+    using System.ComponentModel.Composition;
+    using System.Text;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
 
-    public interface ILogger
+    interface ILogger
     {
-        public void LogMessage(string message)
+        void LogMessage(string message)
         {
             this.EnsureInitialized();
             this.LogString(string.Format(Strings.MessageTextFormat, message), activate: true);
         }
 
-        public void LogError(string message)
+        void LogError(string message)
         {
             this.EnsureInitialized();
             this.LogString(string.Format(Strings.ErrorTextFormat, message), activate: true);
         }
 
-        public void LogException(Exception ex, string message = null)
+        void LogException(Exception ex, string message = null)
         {
             var exceptionOutputMessage = this.ComputeExceptionOutputMessage(ex);
             if (message != null)
@@ -31,7 +36,7 @@
             }
         }
 
-        private string ComputeExceptionOutputMessage(Exception ex)
+        string ComputeExceptionOutputMessage(Exception ex)
         {
             if (ex.InnerException == null)
             {
@@ -50,7 +55,7 @@
             return buffer.ToString();
         }
 
-        private void LogString(string output, bool activate = false)
+        void LogString(string output, bool activate = false)
         {
             this.EnsureInitialized();
 
@@ -66,7 +71,7 @@
             }
         }
 
-        private void EnsureInitialized()
+        void EnsureInitialized()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
