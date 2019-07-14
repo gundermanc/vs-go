@@ -6,6 +6,9 @@
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
+    /// <summary>
+    /// Represents a parsed code block.
+    /// </summary>
     public sealed class BlockNode : ParseNode
     {
         public BlockNode(SnapshotSegment extent) : base(extent, ImmutableArray<ParseNode>.Empty)
