@@ -11,12 +11,18 @@
     /// </summary>
     public sealed class ImportNode : ParseNode
     {
-        public ImportNode(SnapshotSegment extent, SnapshotSegment importExtent) : base(extent, ImmutableArray<ParseNode>.Empty)
+        public ImportNode(
+            SnapshotSegment extent,
+            ImmutableArray<ImportDeclarationNode> importDeclarations)
+            : base(extent, ImmutableArray<ParseNode>.Empty)
         {
-            this.ImportExtent = importExtent;
+            this.ImportExtent = extent;
+            this.ImportDeclarations = importDeclarations;
         }
 
         public SnapshotSegment ImportExtent { get; }
+
+        public ImmutableArray<ImportDeclarationNode> ImportDeclarations { get; }
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out ImportNode parseNode)
         {
@@ -30,16 +36,37 @@
                 return false;
             }
 
-            // Single line import
+            // Single line import (string immediately following import keyword).
             if (!lexer.IsCorrectLexemeOperatorOrReportError('(', errors))
             {
-                var extent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
-                parseNode = new ImportNode(extent, lexer.CurrentLexeme.Extent);
+                // try parse import declaration here
+
+                var singleLineImportExtent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
+                parseNode = new ImportNode(
+                    singleLineImportExtent,
+                    ImmutableArray.Create(new ImportDeclarationNode(singleLineImportExtent, string.Empty, string.Empty)));
                 return true;
             }
 
-            // Block import
-            parseNode = null;
+            // Block import.
+
+            // Advance over opening parenthesis.
+            if (!lexer.TryAdvanceLexemeOrReportError(errors))
+            {
+                parseNode = null;
+                return false;
+            }
+
+            var declarationArrayBuilder = ImmutableArray.CreateBuilder<ImportDeclarationNode>();
+
+            // Parse each import declaration.
+            while(!lexer.IsCorrectLexemeOperatorOrReportError(')', errors))
+            {
+                // try parse import declaration
+            }
+
+            var blockImportExtent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
+            parseNode = new ImportNode(blockImportExtent, declarationArrayBuilder.ToImmutable());
             return false;
         }
     }
