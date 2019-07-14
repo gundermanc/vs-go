@@ -6,6 +6,9 @@
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
+    /// <summary>
+    /// Represents a single import line or import block.
+    /// </summary>
     public sealed class ImportNode : ParseNode
     {
         public ImportNode(SnapshotSegment extent, SnapshotSegment importExtent) : base(extent, ImmutableArray<ParseNode>.Empty)
@@ -19,17 +22,25 @@
         {
             var start = lexer.CurrentLexeme.Extent.Start;
 
-            if (!lexer.IsCorrectLexemeKeywordOrReportError(Keywords.Import, errors) ||
-                !lexer.TryAdvanceLexemeOrReportError(errors) ||
-                !lexer.IsCorrectLexemeTypeOrReportError(LexemeType.String, errors))
+            // Parse "import" keyword.
+            if (!lexer.IsCorrectLexemeKeywordOrReportError(Keywords.Import, errors)
+                || !lexer.TryAdvanceLexemeOrReportError(errors))
             {
                 parseNode = null;
                 return false;
             }
 
-            var extent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
-            parseNode = new ImportNode(extent, lexer.CurrentLexeme.Extent);
-            return true;
+            // Single line import
+            if (!lexer.IsCorrectLexemeOperatorOrReportError('(', errors))
+            {
+                var extent = new SnapshotSegment(lexer.Snapshot, start, lexer.CurrentLexeme.Extent.End - start);
+                parseNode = new ImportNode(extent, lexer.CurrentLexeme.Extent);
+                return true;
+            }
+
+            // Block import
+            parseNode = null;
+            return false;
         }
     }
 }

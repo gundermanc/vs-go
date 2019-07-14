@@ -38,6 +38,7 @@
             return false;
         }
 
+        // TODO: support multi-character operators
         public static bool IsCorrectLexemeOperatorOrReportError(this Lexer lexer, char op, IList<Error> errors)
         {
             if (!lexer.IsCorrectLexemeTypeOrReportError(LexemeType.Operator, errors))
