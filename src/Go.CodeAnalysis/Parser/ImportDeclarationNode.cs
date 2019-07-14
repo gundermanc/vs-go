@@ -14,9 +14,11 @@
         public ImportDeclarationNode(
             SnapshotSegment code,
             string packageName,
-            string alias = null)
+            string packageAlias = null)
             : base(code, ImmutableArray<ParseNode>.Empty)
         {
+            this.PackageName = packageName;
+            this.PackageAlias = packageAlias;
         }
 
         public string PackageName { get; private set; }
@@ -34,8 +36,7 @@
 
             parseNode = new ImportDeclarationNode(
                 lexer.CurrentLexeme.Extent,
-                lexer.CurrentLexeme.Extent.ToString(),
-                null);
+                lexer.CurrentLexeme.Extent.GetText());
             return true;
         }
     }
