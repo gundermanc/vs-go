@@ -1,27 +1,9 @@
-﻿namespace Go.Windows.Hosting
+﻿namespace Go.Editor
 {
     using System;
-    using System.ComponentModel.Composition;
-    using System.Text;
-    using Microsoft.VisualStudio;
-    using Microsoft.VisualStudio.Shell;
-    using Microsoft.VisualStudio.Shell.Interop;
 
-    [Export(typeof(ILogger))]
-    internal sealed class Logger
+    public interface ILogger
     {
-        private const string Endline = "\n";
-        private static readonly Guid ContextoolPaneGuid = new Guid("9AA4DB55-2788-4A0B-9D56-7359005F26ED");
-        private readonly SVsServiceProvider serviceProvider;
-        private IVsOutputWindowPane outputPane;
-
-        [ImportingConstructor]
-        public Logger(SVsServiceProvider serviceProvider)
-        {
-            this.serviceProvider = serviceProvider
-                ?? throw new ArgumentNullException(nameof(serviceProvider));
-        }
-
         public void LogMessage(string message)
         {
             this.EnsureInitialized();
