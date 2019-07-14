@@ -4,11 +4,11 @@
 
     interface ILogger
     {
-        LogMessage();
-        LogError();
-        LogException();
-        ComputeExceptionOutputMessage();
-        LogString();
-        EnsureInitialized();
+        void LogMessage();
+        void LogError();
+        void LogException();
+        string ComputeExceptionOutputMessage();
+        void LogString();
+        void EnsureInitialized();
     }
 }
