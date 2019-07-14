@@ -2,6 +2,7 @@
 {
     using System;
     using System.ComponentModel.Composition;
+    using System.IServiceProvider;
     using System.Text;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell;
