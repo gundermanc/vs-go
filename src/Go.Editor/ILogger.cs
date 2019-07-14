@@ -2,7 +2,7 @@
 {
     using System;
 
-    interface ILogger
+    public interface ILogger
     {
         void LogMessage();
         void LogError();
