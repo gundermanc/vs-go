@@ -6,6 +6,7 @@
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
+    using Go.Editor;
 
     [Export(typeof(ILogger))]
     internal sealed class Logger
