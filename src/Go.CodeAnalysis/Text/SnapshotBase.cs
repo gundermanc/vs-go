@@ -17,9 +17,6 @@
         /// <returns> Character at the specific position. </returns>
         public abstract char this[int offset] { get; }
 
-        /// <summary>
-        /// Create an instance of concrete subclass. 
-        /// </summary>
         public SnapshotSegment Extent => new SnapshotSegment(this, 0, this.Length);
 
         /// <summary>
