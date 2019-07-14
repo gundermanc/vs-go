@@ -1,5 +1,6 @@
 ﻿namespace Go.CodeAnalysis.Lex
 {
+    using System;
     using Go.CodeAnalysis.Text;
 
     /// <summary>
