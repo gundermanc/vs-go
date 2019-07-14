@@ -30,6 +30,9 @@
       <IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Text.UI" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell"/>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop"/>
+    <PackageReference Include="System.ComponentModel.Composition"/>
   </ItemGroup>
 
   <ItemGroup>
