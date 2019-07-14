@@ -69,7 +69,6 @@
             // Parse each import declaration.
             while(!isEndOfImportBlock)
             {
-                // TODO: solve the issue that multi-line block contains inserted semicolun.
                 // Parse declaration and advance over.
                 ImportDeclarationNode importLineNode = null;
                 if (ImportDeclarationNode.TryParse(lexer, errors, out importLineNode)
@@ -82,17 +81,23 @@
                     return false;
                 }
 
-                if (lexer.IsCorrectLexemeOperator(','))
+                if (lexer.CurrentLexeme.Type == LexemeType.Semicolon)
                 {
-                    // If declaration is followed by comma, advance over comma and parse next declaration.
+                    // If declaration is followed by semicolon, advance over it and parse next declaration.
                     if(lexer.TryAdvanceLexeme())
                     {
+                        // If semicolon is followed by a closing parenthesis, stop parsing.
+                        if (lexer.CurrentLexeme.Extent.TryGetSingleChar(out c) && c == ')')
+                        {
+                            isEndOfImportBlock = true;
+                        }
+
                         continue;
                     }
 
                     return false;
                 }
-                else if (lexer.IsCorrectLexemeOperator(')'))
+                else if (lexer.CurrentLexeme.Extent.TryGetSingleChar(out c) && c == ')')
                 {
                     // If declaratino is followed by closing parenthesis, stop parsing.
                     isEndOfImportBlock = true;
@@ -101,7 +106,10 @@
                 {
                     errors.Add(new Error(
                         lexer.CurrentLexeme.Extent,
-                        string.Format(Strings.Error_UnexpectedOperator, "',' or ')'")));
+                        string.Format(
+                            Strings.Error_UnexpectedOperator,
+                            lexer.CurrentLexeme.Extent.GetText(),
+                            "';' or ')'")));
                     return false;
                 }
             }

@@ -31,7 +31,16 @@
         [Description("Ensure proper AST with block import nodes")]
         public void ParseSnapshot_ImportNode_Block()
         {
-            var snapshot = new StringSnapshot("package main\r\nimport(\"yo\",\"mamma\")\r\nfunc main() { }");
+            var snapshot = new StringSnapshot("package main\r\nimport(\"yo\";\"mamma\")\r\nfunc main() { }");
+            var parseSnapshot = ParseSnapshot.Create(snapshot);
+            Assert.AreEqual(0, parseSnapshot.Errors.Length);
+        }
+
+        [TestMethod]
+        [Description("Ensure proper AST with multi-line block import nodes")]
+        public void ParseSnapshot_ImportNode_MultiLineBlock()
+        {
+            var snapshot = new StringSnapshot("package main\r\nimport (\r\n\"yo\"\r\n\"mamma\"\r\n)\r\nfunc main() { }");
             var parseSnapshot = ParseSnapshot.Create(snapshot);
             Assert.AreEqual(0, parseSnapshot.Errors.Length);
         }
