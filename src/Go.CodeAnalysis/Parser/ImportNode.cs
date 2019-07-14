@@ -37,7 +37,8 @@
             }
 
             // Single line import (string immediately following import keyword).
-            if (!lexer.CurrentLexeme.Extent.Equals("("))
+            if (!lexer.CurrentLexeme.Extent.TryGetSingleChar(out var c)
+                || c != '(')
             {
                 ImportDeclarationNode singleLineDeclaration = null;
                 if (ImportDeclarationNode.TryParse(lexer, errors, out singleLineDeclaration))
@@ -98,7 +99,9 @@
                 }
                 else
                 {
-                    errors.Add(new Error(lexer.CurrentLexeme.Extent, "',' or ')' expected."));
+                    errors.Add(new Error(
+                        lexer.CurrentLexeme.Extent,
+                        string.Format(Strings.Error_UnexpectedOperator, "',' or ')'")));
                     return false;
                 }
             }

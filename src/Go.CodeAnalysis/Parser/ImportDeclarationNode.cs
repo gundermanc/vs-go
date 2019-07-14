@@ -13,17 +13,15 @@
     {
         public ImportDeclarationNode(
             SnapshotSegment code,
-            string packageName,
-            string packageAlias = null)
+            SnapshotSegment packageName)
             : base(code, ImmutableArray<ParseNode>.Empty)
         {
             this.PackageName = packageName;
-            this.PackageAlias = packageAlias;
         }
 
-        public string PackageName { get; private set; }
+        public SnapshotSegment PackageName { get; }
 
-        public string PackageAlias { get; private set; }
+        public SnapshotSegment PackageAlias { get; }
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out ImportDeclarationNode parseNode)
         {
@@ -34,9 +32,7 @@
                 return false;
             }
 
-            parseNode = new ImportDeclarationNode(
-                lexer.CurrentLexeme.Extent,
-                lexer.CurrentLexeme.Extent.GetText());
+            parseNode = new ImportDeclarationNode(lexer.CurrentLexeme.Extent, lexer.CurrentLexeme.Extent);
             return true;
         }
     }
