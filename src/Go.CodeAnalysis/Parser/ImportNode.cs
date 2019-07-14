@@ -33,7 +33,6 @@
             if (!lexer.IsCorrectLexemeKeywordOrReportError(Keywords.Import, errors)
                 || !lexer.TryAdvanceLexemeOrReportError(errors))
             {
-                errors.Add(new Error(lexer.CurrentLexeme.Extent, "Import keyword expected."));
                 return false;
             }
 

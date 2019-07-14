@@ -9,7 +9,7 @@
     /// <summary>
     /// Represents a single package import declaration.
     /// </summary>
-    public class ImportDeclarationNode : ParseNode
+    public sealed class ImportDeclarationNode : ParseNode
     {
         public ImportDeclarationNode(
             SnapshotSegment code,
@@ -28,7 +28,7 @@
         public static bool TryParse(Lexer lexer, IList<Error> errors, out ImportDeclarationNode parseNode)
         {
             // TODO: to add support for alias, wildcard import, and blank import.
-            if(!lexer.IsCorrectLexemeTypeOrReportError(LexemeType.String, errors))
+            if (!lexer.IsCorrectLexemeTypeOrReportError(LexemeType.String, errors))
             {
                 parseNode = null;
                 return false;
