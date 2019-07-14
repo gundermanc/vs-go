@@ -187,10 +187,10 @@ func notmain() { }
             Assert.AreEqual(2, parseSnapshot.RootNode.ImportsNode.Imports.Length);
 
             Assert.AreEqual("import \"yo\"", parseSnapshot.RootNode.ImportsNode.Imports[0].Extent.GetText());
-            Assert.AreEqual("\"yo\"", parseSnapshot.RootNode.ImportsNode.Imports[0].ImportDeclarations[0].PackageName);
+            Assert.AreEqual("\"yo\"", parseSnapshot.RootNode.ImportsNode.Imports[0].ImportDeclarations[0].PackageName.GetText());
 
             Assert.AreEqual("import \"mamma\"", parseSnapshot.RootNode.ImportsNode.Imports[1].Extent.GetText());
-            Assert.AreEqual("\"mamma\"", parseSnapshot.RootNode.ImportsNode.Imports[1].ImportDeclarations[0].PackageName);
+            Assert.AreEqual("\"mamma\"", parseSnapshot.RootNode.ImportsNode.Imports[1].ImportDeclarations[0].PackageName.GetText());
 
             Assert.AreEqual("func main() { }\r\nfunc notmain() { }", parseSnapshot.RootNode.DocumentBody.Extent.GetText());
 
