@@ -46,14 +46,29 @@
                 return false;
             }
 
-            if (!lexer.CurrentLexeme.Extent.TryGetSingleChar(out var c) && c == op)
+            if (lexer.CurrentLexeme.Extent.TryGetSingleChar(out var c) && c == op)
             {
-                var message = string.Format(Strings.Error_UnexpectedKeyword, lexer.CurrentLexeme.Extent.GetText(), op);
-                errors.Add(new Error(lexer.CurrentLexeme.Extent, message));
+                return true;
+            }
+
+            var message = string.Format(Strings.Error_UnexpectedKeyword, lexer.CurrentLexeme.Extent.GetText(), op);
+            errors.Add(new Error(lexer.CurrentLexeme.Extent, message));
+            return false;
+        }
+
+        // TODO: support multi-character operators
+        public static bool IsCorrectLexemeOperator(this Lexer lexer, char op)
+        {
+            if (!lexer.IsCorrectLexemeType(LexemeType.Operator))
+            {
                 return false;
             }
 
-            return true;
+            if (lexer.CurrentLexeme.Extent.TryGetSingleChar(out var c) && c == op)
+            {
+                return true;
+            }
+            return false;
         }
 
         public static bool IsCorrectLexemeKeywordOrReportError(this Lexer lexer, string keyword, IList<Error> errors)
@@ -85,6 +100,16 @@
 
             return true;
         }
+        public static bool IsCorrectLexemeType(this Lexer lexer, LexemeType type)
+        {
+            if (lexer.CurrentLexeme.Type != type)
+            {
+                lexer.TryConsumeToEndOfStatement();
+                return false;
+            }
+
+            return true;
+        }
 
         public static bool TryConsumeToEndOfStatementOrReportError(this Lexer lexer, IList<Error> errors)
         {
@@ -94,6 +119,17 @@
             {
                 var message = string.Format(Strings.Error_UnexpectedLexmeTypeFormatString, lexer.CurrentLexeme.Type, LexemeType.Semicolon);
                 errors.Add(new Error(lexer.CurrentLexeme.Extent, message));
+                return false;
+            }
+
+            return true;
+        }
+        public static bool TryConsumeToEndOfStatement(this Lexer lexer)
+        {
+            while (lexer.CurrentLexeme.Type != LexemeType.Semicolon && lexer.TryGetNextLexeme(out _)) { }
+
+            if (lexer.CurrentLexeme.Type != LexemeType.Semicolon)
+            {
                 return false;
             }
 
