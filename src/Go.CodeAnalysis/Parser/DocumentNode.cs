@@ -6,6 +6,9 @@
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
+    /// <summary>
+    /// Represents a parsed Go source code file. It is the root of an abstract syntax tree.
+    /// </summary>
     public sealed class DocumentNode : ParseNode
     {
         public DocumentNode(
@@ -20,10 +23,19 @@
             this.DocumentBody = documentBodyNode;
         }
 
+        /// <summary>
+        /// Package declaration node.
+        /// </summary>
         public PackageDeclarationNode PackageDeclaration { get; }
 
+        /// <summary>
+        /// Import node.
+        /// </summary>
         public ImportsNode ImportsNode { get; }
 
+        /// <summary>
+        /// Source code body node.
+        /// </summary>
         public DocumentBodyNode DocumentBody { get; }
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out DocumentNode parseNode)
