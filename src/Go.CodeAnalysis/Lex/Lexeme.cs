@@ -15,7 +15,7 @@
         }
 
         /// <summary>
-        /// Text content of the token.
+        /// Text span of the token.
         /// </summary>
         public SnapshotSegment Extent { get;  }
 
