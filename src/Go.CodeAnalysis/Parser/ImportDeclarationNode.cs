@@ -25,9 +25,17 @@
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out ImportDeclarationNode parseNode)
         {
-            // to parse: alias/wildcard import
-            // to parse: package name
-            parseNode = new ImportDeclarationNode(lexer.CurrentLexeme.Extent, string.Empty, string.Empty);
+            // TODO: to add support for alias, wildcard import, and blank import.
+            if(!lexer.IsCorrectLexemeTypeOrReportError(LexemeType.String, errors))
+            {
+                parseNode = null;
+                return false;
+            }
+
+            parseNode = new ImportDeclarationNode(
+                lexer.CurrentLexeme.Extent,
+                lexer.CurrentLexeme.Extent.ToString(),
+                null);
             return true;
         }
     }
