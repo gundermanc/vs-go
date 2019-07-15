@@ -17,7 +17,7 @@
                 ?? throw new ArgumentNullException(nameof(parseSnapshot));
         }
 
-        public override void Visit(DocumentNode parseNode) => parseNode.DocumentBody.Accept(this);
+        public override void Visit(DocumentNode parseNode) => parseNode?.DocumentBody?.Accept(this);
 
         public override void Visit(FunctionDeclarationNode parseNode)
         {
