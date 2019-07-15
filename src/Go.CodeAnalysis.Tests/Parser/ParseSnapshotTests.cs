@@ -101,7 +101,7 @@
             var snapshot = new StringSnapshot("package main\r\n\r\nfunc main() { }");
             var parseSnapshot = ParseSnapshot.Create(snapshot);
             Assert.AreEqual(0, parseSnapshot.Errors.Length);
-            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children.Length);
+            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Declarations.Length);
         }
 
         [TestMethod]
@@ -110,7 +110,7 @@
             var snapshot = new StringSnapshot("package main\n\nfunc main() { }");
             var parseSnapshot = ParseSnapshot.Create(snapshot);
             Assert.AreEqual(0, parseSnapshot.Errors.Length);
-            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children.Length);
+            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Declarations.Length);
         }
 
         [TestMethod]
@@ -137,7 +137,7 @@ func main() {
 ");
             var parseSnapshot = ParseSnapshot.Create(snapshot);
             Assert.AreEqual(0, parseSnapshot.Errors.Length);
-            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children.Length);
+            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Declarations.Length);
         }
 
         [TestMethod]
@@ -183,7 +183,6 @@ func notmain() { }
             Assert.AreEqual("package main", parseSnapshot.RootNode.PackageDeclaration.Extent.GetText());
             Assert.AreEqual("main", parseSnapshot.RootNode.PackageDeclaration.PackageNameExtent.GetText());
 
-            Assert.AreEqual(2, parseSnapshot.RootNode.ImportsNode.Children.Length);
             Assert.AreEqual(2, parseSnapshot.RootNode.ImportsNode.Imports.Length);
 
             Assert.AreEqual("import \"yo\"", parseSnapshot.RootNode.ImportsNode.Imports[0].Extent.GetText());
@@ -194,15 +193,13 @@ func notmain() { }
 
             Assert.AreEqual("func main() { }\r\nfunc notmain() { }", parseSnapshot.RootNode.DocumentBody.Extent.GetText());
 
-            Assert.AreEqual("func main() { }", parseSnapshot.RootNode.DocumentBody.Children[0].Extent.GetText());
-            Assert.AreEqual("main", ((FunctionDeclarationNode)parseSnapshot.RootNode.DocumentBody.Children[0]).FunctionNameExtent.GetText());
-            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children[0].Children.Length);
-            Assert.AreEqual("{ }", parseSnapshot.RootNode.DocumentBody.Children[0].Children[0].Extent.GetText());
+            Assert.AreEqual("func main() { }", parseSnapshot.RootNode.DocumentBody.Declarations[0].Extent.GetText());
+            Assert.AreEqual("main", ((FunctionDeclarationNode)parseSnapshot.RootNode.DocumentBody.Declarations[0]).FunctionNameExtent.GetText());
+            Assert.AreEqual("{ }", ((FunctionDeclarationNode)parseSnapshot.RootNode.DocumentBody.Declarations[0]).BlockNode.Extent.GetText());
 
-            Assert.AreEqual("func notmain() { }", parseSnapshot.RootNode.DocumentBody.Children[1].Extent.GetText());
-            Assert.AreEqual("notmain", ((FunctionDeclarationNode)parseSnapshot.RootNode.DocumentBody.Children[1]).FunctionNameExtent.GetText());
-            Assert.AreEqual(1, parseSnapshot.RootNode.DocumentBody.Children[1].Children.Length);
-            Assert.AreEqual("{ }", parseSnapshot.RootNode.DocumentBody.Children[1].Children[0].Extent.GetText());
+            Assert.AreEqual("func notmain() { }", parseSnapshot.RootNode.DocumentBody.Declarations[1].Extent.GetText());
+            Assert.AreEqual("notmain", ((FunctionDeclarationNode)parseSnapshot.RootNode.DocumentBody.Declarations[1]).FunctionNameExtent.GetText());
+            Assert.AreEqual("{ }", ((FunctionDeclarationNode)parseSnapshot.RootNode.DocumentBody.Declarations[1]).BlockNode.Extent.GetText());
         }
     }
 }

@@ -1,15 +1,14 @@
 ﻿namespace Go.CodeAnalysis.Parser
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Go.CodeAnalysis.Common;
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
-    public sealed class FunctionDeclarationNode : ParseNode
+    public sealed class FunctionDeclarationNode : ParseNodeBase
     {
         public FunctionDeclarationNode(SnapshotSegment extent, SnapshotSegment functionNameExtent, BlockNode blockNode)
-            : base(extent, ImmutableArray.Create<ParseNode>(blockNode))
+            : base(extent)
         {
             this.FunctionNameExtent = functionNameExtent;
             this.BlockNode = blockNode;
@@ -18,6 +17,8 @@
         public SnapshotSegment FunctionNameExtent { get; }
 
         public BlockNode BlockNode { get; }
+
+        public override void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out FunctionDeclarationNode parseNode)
         {

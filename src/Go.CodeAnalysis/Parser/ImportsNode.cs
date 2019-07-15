@@ -6,15 +6,17 @@
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
-    public class ImportsNode : ParseNode
+    public class ImportsNode : ParseNodeBase
     {
         public ImportsNode(SnapshotSegment extent, ImmutableArray<ImportNode> imports)
-            : base(extent, imports.CastArray<ParseNode>())
+            : base(extent)
         {
             this.Imports = imports;
         }
 
         public ImmutableArray<ImportNode> Imports { get; }
+
+        public override void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out ImportsNode parseNode)
         {

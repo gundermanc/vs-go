@@ -6,16 +6,21 @@
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
-    public sealed class DocumentBodyNode : ParseNode
+    public sealed class DocumentBodyNode : ParseNodeBase
     {
-        public DocumentBodyNode(SnapshotSegment extent, ImmutableArray<ParseNode> children) : base(extent, children)
+        public DocumentBodyNode(SnapshotSegment extent, ImmutableArray<ParseNodeBase> declarations) : base(extent)
         {
+            this.Declarations = declarations;
         }
+
+        public ImmutableArray<ParseNodeBase> Declarations { get; }
+
+        public override void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out DocumentBodyNode parseNode)
         {
             var start = lexer.CurrentLexeme.Extent.Start;
-            var declarationsBuilder = ImmutableArray.CreateBuilder<ParseNode>();
+            var declarationsBuilder = ImmutableArray.CreateBuilder<ParseNodeBase>();
 
             while (!lexer.ReachedEnd)
             {
