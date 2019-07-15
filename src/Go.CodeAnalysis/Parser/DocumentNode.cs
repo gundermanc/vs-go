@@ -8,7 +8,7 @@
     /// <summary>
     /// Represents a parsed Go source code file. It is the root of an abstract syntax tree.
     /// </summary>
-    public sealed class DocumentNode : ParseNodeBase
+    public class DocumentNode : ParseNodeBase
     {
         public DocumentNode(
             SnapshotSegment extent,
