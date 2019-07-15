@@ -8,7 +8,7 @@
     /// <summary>
     /// Represents a parsed code block.
     /// </summary>
-    public sealed class BlockNode : ParseNodeBase
+    public class BlockNode : ParseNodeBase
     {
         public BlockNode(SnapshotSegment extent) : base(extent)
         {

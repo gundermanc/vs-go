@@ -5,7 +5,7 @@
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
-    public sealed class FunctionDeclarationNode : ParseNodeBase
+    public class FunctionDeclarationNode : ParseNodeBase
     {
         public FunctionDeclarationNode(SnapshotSegment extent, SnapshotSegment functionNameExtent, BlockNode blockNode)
             : base(extent)

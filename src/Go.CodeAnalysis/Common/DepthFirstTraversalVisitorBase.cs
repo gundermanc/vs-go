@@ -16,15 +16,15 @@
 
         public virtual void Visit(ImportsNode parseNode) => this.VisitNodes(parseNode.Imports);
 
-        public virtual void Visit(ImportNode parseNode) { }
+        public virtual void Visit(ImportNode parseNode) => this.VisitNodes(parseNode.ImportDeclarations);
+
+        public virtual void Visit(ImportDeclarationNode parseNode) { }
 
         public virtual void Visit(DocumentBodyNode parseNode) => this.VisitNodes(parseNode.Declarations);
 
         public virtual void Visit(FunctionDeclarationNode parseNode) => parseNode.BlockNode.Accept(this);
 
         public virtual void Visit(BlockNode parseNode) { }
-
-        public void Visit(ImportDeclarationNode parseNode) { }
 
         private void VisitNodes<TNode>(ImmutableArray<TNode> nodes) where TNode : ParseNodeBase
         {

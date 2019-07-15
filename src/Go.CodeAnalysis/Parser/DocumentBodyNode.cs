@@ -6,7 +6,7 @@
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
-    public sealed class DocumentBodyNode : ParseNodeBase
+    public class DocumentBodyNode : ParseNodeBase
     {
         public DocumentBodyNode(SnapshotSegment extent, ImmutableArray<ParseNodeBase> declarations) : base(extent)
         {

@@ -8,7 +8,7 @@
     /// <summary>
     /// Represents a single package import declaration.
     /// </summary>
-    public sealed class ImportDeclarationNode : ParseNodeBase
+    public class ImportDeclarationNode : ParseNodeBase
     {
         public ImportDeclarationNode(
             SnapshotSegment code,

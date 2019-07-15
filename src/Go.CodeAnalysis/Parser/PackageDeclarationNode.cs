@@ -5,7 +5,7 @@
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
-    public sealed class PackageDeclarationNode : ParseNodeBase
+    public class PackageDeclarationNode : ParseNodeBase
     {
         public PackageDeclarationNode(
             SnapshotSegment extent,

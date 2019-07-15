@@ -9,7 +9,7 @@
     /// <summary>
     /// Represents a single import line or import block.
     /// </summary>
-    public sealed class ImportNode : ParseNodeBase
+    public class ImportNode : ParseNodeBase
     {
         public ImportNode(
             SnapshotSegment extent,
