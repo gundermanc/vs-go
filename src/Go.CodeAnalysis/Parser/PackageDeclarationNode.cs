@@ -1,21 +1,22 @@
 ﻿namespace Go.CodeAnalysis.Parser
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Go.CodeAnalysis.Common;
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
-    public sealed class PackageDeclarationNode : ParseNode
+    public sealed class PackageDeclarationNode : ParseNodeBase
     {
         public PackageDeclarationNode(
             SnapshotSegment extent,
-            SnapshotSegment packageNameExtent) : base(extent, ImmutableArray<ParseNode>.Empty)
+            SnapshotSegment packageNameExtent) : base(extent)
         {
             this.PackageNameExtent = packageNameExtent;
         }
 
         public SnapshotSegment PackageNameExtent { get; }
+
+        public override void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out PackageDeclarationNode parseNode)
         {

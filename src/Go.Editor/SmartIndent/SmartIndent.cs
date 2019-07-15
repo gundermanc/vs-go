@@ -1,8 +1,8 @@
 ﻿namespace Go.Editor.SmartIndent
 {
     using System;
-    using Go.CodeAnalysis.Common;
     using Go.CodeAnalysis.Parser;
+    using Go.CodeAnalysis.Editor;
     using Go.CodeAnalysis.Workspace;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
@@ -27,9 +27,9 @@
             // TODO: ensure we're on the same snapshot as the document and track if needed.
             var lineStart = line.Start;
 
-            if (docSnapshot.TryGetDeepestNode<BlockNode>(lineStart, out var foundNode))
+            if (docSnapshot.TryGetDeepestNode<BlockNode>(lineStart.Position, out var discoveredNode))
             {
-                var endPoint = new SnapshotPoint(line.Snapshot, foundNode.Extent.End);
+                var endPoint = new SnapshotPoint(line.Snapshot, discoveredNode.Extent.End);
                 var endLineStart = endPoint.GetContainingLine().Start;
                 var endPointIndent = endPoint - endLineStart - 1;
 

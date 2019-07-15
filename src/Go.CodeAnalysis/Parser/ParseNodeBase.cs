@@ -1,17 +1,16 @@
 ﻿namespace Go.CodeAnalysis.Parser
 {
-    using System.Collections.Immutable;
+    using Go.CodeAnalysis.Common;
     using Go.CodeAnalysis.Text;
 
     /// <summary>
     /// Represents a node in abstract syntax tree.
     /// </summary>
-    public class ParseNode
+    public abstract class ParseNodeBase
     {
-        public ParseNode(SnapshotSegment extent, ImmutableArray<ParseNode> children)
+        public ParseNodeBase(SnapshotSegment extent)
         {
             this.Extent = extent;
-            this.Children = children;
         }
 
         /// <summary>
@@ -19,7 +18,6 @@
         /// </summary>
         public SnapshotSegment Extent { get; }
 
-        // TODO: move to a sub class?
-        public ImmutableArray<ParseNode> Children { get; }
+        public abstract void Accept(IVisitor visitor);
     }
 }

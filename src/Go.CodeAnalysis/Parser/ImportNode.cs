@@ -9,12 +9,12 @@
     /// <summary>
     /// Represents a single import line or import block.
     /// </summary>
-    public sealed class ImportNode : ParseNode
+    public sealed class ImportNode : ParseNodeBase
     {
         public ImportNode(
             SnapshotSegment extent,
             ImmutableArray<ImportDeclarationNode> importDeclarations)
-            : base(extent, importDeclarations.CastArray<ParseNode>())
+            : base(extent)
         {
             this.ImportDeclarations = importDeclarations;
         }
@@ -23,6 +23,8 @@
         /// All imported packages under this import line or block.
         /// </summary>
         public ImmutableArray<ImportDeclarationNode> ImportDeclarations { get; }
+
+        public override void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out ImportNode parseNode)
         {

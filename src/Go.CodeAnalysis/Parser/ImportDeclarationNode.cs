@@ -1,7 +1,6 @@
 ﻿namespace Go.CodeAnalysis.Parser
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Go.CodeAnalysis.Common;
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
@@ -9,12 +8,12 @@
     /// <summary>
     /// Represents a single package import declaration.
     /// </summary>
-    public sealed class ImportDeclarationNode : ParseNode
+    public sealed class ImportDeclarationNode : ParseNodeBase
     {
         public ImportDeclarationNode(
             SnapshotSegment code,
             SnapshotSegment packageName)
-            : base(code, ImmutableArray<ParseNode>.Empty)
+            : base(code)
         {
             this.PackageName = packageName;
         }
@@ -35,5 +34,7 @@
             parseNode = new ImportDeclarationNode(lexer.CurrentLexeme.Extent, lexer.CurrentLexeme.Extent);
             return true;
         }
+
+        public override void Accept(IVisitor visitor) => visitor.Visit(this);
     }
 }
