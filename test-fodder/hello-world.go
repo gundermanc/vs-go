@@ -8,13 +8,16 @@
 package main
 
 // Can parse import statements.
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 // Functions with no parameters and no body contents can be too.
 // Outlining works here, so you should see structure guides and outlining regions.
 func main( /* params are not yet supported */ ) {
 
-    /* Body is not yet supported but smart indent should work in this block */
+	/* Body is not yet supported but smart indent should work in this block */
 }
 
 // Can have multiple functions in a file.

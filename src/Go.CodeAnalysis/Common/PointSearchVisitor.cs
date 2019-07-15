@@ -17,7 +17,7 @@
             this.parseSnapshot = parseSnapshot
                 ?? throw new ArgumentNullException(nameof(parseSnapshot));
 
-            if (position < 0 || position >= this.parseSnapshot.RootNode.Extent.Length)
+            if (position < 0 || position > this.parseSnapshot.RootNode.Extent.Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(position));
             }
@@ -40,15 +40,15 @@
                 return;
             }
 
-            if (parseNode.PackageDeclaration.Extent.ContainsPosition(this.position))
+            if (parseNode?.PackageDeclaration?.Extent.ContainsPosition(this.position) ?? false)
             {
                 this.Visit(parseNode.PackageDeclaration);
             }
-            else if (parseNode.ImportsNode.Extent.ContainsPosition(this.position))
+            else if (parseNode?.ImportsNode?.Extent.ContainsPosition(this.position) ?? false)
             {
                 this.Visit(parseNode.ImportsNode);
             }
-            else if (parseNode.DocumentBody.Extent.ContainsPosition(this.position))
+            else if (parseNode?.DocumentBody?.Extent.ContainsPosition(this.position) ?? false)
             {
                 this.Visit(parseNode.DocumentBody);
             }
