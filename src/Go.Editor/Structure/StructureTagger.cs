@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Threading.Tasks;
+    using Go.CodeAnalysis.Editor;
     using Go.CodeAnalysis.Parser;
     using Go.CodeAnalysis.Workspace;
     using Go.Editor.Common;
@@ -32,13 +33,8 @@
 
             var documentSnapshot = this.document.CurrentSnapshot;
 
-            if ((documentSnapshot?.RootNode?.DocumentBody?.Children.Length ?? 0) == 0)
-            {
-                return;
-            }
-
             // TODO: generalize for non-functions.
-            foreach (FunctionDeclarationNode block in documentSnapshot.RootNode.DocumentBody.Children)
+            foreach (FunctionDeclarationNode block in documentSnapshot.GetFunctions())
             {
                 // TODO: include args in header span.
                 // TODO: explicitly specify guideline span + point.

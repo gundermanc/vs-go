@@ -1,30 +1,42 @@
 ﻿namespace Go.CodeAnalysis.Parser
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Go.CodeAnalysis.Common;
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
-    public sealed class DocumentNode : ParseNode
+    /// <summary>
+    /// Represents a parsed Go source code file. It is the root of an abstract syntax tree.
+    /// </summary>
+    public class DocumentNode : ParseNodeBase
     {
         public DocumentNode(
             SnapshotSegment extent,
             PackageDeclarationNode packageDeclaration,
             ImportsNode importsNode,
-            DocumentBodyNode documentBodyNode)
-            : base(extent, ImmutableArray.Create<ParseNode>(packageDeclaration, documentBodyNode, importsNode))
+            DocumentBodyNode documentBodyNode) : base(extent)
         {
             this.PackageDeclaration = packageDeclaration;
             this.ImportsNode = importsNode;
             this.DocumentBody = documentBodyNode;
         }
 
+        /// <summary>
+        /// Package declaration node.
+        /// </summary>
         public PackageDeclarationNode PackageDeclaration { get; }
 
+        /// <summary>
+        /// Import node.
+        /// </summary>
         public ImportsNode ImportsNode { get; }
 
+        /// <summary>
+        /// Source code body node.
+        /// </summary>
         public DocumentBodyNode DocumentBody { get; }
+
+        public override void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out DocumentNode parseNode)
         {
