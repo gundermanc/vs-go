@@ -8,8 +8,8 @@ import "fmt"
 
 //export GetGoRoot
 // Gets the Go install directory path.
-func GetGoRoot() {
-
+func GetGoRoot() int {
+    return 123
 }
 
 // Entry point for language service test app.

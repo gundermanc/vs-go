@@ -5,6 +5,6 @@ namespace Go.Interop
     public static class Utils
     {
         [DllImport(GoLib.LibName)]
-        public static extern string GetGoRoot();
+        public static extern int GetGoRoot();
     }
 }

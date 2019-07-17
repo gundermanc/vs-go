@@ -6,11 +6,15 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GoPath Condition="'$(GOPATH)' == ''">/usr/local/go/bin</GoPath>
+    <GoArch>386</GoArch>
+    <LibExtension Condition="'$(OS)' == 'Windows_NT'">dll</LibExtension>
+    <LibExtension Condition="'$(OS)' != 'Windows_NT'">so</LibExtension>
+    <GoBinPath Condition="'$(GoBinPath)' == '' and '$(OS)' == 'Windows_NT'">C:\Go\bin\</GoBinPath>
+    <GoBinPath Condition="'$(GoBinPath)' == ''">/usr/local/go/bin/</GoBinPath>
   </PropertyGroup>
   
   <Target Name="BuildGoSources" AfterTargets="Build">
-    <Exec Command="$(GOPATH)/go build -i -o $(TargetDir)golib.so -buildmode=c-shared" WorkingDirectory="GoSources" />
+    <Exec Command="$(GoBinPath)go build -i -o $(TargetDir)golib.$(LibExtension) -buildmode=c-shared" WorkingDirectory="GoSources" EnvironmentVariables="CGO_ENABLED=1;GOARCH=386" />
   </Target>
 
 </Project>
