@@ -1,5 +1,8 @@
 ﻿namespace Go.CodeAnalysis.Lex
 {
+    /// <summary>
+    /// Go keywords.
+    /// </summary>
     internal static class Keywords
     {
         public const string Break = "break";

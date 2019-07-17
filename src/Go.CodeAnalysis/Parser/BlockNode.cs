@@ -1,16 +1,20 @@
 ﻿namespace Go.CodeAnalysis.Parser
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Go.CodeAnalysis.Common;
     using Go.CodeAnalysis.Lex;
     using Go.CodeAnalysis.Text;
 
-    public sealed class BlockNode : ParseNode
+    /// <summary>
+    /// Represents a parsed code block.
+    /// </summary>
+    public class BlockNode : ParseNodeBase
     {
-        public BlockNode(SnapshotSegment extent) : base(extent, ImmutableArray<ParseNode>.Empty)
+        public BlockNode(SnapshotSegment extent) : base(extent)
         {
         }
+
+        public override void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public static bool TryParse(Lexer lexer, IList<Error> errors, out BlockNode parseNode)
         {
