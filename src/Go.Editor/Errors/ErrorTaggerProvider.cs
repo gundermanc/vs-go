@@ -3,6 +3,7 @@
     using System;
     using System.ComponentModel.Composition;
     using Go.Editor.Workspace;
+    using Go.Interop;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Tagging;
     using Microsoft.VisualStudio.Threading;
@@ -29,6 +30,8 @@
         {
             var document = this.workspace.GetOrCreateDocument(textBuffer);
 
+            int[] text = new int[100];
+            var root = Utils.GetGoRoot();
             return new ErrorTagger(this.joinableTaskContext, document) as ITagger<T>;
         }
     }

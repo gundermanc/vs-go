@@ -6,11 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MonoDevelop.Addins" />
+    <PackageReference Include="MonoDevelop.Addins" Version="0.4.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Go.CodeAnalysis\Go.CodeAnalysis.csproj" />
     <ProjectReference Include="..\Go.Editor\Go.Editor.csproj" />
+    <ProjectReference Include="..\Go.Interop\Go.Interop.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AddinFile Include="$(BaseOutputPath)..\Go.Interop\$(Configuration)\$(TargetFramework)\golib.*" />
   </ItemGroup>
 </Project>

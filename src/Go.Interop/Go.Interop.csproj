@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Work-around for https://github.com/dotnet/project-system/issues/2832 -->
+    <TargetFramework>$(TargetFramework)</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GoPath Condition="'$(GOPATH)' == ''">/usr/local/go/bin</GoPath>
+  </PropertyGroup>
+  
+  <Target Name="BuildGoSources" AfterTargets="Build">
+    <Exec Command="$(GOPATH)/go build -i -o $(TargetDir)golib.so -buildmode=c-shared" WorkingDirectory="GoSources" />
+  </Target>
+
+</Project>
