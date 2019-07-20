@@ -1,15 +1,41 @@
 package main
 
+// typedef struct tagFoo {
+//
+// } Foo;
+
+// #cgo CFLAGS: -g -Wall
+// #include "bindings.h"
+import "C"
+
 import (
-	"C"
-	//"runtime"
+	"fmt"
 )
-import "fmt"
 
 //export GetGoRoot
 // Gets the Go install directory path.
 func GetGoRoot() int {
-    return 123
+	return 123
+}
+
+//export CreateSnapshot
+func CreateSnapshot(in []byte, out []byte, byteLen uint) {
+
+	C.foo()
+	// fset := token.NewFileSet()
+
+	// source := `
+
+	// package main
+
+	// func main() {
+
+	// }`
+
+	// f, err := parser.ParseFile(fset, nil, source, parser.AllErrors)
+}
+
+type Snapshot struct {
 }
 
 // Entry point for language service test app.

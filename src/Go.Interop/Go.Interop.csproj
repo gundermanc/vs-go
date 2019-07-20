@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GoArch>386</GoArch>
+    <GoArch Condition="'$(OS)' == 'Windows_NT'">386</GoArch>
+    <GoArch Condition="'$(OS)' == 'Windows_NT'">amd64</GoArch>
     <LibExtension Condition="'$(OS)' == 'Windows_NT'">dll</LibExtension>
     <LibExtension Condition="'$(OS)' != 'Windows_NT'">so</LibExtension>
     <GoBinPath Condition="'$(GoBinPath)' == '' and '$(OS)' == 'Windows_NT'">C:\Go\bin\</GoBinPath>
@@ -14,7 +15,10 @@
   </PropertyGroup>
   
   <Target Name="BuildGoSources" AfterTargets="Build">
-    <Exec Command="$(GoBinPath)go build -i -o $(TargetDir)golib.$(LibExtension) -buildmode=c-shared" WorkingDirectory="GoSources" EnvironmentVariables="CGO_ENABLED=1;GOARCH=386" />
+    <Exec Command="$(GoBinPath)go build -i -o $(TargetDir)golib.$(LibExtension) -buildmode=c-shared -gccgoflags=&quot;-I$(TargetDir)&quot;"
+          WorkingDirectory="GoSources"
+          EnvironmentVariables="CGO_ENABLED=1;GOARCH=386" 
+          LogStandardErrorAsError="true" />
   </Target>
 
 </Project>

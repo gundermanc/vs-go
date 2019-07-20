@@ -2,6 +2,8 @@
 {
     using System;
     using System.ComponentModel.Composition;
+    using System.Runtime.InteropServices;
+    using System.Text;
     using Go.Editor.Workspace;
     using Go.Interop;
     using Microsoft.VisualStudio.Text;
@@ -30,8 +32,10 @@
         {
             var document = this.workspace.GetOrCreateDocument(textBuffer);
 
-            int[] text = new int[100];
-            var root = Utils.GetGoRoot();
+            var inBytes = Encoding.UTF8.GetBytes("Yo, whazzup?");
+            var outBytes = new byte[100];
+            Utils.CreateSnapshot(inBytes, outBytes, (uint)outBytes.Length);
+
             return new ErrorTagger(this.joinableTaskContext, document) as ITagger<T>;
         }
     }
