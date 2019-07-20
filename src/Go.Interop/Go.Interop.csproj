@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GoArch Condition="'$(OS)' == 'Windows_NT'">386</GoArch>
     <GoArch Condition="'$(OS)' == 'Windows_NT'">amd64</GoArch>
     <LibExtension Condition="'$(OS)' == 'Windows_NT'">dll</LibExtension>

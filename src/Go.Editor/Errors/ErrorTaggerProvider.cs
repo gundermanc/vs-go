@@ -2,7 +2,6 @@
 {
     using System;
     using System.ComponentModel.Composition;
-    using System.Runtime.InteropServices;
     using System.Text;
     using Go.Editor.Common;
     using Go.Editor.Workspace;
