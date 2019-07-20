@@ -3,7 +3,7 @@
     using System;
     using System.Runtime.InteropServices;
     using System.Text;
-    using Go.CodeAnalysis.Text;
+    using Go.Interop.Text;
 
     public static class Utils
     {
