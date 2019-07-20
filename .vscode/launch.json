@@ -12,8 +12,8 @@
             "program": "${fileDirname}",
             "env": {
 
-                // VS Windows is 32 bit
                 "GOARCH": "amd64",
+                "GOPATH": "${workspaceFolder}",
                 "CGO_ENABLED": 1
             },
             "args": []

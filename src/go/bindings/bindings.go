@@ -16,7 +16,7 @@ type snapshotReader struct {
 	Offset   int
 }
 
-func newReader(snapshot C.Snapshot) *snapshotReader {
+func (snapshot C.Snapshot) newReader() *snapshotReader {
 	return &snapshotReader{snapshot, 0}
 }
 
@@ -35,18 +35,16 @@ func (reader *snapshotReader) Read(buffer []byte) (n int, err error) {
 
 //export PrintSnapshot
 func PrintSnapshot(snapshot C.Snapshot) {
+
 	fset := token.NewFileSet()
 
-	reader := newReader(snapshot)
+	reader := snapshot.newReader()
 
-	f, err := parser.ParseFile(fset, "", reader, 0)
+	_, err := parser.ParseFile(fset, "", reader, 0)
 	if err != nil {
 		ioutil.WriteFile("C:\\repos\\vs-go\\out.txt", []byte(err.Error()), 0)
 		return
 	}
-
-    // TODO: this is here cause I'm not sure how to avoid 'declaring' f.
-	f.Pos()
 
 	ioutil.WriteFile("C:\\repos\\vs-go\\out.txt", []byte("Succeeded"), 0)
 }
