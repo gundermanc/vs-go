@@ -15,10 +15,11 @@
   </PropertyGroup>
   
   <Target Name="BuildGoSources" AfterTargets="Build">
-    <Exec Command="$(GoBinPath)go build -i -o $(TargetDir)golib.$(LibExtension) -buildmode=c-shared -gccgoflags=&quot;-I$(TargetDir)&quot;"
-          WorkingDirectory="GoSources"
-          EnvironmentVariables="CGO_ENABLED=1;GOARCH=386" 
-          LogStandardErrorAsError="true" />
+    <Exec Command="$(GoBinPath)go build -i -o $(TargetDir)golib.$(LibExtension) -buildmode=c-shared -gccgoflags=&quot;-I$(TargetDir)&quot;" WorkingDirectory="GoSources" EnvironmentVariables="CGO_ENABLED=1;GOARCH=386" LogStandardErrorAsError="true" />
   </Target>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Go.CodeAnalysis\Go.CodeAnalysis.csproj" />
+  </ItemGroup>
 
 </Project>

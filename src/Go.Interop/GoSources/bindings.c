@@ -1,6 +1,6 @@
 ﻿#include "bindings.h"
 
-int foo()
+int Read(Snapshot snapshot, uint8_t buffer[], int offset, int count)
 {
-    return 0;
+    return snapshot.ReadChar(buffer, offset, count);
 }

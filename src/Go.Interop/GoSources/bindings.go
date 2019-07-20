@@ -1,41 +1,28 @@
 package main
 
-// typedef struct tagFoo {
-//
-// } Foo;
-
 // #cgo CFLAGS: -g -Wall
 // #include "bindings.h"
 import "C"
-
 import (
 	"fmt"
+	"io/ioutil"
 )
 
-//export GetGoRoot
-// Gets the Go install directory path.
-func GetGoRoot() int {
-	return 123
-}
+type ReadCallback func(buffer []byte, offset int, count int) int
 
-//export CreateSnapshot
-func CreateSnapshot(in []byte, out []byte, byteLen uint) {
+// type Snapshot struct {
+// 	Read   ReadCallback
+// 	length int
+// }
 
-	C.foo()
-	// fset := token.NewFileSet()
+//export PrintSnapshot
+func PrintSnapshot(snapshot C.Snapshot) {
 
-	// source := `
+	buffer := make([]byte, 10)
 
-	// package main
+	C.Read(snapshot, (*C.uint8_t)(&buffer[0]), 0, C.int(len(buffer)))
 
-	// func main() {
-
-	// }`
-
-	// f, err := parser.ParseFile(fset, nil, source, parser.AllErrors)
-}
-
-type Snapshot struct {
+	ioutil.WriteFile("C:\\repos\\vs-go\\out.txt", buffer, 0)
 }
 
 // Entry point for language service test app.
@@ -44,5 +31,4 @@ type Snapshot struct {
 func main() {
 	fmt.Println("Go language service bindings")
 	fmt.Println("By: Christian Gunderman")
-
 }

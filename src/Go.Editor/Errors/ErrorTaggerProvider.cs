@@ -4,6 +4,7 @@
     using System.ComponentModel.Composition;
     using System.Runtime.InteropServices;
     using System.Text;
+    using Go.Editor.Common;
     using Go.Editor.Workspace;
     using Go.Interop;
     using Microsoft.VisualStudio.Text;
@@ -34,7 +35,9 @@
 
             var inBytes = Encoding.UTF8.GetBytes("Yo, whazzup?");
             var outBytes = new byte[100];
-            Utils.CreateSnapshot(inBytes, outBytes, (uint)outBytes.Length);
+            var snap = GoSnapshot.FromSnapshot(textBuffer.CurrentSnapshot.ToSnapshot());
+
+            Utils.PrintSnapshot(snap);
 
             return new ErrorTagger(this.joinableTaskContext, document) as ITagger<T>;
         }

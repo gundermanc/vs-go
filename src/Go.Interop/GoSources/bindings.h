@@ -5,10 +5,22 @@
 // and linked into the shared library. We can use it to do some of the more complex
 // interop between C# and Go that "C" Go doesn't support, such as calling into
 // function pointers.
+
+#include <stdint.h>
+
 #ifndef BINDINGS__H__
 #define BINDINGS__H__
 
-#include "../../../bin/Go.Interop/net472/golib.h"
+// TODO: support release.
+//#include "../../../bin/Go.Interop/Debug/net472/golib.h"
 
-GoInt foo();
+typedef struct tagSnapshot
+{
+    int (*ReadChar)(uint8_t buffer[], int offset, int count);
+    int length;
+} Snapshot;
+
+// Go can't execute C function pointers, so we have this monstrosity.
+int Read(Snapshot snapshot, uint8_t buffer[], int offset, int count);
+
 #endif
