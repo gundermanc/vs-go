@@ -22,5 +22,5 @@ func main( /* params are not yet supported */ ) {
 
 // Can have multiple functions in a file.
 func notmain() {
-
+	testVar := 2
 }
