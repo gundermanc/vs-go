@@ -7,9 +7,9 @@ using System.ComponentModel.Composition;
 namespace Go.Editor.Completion
 {
     [Export(typeof(IAsyncCompletionSourceProvider))]
-    [ContentType("CSharp")]
-    [Name("Completion item source")]
-    public class CompletionSourceProvider : IAsyncCompletionSourceProvider
+    [ContentType(GoContentType.Name)]
+    [Name("Go Completion")]
+    internal sealed class CompletionSourceProvider : IAsyncCompletionSourceProvider
     {
         Lazy<CompletionSource> Source = new Lazy<CompletionSource>(() => new CompletionSource());
 
