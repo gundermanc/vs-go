@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Core.Imaging;
@@ -58,8 +59,7 @@ namespace Go.Editor.Completion
         public async Task<CompletionContext> GetCompletionContextAsync(IAsyncCompletionSession session, CompletionTrigger trigger, SnapshotPoint triggerLocation, SnapshotSpan applicableToSpan, CancellationToken token)
         {
             session.Properties["LineNumber"] = triggerLocation.GetContainingLine().LineNumber;
-
-
+            keywords.Where(keyword => keyword.DisplayText.Contains(applicableToSpan.GetText()));
 
             var result = new CompletionContext(keywords);
             return await Task.FromResult(result);
@@ -71,22 +71,11 @@ namespace Go.Editor.Completion
                 ContainerElementStyle.Wrapped,
                 CompletionItemIcon,
                 new ClassifiedTextElement(
-                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, "Hello!"),
-                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Identifier, " This is a sample item")));
-            var lineInfo = new ClassifiedTextElement(
-                    new ClassifiedTextRun(
-                        PredefinedClassificationTypeNames.Comment,
-                        "You are on line " + ((int)(session.Properties["LineNumber"]) + 1).ToString()));
-            var timeInfo = new ClassifiedTextElement(
-                    new ClassifiedTextRun(
-                        PredefinedClassificationTypeNames.Identifier,
-                        "and it is " + DateTime.Now.ToShortTimeString()));
+                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, item.DisplayText)));
 
             var result = new ContainerElement(
                 ContainerElementStyle.Stacked,
-                content,
-                lineInfo,
-                timeInfo);
+                content);
 
             return await Task.FromResult(result);
         }
