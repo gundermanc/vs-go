@@ -1,19 +1,21 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Task = System.Threading.Tasks.Task;
 using Microsoft.VisualStudio.Text;
-using EnvDTE;
+using Task = System.Threading.Tasks.Task;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio;
 
 namespace Go.Windows
 {
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class GoBuildCommand
+    public class GoBuildCommand
     {
         /// <summary>
         /// Command ID.
@@ -42,44 +44,33 @@ namespace Go.Windows
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
             var menuCommandID = new CommandID(CommandSet, CommandId);
-            MenuCommand menuItem = new MenuCommand(this.BuildGoFile, menuCommandID);
+            MenuCommand menuItem = new MenuCommand(this.BuildGo, menuCommandID);
             commandService.AddCommand(menuItem);
         }
 
-        private void BuildGoFile(object sender, EventArgs e)
+        private void BuildGo(object sender, EventArgs e)
         {
-            // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                this.package,
-                "Run go build",
-                "Go Build",
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            // Try to output something
+            var outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+            var generalPaneId = VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid;
+            var hr = outputWindow.CreatePane(generalPaneId, "General", 1, 0);
+            IVsOutputWindowPane generalPane;
+            outputWindow.GetPane(generalPaneId, out generalPane);
+
+            generalPane.Activate(); // Brings this pane into view
+            generalPane.OutputString("===== Build started =====");
 
             // Try to get document path
-            var dte = (ServiceProvider.GetServiceAsync(typeof(DTE))).Result as DTE;
-            var dteServiceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)dte);
-            var documentService = dteServiceProvider.GetService(typeof(Document)) as Document;
-            if (documentService != null)
-            {
-                var documentPath = documentService.Path;
-                Console.WriteLine(documentPath);
-            }
 
-            // Try to output something
-            var outputWindowPane = ServiceProvider.GetServiceAsync(typeof(IVsOutputWindowPane)).Result as IVsOutputWindowPane;
-            if (outputWindowPane != null)
-            {
-                outputWindowPane.Activate();
-                outputWindowPane.OutputStringThreadSafe("Trying to run go build command");
-            }
-            
+
+            // Try build go package
             var processInfo = new ProcessStartInfo("go.exe");
             processInfo.Arguments = "build -v";
             processInfo.RedirectStandardError = true;
             processInfo.UseShellExecute = false;
             System.Diagnostics.Process.Start(processInfo);
+
+            generalPane.OutputString("===== Build finished =====");
         }
 
         private string GetDocumentPath(ITextSnapshot textSnapshot)
