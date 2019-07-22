@@ -15,65 +15,86 @@ import (
 // and allowing C# to hold onto a Go pointer violates the Go memory model.
 // Instead.. We'll identify important items by a handle.
 
-// TODO: figure out synchronization.
-var manager = workspaceManager{Workspaces:make(map[WorkspaceID]*workspace), l: new(sync.RWMutex),}
+var manager = WorkspaceManager{Workspaces:make(map[WorkspaceID]*Workspace), l: new(sync.RWMutex),}
 var nextManagerID = 0
 
-// WorkspaceID uniquely identifies a workspace to the caller.
+// WorkspaceID uniquely identifies a Workspace to the caller.
 type WorkspaceID int
 
 // WorkspaceUpdateCallback indicates that the specified workspace file was updated.
 type WorkspaceUpdateCallback func(fileName string)
 
-type workspaceManager struct {
-	Workspaces map[WorkspaceID]*workspace
+type WorkspaceManager struct {
+	Workspaces map[WorkspaceID]*Workspace
     l *sync.RWMutex
 }
 
-func (w *workspaceManager) Set(key WorkspaceID, value *workspace) {
+func (w *WorkspaceManager) SetManager(key WorkspaceID, value *Workspace) {
 	w.l.Lock()
 	defer w.l.Unlock()
 	w.Workspaces[key] = value
 }
 
-func (w *workspaceManager) Get(key WorkspaceID) (*workspace, error) {
+func (w *WorkspaceManager) GetManager(key WorkspaceID) (*Workspace, error) {
 	w.l.RLock()
 	defer w.l.RUnlock()
 	id, ok := w.Workspaces[key]
 	if !ok {
-		return nil, errors.New(" workspace id not found")
+		return nil, errors.New(" Workspace id not found")
 	}
 	return id, nil
 }
-func (w *workspaceManager) Delete(key WorkspaceID) {
+func (w *WorkspaceManager) DeleteManager(key WorkspaceID) {
 	w.l.Lock()
 	defer w.l.Unlock()
 	delete(w.Workspaces, key)
 }
 
-type workspace struct {
+type Workspace struct {
 	Callbacks []WorkspaceUpdateCallback
 
 	// TODO: to enable incremental-ish behavior, I have separate file sets per file.
 	// The idea is that we can create a combined file set at a point in time for type
 	// checking if needed. Not sure how idomatic this is...
 	Files  map[string]*workspaceDocument
+    l      *sync.RWMutex
 	Errors []error
 }
 
-// CreateNewWorkspace creates a workspace and returns a unique Id
+func (ws *Workspace) SetWorkspaceDocument(key string, value *workspaceDocument) {
+	ws.l.Lock()
+	defer ws.l.Unlock()
+	ws.Files[key] = value
+}
+
+func (ws *Workspace) GetWorkspaceDocument(key string) (*workspaceDocument, error) {
+	ws.l.RLock()
+	defer ws.l.RUnlock()
+	document, ok := ws.Files[key]
+	if !ok {
+		return nil, errors.New(" workspaceDocument not found")
+	}
+	return document, nil
+}
+func (ws *Workspace) DeleteWorkspaceDocument(key string) {
+	ws.l.Lock()
+	defer ws.l.Unlock()
+	delete(ws.Files, key)
+}
+
+// CreateNewWorkspace creates a Workspace and returns a unique Id
 // for it.
 func CreateNewWorkspace() WorkspaceID {
-	workspace := workspace{
+	workspace := Workspace{
 		Callbacks: nil,
 		Files:     make(map[string]*workspaceDocument, 0),
+        l:         new(sync.RWMutex),
 		Errors:    nil,
 	}
 
-	// TODO: synchronize these two
 	// TODO: there's a hypothetical concern with int wrap around as we open + close workspaces.
 	thisManagerID := WorkspaceID(nextManagerID)
-	manager.Workspaces[thisManagerID] = &workspace
+    manager.SetManager(thisManagerID, &workspace)
 
 	nextManagerID++
 
@@ -147,7 +168,7 @@ func (id WorkspaceID) GetWorkspaceErrors() []error {
 	return errors
 }
 
-func (id WorkspaceID) getWorkspace() (*workspace, *error) {
+func (id WorkspaceID) getWorkspace() (*Workspace, *error) {
 
 	if workspace, ok := manager.Workspaces[id]; ok {
 		return workspace, nil
