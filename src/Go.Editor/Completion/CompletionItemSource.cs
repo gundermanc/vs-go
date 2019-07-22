@@ -61,8 +61,6 @@ namespace Go.Editor.Completion
 
             if (extent.IsSignificant)
             {
-                // This code checks to make sure that if the caret is right after a non-alphanumeric character, i.e. '(', then we don't count that 
-                // as part of the applicableTo span and delete that when we insert the item.
                 var extentText = extent.Span.GetText();
                 if (extentText.Length == 1 && !char.IsLetterOrDigit(extentText[0]))
                 {
@@ -77,8 +75,10 @@ namespace Go.Editor.Completion
 
         public async Task<CompletionContext> GetCompletionContextAsync(IAsyncCompletionSession session, CompletionTrigger trigger, SnapshotPoint triggerLocation, SnapshotSpan applicableToSpan, CancellationToken token)
         {
+            string currentText = applicableToSpan.GetText();
+
             session.Properties["LineNumber"] = triggerLocation.GetContainingLine().LineNumber;
-            var keyWordsFiltered = keywords.Where(keyword => keyword.DisplayText.Contains(applicableToSpan.GetText()));
+            var keyWordsFiltered = keywords.Where(keyword => keyword.DisplayText.Contains(currentText));
 
             var result = new CompletionContext(keyWordsFiltered.ToImmutableArray());
             return await Task.FromResult(result);
