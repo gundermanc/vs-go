@@ -17,10 +17,6 @@ jobs:
 
   steps:
 
-    - task: PowerShell@2
-      inputs:
-        filePath: tools/ProvisionWindows.ps1
-
     - task: NuGetToolInstaller@1
 
     - task: NuGetCommand@2
