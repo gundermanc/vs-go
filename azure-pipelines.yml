@@ -29,10 +29,10 @@ jobs:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-    - task: VSTest@2
-      inputs:
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
+#    - task: VSTest@2
+#      inputs:
+#        platform: '$(buildPlatform)'
+#        configuration: '$(buildConfiguration)'
 
 - job: Mac
   displayName: Build Go Extension for Visual Studio for Mac
@@ -58,7 +58,7 @@ jobs:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-    - task: ShellScript@2
-      displayName: Run tests
-      inputs:
-        scriptPath: tools/RunTestsMacOS.sh
+#    - task: ShellScript@2
+#      displayName: Run tests
+#      inputs:
+#        scriptPath: tools/RunTestsMacOS.sh
