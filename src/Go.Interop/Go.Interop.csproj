@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <Target Name="BuildGoSources" AfterTargets="Build">
-    <Exec Command="$(GoBinPath)go build -i -o $(TargetDir)golib.$(LibExtension) -buildmode=c-shared -gccgoflags=&quot;-I$(TargetDir)&quot;" WorkingDirectory="$(RepoRoot)src\go\bindings" EnvironmentVariables="CGO_ENABLED=1;GOARCH=386" LogStandardErrorAsError="true" />
+    <Exec Command="$(GoBinPath)go build -i -o $(TargetDir)golib.$(LibExtension) -buildmode=c-shared -gccgoflags=&quot;-I$(TargetDir)&quot;" WorkingDirectory="$(RepoRoot)src\go\bindings" EnvironmentVariables="GOPATH=$(RepoRoot);CGO_ENABLED=1;GOARCH=386" LogStandardErrorAsError="true" />
   </Target>
 
 </Project>

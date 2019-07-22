@@ -5,8 +5,6 @@ package languageservice
 
 import (
 	"errors"
-	"go/parser"
-	"go/token"
 	"io"
 )
 
@@ -23,20 +21,31 @@ var nextManagerID = 0
 // WorkspaceID uniquely identifies a workspace to the caller.
 type WorkspaceID int
 
+// WorkspaceUpdateCallback indicates that the specified workspace file was updated.
+type WorkspaceUpdateCallback func(fileName string)
+
 type workspaceManager struct {
 	Workspaces map[WorkspaceID]*workspace
 }
 
 type workspace struct {
-	FileSet *token.FileSet
-	Errors  []error
+	Callbacks []WorkspaceUpdateCallback
+
+	// TODO: to enable incremental-ish behavior, I have separate file sets per file.
+	// The idea is that we can create a combined file set at a point in time for type
+	// checking if needed. Not sure how idomatic this is...
+	Files  map[string]*workspaceDocument
+	Errors []error
 }
 
 // CreateNewWorkspace creates a workspace and returns a unique Id
 // for it.
 func CreateNewWorkspace() WorkspaceID {
-	files := token.NewFileSet()
-	workspace := workspace{files, nil}
+	workspace := workspace{
+		Callbacks: nil,
+		Files:     make(map[string]*workspaceDocument, 0),
+		Errors:    nil,
+	}
 
 	// TODO: synchronize these two
 	// TODO: there's a hypothetical concern with int wrap around as we open + close workspaces.
@@ -53,34 +62,60 @@ func (id WorkspaceID) CloseWorkspace() {
 	delete(manager.Workspaces, id)
 }
 
-func (id WorkspaceID) ParseFile(reader io.Reader) *error {
-
+// QueueFileParse queues the reparse of a file. Reparse is signaled to the caller
+// via a WorkspaceUpdateCallback.
+func (id WorkspaceID) QueueFileParse(fileName string, reader io.Reader) *error {
 	if reader == nil {
-		err := errors.New("Reader cannot be nil")
-		return &err
+		panic("reader cannot be nil")
 	}
 
-	if workspace, err := id.getWorkspace(); err == nil {
-		// TODO: how do we invalidate errors?
-		_, err := parser.ParseFile(workspace.FileSet, "", reader, 0)
-		if err != nil {
-			// TODO: synchronize.
-			workspace.Errors = append(workspace.Errors, err)
-		}
-	} else {
+	workspace, err := id.getWorkspace()
+	if err != nil {
 		return err
 	}
 
+	file, ok := workspace.Files[fileName]
+	if !ok {
+		file = createNewWorkspaceDocument(fileName)
+		workspace.Files[fileName] = file
+	}
+
+	// TODO: better done with channels?
+	callback := func(fileName string) {
+		workspace, err := id.getWorkspace()
+		if err == nil {
+			for _, callback := range workspace.Callbacks {
+				callback(fileName)
+			}
+		}
+	}
+
+	file.queueReparse(fileName, reader, callback)
+	return nil
+}
+
+// RegisterWorkspaceUpdateCallback registers a method that is invoked on the completion of
+// a change to a file in the workspace.
+func (id WorkspaceID) RegisterWorkspaceUpdateCallback(callback WorkspaceUpdateCallback) *error {
+
+	workspace, err := id.getWorkspace()
+	if err != nil {
+		return err
+	}
+
+	workspace.Callbacks = append(workspace.Callbacks, callback)
 	return nil
 }
 
 // GetWorkspaceErrors gets all currently known errors in the workspace.
 func (id WorkspaceID) GetWorkspaceErrors() []error {
-	if workspace, err := id.getWorkspace(); err == nil {
-		return workspace.Errors
-	} else {
+
+	workspace, err := id.getWorkspace()
+	if err != nil {
 		return append([]error(nil), *err)
 	}
+
+	return workspace.Errors
 }
 
 func (id WorkspaceID) getWorkspace() (*workspace, *error) {

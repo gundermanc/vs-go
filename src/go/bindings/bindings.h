@@ -23,4 +23,10 @@ typedef struct tagSnapshot
 // Go can't execute C function pointers, so we have this monstrosity.
 int Read(Snapshot snapshot, uint8_t buffer[], int offset, int count);
 
+// .. and this one too
+typedef void (*WorkspaceUpdateCallback)(uint8_t buffer[], int count);
+
+// .. and this one too.
+void InvokeWorkspaceUpdateCallback(WorkspaceUpdateCallback callback, uint8_t buffer[], int count);
+
 #endif

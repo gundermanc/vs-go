@@ -4,11 +4,9 @@ package main
 // #include "bindings.h"
 import "C"
 import (
-	"fmt"
-	"go/parser"
-	"go/token"
+	"go/languageservice"
 	"io"
-	"io/ioutil"
+	"unsafe"
 )
 
 type snapshotReader struct {
@@ -33,26 +31,35 @@ func (reader *snapshotReader) Read(buffer []byte) (n int, err error) {
 	return read, nil
 }
 
-//export PrintSnapshot
-func PrintSnapshot(snapshot C.Snapshot) {
-
-	fset := token.NewFileSet()
-
-	reader := snapshot.newReader()
-
-	_, err := parser.ParseFile(fset, "", reader, 0)
-	if err != nil {
-		ioutil.WriteFile("C:\\repos\\vs-go\\out.txt", []byte(err.Error()), 0)
-		return
-	}
-
-	ioutil.WriteFile("C:\\repos\\vs-go\\out.txt", []byte("Succeeded"), 0)
+//export CreateNewWorkspace
+func CreateNewWorkspace() int {
+	return int(languageservice.CreateNewWorkspace())
 }
 
-// Entry point for language service test app.
+//export RegisterWorkspaceUpdateCallback
+func RegisterWorkspaceUpdateCallback(workspaceID int, callback C.WorkspaceUpdateCallback) {
+
+	goCallback := func(fileName string) {
+		fileNameSlice := []byte(fileName)
+		C.InvokeWorkspaceUpdateCallback(callback, (*C.uint8_t)(&fileNameSlice[0]), C.int(len(fileNameSlice)))
+	}
+
+	languageservice.WorkspaceID(workspaceID).RegisterWorkspaceUpdateCallback(goCallback)
+}
+
+//export QueueFileParse
+func QueueFileParse(workspaceID int, fileName *byte, count int, snapshot C.Snapshot) {
+	reader := snapshot.newReader()
+	fileNameString := cToString(fileName, count)
+	languageservice.WorkspaceID(workspaceID).QueueFileParse(fileNameString, reader)
+}
+
+func cToString(bytes *byte, length int) string {
+	// TODO: there are 2 copies being made here. Eliminate one.
+	return string(C.GoBytes(unsafe.Pointer(bytes), C.int(length)))
+}
+
 // Note: The "C" library requires there to be main
 // to work, however, it's not run in normal circumstances
 func main() {
-	fmt.Println("Go language service bindings")
-	fmt.Println("By: Christian Gunderman")
 }
