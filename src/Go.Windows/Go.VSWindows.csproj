@@ -57,6 +57,14 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Disable Go build in the CI until we figure out how to install MinGW and Go on the machines. -->
+    <Content Condition="'$(isCIBuild)' != 'true'"
+             Include="$(BaseOutputPath)..\Go.Interop\$(Configuration)\$(TargetFramework)\golib.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+  </ItemGroup>
+
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" />
 
