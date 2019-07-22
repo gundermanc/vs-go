@@ -22,6 +22,8 @@
 
             this.buffer.Changed += this.OnTextBufferChanged;
             this.workspace.WorkspaceFileUpdated += this.OnWorkspaceFileUpdated;
+
+            this.OnTextBufferChanged(null, null);
         }
 
         private void OnWorkspaceFileUpdated(object sender, string fileName)
@@ -52,7 +54,7 @@
                         errorTagsBuilder.Add(
                             new TagSpan<IErrorTag>(
                                 new SnapshotSpan(snapshot, new Span(errorSpanStart, 1)),
-                                new ErrorTag(PredefinedErrorTypeNames.CompilerError, lineSegments[2])));
+                                new ErrorTag(PredefinedErrorTypeNames.SyntaxError, lineSegments[2])));
                     }
 
                 }

@@ -74,6 +74,7 @@ func (document *workspaceDocument) reparse(fileName string, reader io.Reader) {
 	// Update document.
 	document.Mutex.Lock()
 	defer document.Mutex.Unlock()
+	document.Error = nil
 	if err != nil {
 		document.Error = append(document.Error, err)
 	}
