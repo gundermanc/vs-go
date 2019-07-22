@@ -58,7 +58,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="$(BaseOutputPath)..\Go.Interop\$(Configuration)\$(TargetFramework)\golib.dll">
+    <!-- Disable Go build in the CI until we figure out how to install MinGW and Go on the machines. -->
+    <Content Condition="'$(isCIBuild)' != 'true'"
+             Include="$(BaseOutputPath)..\Go.Interop\$(Configuration)\$(TargetFramework)\golib.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
