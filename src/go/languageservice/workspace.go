@@ -6,6 +6,7 @@ package languageservice
 import (
 	"errors"
 	"io"
+    "sync"
 )
 
 // Rant: singletons are a terrible anti-pattern that needs to be avoided
@@ -26,6 +27,28 @@ type WorkspaceUpdateCallback func(fileName string)
 
 type workspaceManager struct {
 	Workspaces map[WorkspaceID]*workspace
+    l *sync.RWMutex
+}
+
+func (w *workspaceManager) Set(key WorkspaceID, value *workspace) {
+	w.l.Lock()
+	defer w.l.Unlock()
+	w.Workspaces[key] = value
+}
+
+func (w *workspaceManager) Get(key WorkspaceID) (*workspace, error) {
+	w.l.RLock()
+	defer w.l.RUnlock()
+	id, ok := w.Workspaces[key]
+	if !ok {
+		return nil, errors.New(" workspace id not found")
+	}
+	return id, nil
+}
+func (w *workspaceManager) Delete(key WorkspaceID) {
+	w.l.Lock()
+	defer w.l.Unlock()
+	delete(w.Workspaces, key)
 }
 
 type workspace struct {
