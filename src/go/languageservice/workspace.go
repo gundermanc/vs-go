@@ -16,7 +16,7 @@ import (
 // Instead.. We'll identify important items by a handle.
 
 // TODO: figure out synchronization.
-var manager = workspaceManager{make(map[WorkspaceID]*workspace)}
+var manager = workspaceManager{Workspaces:make(map[WorkspaceID]*workspace), l: new(sync.RWMutex),}
 var nextManagerID = 0
 
 // WorkspaceID uniquely identifies a workspace to the caller.
