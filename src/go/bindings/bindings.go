@@ -37,11 +37,11 @@ func CreateNewWorkspace() int {
 }
 
 //export RegisterWorkspaceUpdateCallback
-func RegisterWorkspaceUpdateCallback(workspaceID int, callback C.WorkspaceUpdateCallback) {
+func RegisterWorkspaceUpdateCallback(workspaceID int, callback C.ProvideStringCallback) {
 
 	goCallback := func(fileName string) {
 		fileNameSlice := []byte(fileName)
-		C.InvokeWorkspaceUpdateCallback(callback, (*C.uint8_t)(&fileNameSlice[0]), C.int(len(fileNameSlice)))
+		C.InvokeStringCallback(callback, (*C.uint8_t)(&fileNameSlice[0]), C.int(len(fileNameSlice)))
 	}
 
 	languageservice.WorkspaceID(workspaceID).RegisterWorkspaceUpdateCallback(goCallback)
@@ -52,6 +52,18 @@ func QueueFileParse(workspaceID int, fileName *byte, count int, snapshot C.Snaps
 	reader := snapshot.newReader()
 	fileNameString := cToString(fileName, count)
 	languageservice.WorkspaceID(workspaceID).QueueFileParse(fileNameString, reader)
+}
+
+//export GetWorkspaceErrors
+func GetWorkspaceErrors(workspaceID int, callback C.ProvideStringCallback) {
+	rawErrors := languageservice.WorkspaceID(workspaceID).GetWorkspaceErrors()
+
+	for _, err := range rawErrors {
+
+        errorText := []byte(err.Error())
+
+        C.InvokeStringCallback(callback, (*C.uint8_t)(&errorText[0]), C.int(len(errorText)))
+	}
 }
 
 func cToString(bytes *byte, length int) string {

@@ -1,6 +1,7 @@
 ﻿namespace Go.Interop
 {
     using System;
+    using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using System.Text;
     using Go.Interop.Text;
@@ -15,6 +16,8 @@
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public unsafe struct GoSnapshot
     {
+        private static List<ReadCallback> keepAlive = new List<ReadCallback>();
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public delegate int ReadCallback([Out]byte* buffer, int offset, int count);
 
@@ -44,6 +47,10 @@
                 // at array boundaries.
                 return Encoding.UTF8.GetBytes(chars, count, buffer, count);
             }
+
+            // HACK: keep the delegates rooted so they aren't GC-ed.
+            // Eventually this should be managed as part of the snapshot life-cycle.
+            keepAlive.Add(CopyChars);
 
             return new GoSnapshot(CopyChars, snapshotBase.Length);
         }

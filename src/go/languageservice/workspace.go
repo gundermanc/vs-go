@@ -115,7 +115,13 @@ func (id WorkspaceID) GetWorkspaceErrors() []error {
 		return append([]error(nil), *err)
 	}
 
-	return workspace.Errors
+	errors := make([]error, 0)
+	for _, wd := range workspace.Files {
+		fileErrors := wd.Error
+		errors = append(errors, fileErrors...)
+	}
+
+	return errors
 }
 
 func (id WorkspaceID) getWorkspace() (*workspace, *error) {

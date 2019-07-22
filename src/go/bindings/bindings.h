@@ -24,9 +24,10 @@ typedef struct tagSnapshot
 int Read(Snapshot snapshot, uint8_t buffer[], int offset, int count);
 
 // .. and this one too
-typedef void (*WorkspaceUpdateCallback)(uint8_t buffer[], int count);
+typedef void (*ProvideStringCallback)(uint8_t buffer[], int count);
 
 // .. and this one too.
-void InvokeWorkspaceUpdateCallback(WorkspaceUpdateCallback callback, uint8_t buffer[], int count);
+void InvokeStringCallback(ProvideStringCallback callback, uint8_t buffer[], int count);
+
 
 #endif
