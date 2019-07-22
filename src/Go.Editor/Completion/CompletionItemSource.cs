@@ -35,7 +35,8 @@ namespace Go.Editor.Completion
         public async Task<CompletionContext> GetCompletionContextAsync(IAsyncCompletionSession session, CompletionTrigger trigger, SnapshotPoint triggerLocation, SnapshotSpan applicableToSpan, CancellationToken token)
         {
             session.Properties["LineNumber"] = triggerLocation.GetContainingLine().LineNumber;
-            return new CompletionContext(sampleItems);
+            var result = new CompletionContext(sampleItems);
+            return await Task.FromResult(result);
         }
 
         public async Task<object> GetDescriptionAsync(IAsyncCompletionSession session, CompletionItem item, CancellationToken token)
@@ -55,11 +56,13 @@ namespace Go.Editor.Completion
                         PredefinedClassificationTypeNames.Identifier,
                         "and it is " + DateTime.Now.ToShortTimeString()));
 
-            return new ContainerElement(
+            var result = new ContainerElement(
                 ContainerElementStyle.Stacked,
                 content,
                 lineInfo,
                 timeInfo);
+
+            return await Task.FromResult(result);
         }
     }
 }
