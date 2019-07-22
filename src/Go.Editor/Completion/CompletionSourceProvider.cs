@@ -43,6 +43,10 @@ namespace Go.Editor.Completion
                     this.sourceMap.Remove(textView);
                 }
             }
+            catch
+            {
+
+            }
         }
     }
 }
