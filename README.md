@@ -9,22 +9,22 @@ In progress Go language service for Visual Studio for Windows and Mac.
 
 ## Done
 
-### Supported platforms:
+### Planned Supported platforms:
 
 - Visual Studio 2019 16.1 for Windows
 - Visual Studio 2019 8.2.0 Preview for Mac
 
+### How it does/will work
+- Language service smarts are written in Go, using the token, parser, and types libraries
+  from the Go standard library to lex, parse, and type check the code.
+- Editor features talk to this language service through a thin inteop layer built using a
+  a combination of PInvoke and a cgo c-shared library with C language bindings for Go.
+
 ### Editor Features
-- Very early prototype of colorization via lexing the file.
-- Error squiggles (only for some `gofmt.exe` provided errors and supported parse cases).
-- Outlining and structure guides (only for supported parse cases).
-- Colorized + formatted documentation tooltips via `gogetdoc.exe` (currently requires files to be in GOPATH directory).
-- Smart-indent (only for supported parse cases).
-
-### Supported Parse Cases
-
-- Package declarations
-- Top level functions with no parameters, no return type, and no body content.
+- Currently using TextMate for colorization and outlining and structure. Ideally we'll move
+  this to using the Go AST or tokens.
+- Error squiggles are directly output by the go/parser and go/types libraries as a result of
+  parsing and type checking the code.
 
 ## Getting started
 - Install the Go development SDK.
@@ -33,8 +33,15 @@ In progress Go language service for Visual Studio for Windows and Mac.
 - Copy src/test-fodder to your GOPATH directory.
 - Open the file in the experimental VS instance.
 
-## Roadmap
+### Windows
+- Install Visual Studio 2019 16.1
+- Install Go SDK (expects C:\Go)
+- Install MinGW32 GCC C/C++ compiler for Windows (expects C:\MinGW)
+- Open Go.Windows.sln, rebuild and start 'Visual Studio Extension'
 
-See https://github.com/gundermanc/vs-go/issues/1 for the roadmap discussion.
+### Mac
+- Install VS for Mac 8.2 Preview
+- Install Go SDK
+- Install XCode/Apple developer tools (needed for gcc).
 
 Contributions and discussion are absolutely welcome :)
