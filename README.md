@@ -20,6 +20,12 @@ In progress Go language service for Visual Studio for Windows and Mac.
 - Editor features talk to this language service through a thin inteop layer built using a
   a combination of PInvoke and a cgo c-shared library with C language bindings for Go.
 
+### Historical Context
+Screenshots are from an earlier build which was a full, from-scratch language service for
+Go in C#. Since then, I have changed strategies to enable reuse of existing Go libraries.
+
+We're starting at square one.
+
 ### Editor Features
 - Currently using TextMate for colorization and outlining and structure. Ideally we'll move
   this to using the Go AST or tokens.
