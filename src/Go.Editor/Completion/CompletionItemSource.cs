@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
 using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
+using Microsoft.VisualStudio.Text.Operations;
 
 namespace Go.Editor.Completion
 {
@@ -16,9 +17,12 @@ namespace Go.Editor.Completion
     {
         private static ImageElement CompletionItemIcon = new ImageElement(new ImageId(new Guid("ae27a6b0-e345-4288-96df-5eaf394ee369"), 3335), "Hello Icon");
         private ImmutableArray<CompletionItem> keywords;
+        private ITextStructureNavigatorSelectorService navigatorSelectorService;
 
-        public CompletionSource()
+        public CompletionSource(ITextStructureNavigatorSelectorService navigatorSelectorService)
         {
+            this.navigatorSelectorService = navigatorSelectorService;
+
             keywords = ImmutableArray.Create(
                 new CompletionItem("break", this, CompletionItemIcon),
                 new CompletionItem("default", this, CompletionItemIcon),
@@ -49,19 +53,34 @@ namespace Go.Editor.Completion
 
         public CompletionStartData InitializeCompletion(CompletionTrigger trigger, SnapshotPoint triggerLocation, CancellationToken token)
         {
-            // Since we are plugging in to CSharp content type,
-            // allow the CSharp language service to pick the Applicable To Span.
-            return new CompletionStartData(CompletionParticipation.ProvidesItems, new SnapshotSpan(triggerLocation, 1));
-            // Alternatively, we've got to provide location for completion
-            // return new CompletionStartData(CompletionParticipation.ProvidesItems, ...
+            if (!char.IsLetterOrDigit(trigger.Character))
+                return CompletionStartData.DoesNotParticipateInCompletion;
+
+            var navigator = this.navigatorSelectorService.GetTextStructureNavigator(triggerLocation.Snapshot.TextBuffer);
+            var extent = navigator.GetExtentOfWord(triggerLocation - 1);
+
+            if (extent.IsSignificant)
+            {
+                // This code checks to make sure that if the caret is right after a non-alphanumeric character, i.e. '(', then we don't count that 
+                // as part of the applicableTo span and delete that when we insert the item.
+                var extentText = extent.Span.GetText();
+                if (extentText.Length == 1 && !char.IsLetterOrDigit(extentText[0]))
+                {
+                    return new CompletionStartData(CompletionParticipation.ProvidesItems, new SnapshotSpan(triggerLocation, triggerLocation));
+                }
+
+                return new CompletionStartData(CompletionParticipation.ProvidesItems, extent.Span);
+            }
+
+            return new CompletionStartData(CompletionParticipation.ProvidesItems, new SnapshotSpan(triggerLocation, 0));
         }
 
         public async Task<CompletionContext> GetCompletionContextAsync(IAsyncCompletionSession session, CompletionTrigger trigger, SnapshotPoint triggerLocation, SnapshotSpan applicableToSpan, CancellationToken token)
         {
             session.Properties["LineNumber"] = triggerLocation.GetContainingLine().LineNumber;
-            keywords.Where(keyword => keyword.DisplayText.Contains(applicableToSpan.GetText()));
+            var keyWordsFiltered = keywords.Where(keyword => keyword.DisplayText.Contains(applicableToSpan.GetText()));
 
-            var result = new CompletionContext(keywords);
+            var result = new CompletionContext(keyWordsFiltered.ToImmutableArray());
             return await Task.FromResult(result);
         }
 
