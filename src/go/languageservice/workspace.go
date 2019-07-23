@@ -5,8 +5,9 @@ package languageservice
 
 import (
 	"errors"
+	"go/ast"
 	"io"
-    "sync"
+	"sync"
 )
 
 // Rant: singletons are a terrible anti-pattern that needs to be avoided
@@ -15,7 +16,7 @@ import (
 // and allowing C# to hold onto a Go pointer violates the Go memory model.
 // Instead.. We'll identify important items by a handle.
 
-var manager = WorkspaceManager{Workspaces:make(map[WorkspaceID]*Workspace), l: new(sync.RWMutex),}
+var manager = WorkspaceManager{Workspaces: make(map[WorkspaceID]*Workspace), l: new(sync.RWMutex)}
 var nextManagerID = 0
 
 // WorkspaceID uniquely identifies a Workspace to the caller.
@@ -26,7 +27,7 @@ type WorkspaceUpdateCallback func(fileName string)
 
 type WorkspaceManager struct {
 	Workspaces map[WorkspaceID]*Workspace
-    l *sync.RWMutex
+	l          *sync.RWMutex
 }
 
 func (w *WorkspaceManager) SetManager(key WorkspaceID, value *Workspace) {
@@ -57,7 +58,7 @@ type Workspace struct {
 	// The idea is that we can create a combined file set at a point in time for type
 	// checking if needed. Not sure how idomatic this is...
 	Files  map[string]*workspaceDocument
-    l      *sync.RWMutex
+	l      *sync.RWMutex
 	Errors []error
 }
 
@@ -88,13 +89,13 @@ func CreateNewWorkspace() WorkspaceID {
 	workspace := Workspace{
 		Callbacks: nil,
 		Files:     make(map[string]*workspaceDocument, 0),
-        l:         new(sync.RWMutex),
+		l:         new(sync.RWMutex),
 		Errors:    nil,
 	}
 
 	// TODO: there's a hypothetical concern with int wrap around as we open + close workspaces.
 	thisManagerID := WorkspaceID(nextManagerID)
-    manager.SetManager(thisManagerID, &workspace)
+	manager.SetManager(thisManagerID, &workspace)
 
 	nextManagerID++
 
@@ -166,6 +167,32 @@ func (id WorkspaceID) GetWorkspaceErrors() []error {
 	}
 
 	return errors
+}
+
+func (id WorkspaceID) GetCompletions() ([]string, error) {
+
+	workspace, err := id.getWorkspace()
+	if err != nil {
+		return nil, *err
+	}
+
+	completions := []string(nil)
+
+	// TODO: take into account context.
+	// TODO: support locals.
+    // TODO: return item type.
+    // TODO: support fetching item description.
+    // TODO: support non-function declarations.
+	for _, wd := range workspace.Files {
+		decls := wd.File.Decls
+		for _, decl := range decls {
+			if funcDecl, ok := decl.(*ast.FuncDecl); ok {
+				completions = append(completions, funcDecl.Name.Name)
+			}
+		}
+	}
+
+	return completions, nil
 }
 
 func (id WorkspaceID) getWorkspace() (*Workspace, *error) {

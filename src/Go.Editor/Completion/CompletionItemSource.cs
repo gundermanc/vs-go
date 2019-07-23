@@ -1,29 +1,31 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.Core.Imaging;
-using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
-using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
-using Microsoft.VisualStudio.Language.StandardClassification;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Adornments;
-using Microsoft.VisualStudio.Text.Operations;
-
-namespace Go.Editor.Completion
+﻿namespace Go.Editor.Completion
 {
-    public class CompletionSource : IAsyncCompletionSource
-    {
-        private static ImageElement CompletionItemIcon = new ImageElement(new ImageId(new Guid("ae27a6b0-e345-4288-96df-5eaf394ee369"), 3335), "Hello Icon");
-        private ImmutableArray<CompletionItem> keywords;
-        private ITextStructureNavigatorSelectorService navigatorSelectorService;
+    using System;
+    using System.Collections.Immutable;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.VisualStudio.Core.Imaging;
+    using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
+    using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
+    using Microsoft.VisualStudio.Language.StandardClassification;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Adornments;
+    using Microsoft.VisualStudio.Text.Operations;
 
-        public CompletionSource(ITextStructureNavigatorSelectorService navigatorSelectorService)
+    internal sealed class CompletionSource : IAsyncCompletionSource
+    {
+        private static readonly ImageElement CompletionItemIcon
+            = new ImageElement(new ImageId(new Guid("ae27a6b0-e345-4288-96df-5eaf394ee369"), 3335), "Hello Icon");
+        private readonly ImmutableArray<CompletionItem> keywords;
+        private readonly ITextStructureNavigatorSelectorService navigatorSelectorService;
+        private readonly GoWorkspace workspace;
+
+        public CompletionSource(ITextStructureNavigatorSelectorService navigatorSelectorService, GoWorkspace workspace)
         {
             this.navigatorSelectorService = navigatorSelectorService;
+            this.workspace = workspace;
 
-            keywords = ImmutableArray.Create(
+            this.keywords = ImmutableArray.Create(
                 new CompletionItem("break", this, CompletionItemIcon),
                 new CompletionItem("default", this, CompletionItemIcon),
                 new CompletionItem("func", this, CompletionItemIcon),
@@ -75,12 +77,14 @@ namespace Go.Editor.Completion
 
         public async Task<CompletionContext> GetCompletionContextAsync(IAsyncCompletionSession session, CompletionTrigger trigger, SnapshotPoint triggerLocation, SnapshotSpan applicableToSpan, CancellationToken token)
         {
-            string currentText = applicableToSpan.GetText();
+            var items = ImmutableArray.CreateBuilder<CompletionItem>();
+            items.AddRange(keywords);
+            foreach (var item in this.workspace.GetWorkspaceCompletions())
+            {
+                items.Add(new CompletionItem(item, this, CompletionItemIcon));
+            }
 
-            session.Properties["LineNumber"] = triggerLocation.GetContainingLine().LineNumber;
-            var keyWordsFiltered = keywords.Where(keyword => keyword.DisplayText.Contains(currentText));
-
-            var result = new CompletionContext(keyWordsFiltered.ToImmutableArray());
+            var result = new CompletionContext(items.ToImmutable());
             return await Task.FromResult(result);
         }
 
