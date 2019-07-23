@@ -14,18 +14,28 @@ import (
 // Shows up in completion.
 const ConstantlyOutdoingExpectations int = 4
 
-// Also shows up in completion.
+// Also shows up in completion. <- currently not supported
 type SoStructural struct {
 
 }
 
-// Also shows up in completion.
+// Also shows up in completion. <- currently not supported
 type AreWeInterfacing interface {
 
 }
 
+const globalX int = 1
+
 // Outlining works here, so you should see structure guides and outlining regions.
 func main(foo int) {
+	const x int = 7 
+	var y int = 8
 
-	fmt.Println("hello world")
+	// globalX, globalY, x and y are visible here, but z not
+
+	var z int = y
+
+	fmt.Println("hello world", z)
 }
+
+const globalY int = 1
