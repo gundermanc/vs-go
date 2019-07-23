@@ -18,12 +18,19 @@
     {
         private static List<ReadCallback> keepAlive = new List<ReadCallback>();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public delegate int ReadCallback([Out]byte* buffer, int offset, int count);
+        public delegate int ReadCallback(
+            // VS Mac runs on Mono runtime, which appears to have
+            // trouble with the [Out] attribute.
+#if WINDOWS
+            [Out]
+#endif
+            byte* buffer,
+            int offset,
+            int count);
 
         public GoSnapshot(ReadCallback readCallback, int length)
         {
-            this.readCallback = readCallback ?? throw new ArgumentNullException(nameof(readCallback));
+            this.readCallback = readCallback;
             this.length = length;
         }
 
@@ -38,7 +45,7 @@
             unsafe int CopyChars(byte* buffer, int offset, int count)
             {
                 var chars = stackalloc char[count];
-                for (int i = 0; i < count && (i+offset) < snapshotBase.Length; i++)
+                for (int i = 0; i < count && (i + offset) < snapshotBase.Length; i++)
                 {
                     chars[i] = snapshotBase[i + offset];
                 }

@@ -32,12 +32,12 @@ func (reader *snapshotReader) Read(buffer []byte) (n int, err error) {
 }
 
 //export CreateNewWorkspace
-func CreateNewWorkspace() int {
-	return int(languageservice.CreateNewWorkspace())
+func CreateNewWorkspace() int32 {
+	return int32(languageservice.CreateNewWorkspace())
 }
 
 //export RegisterWorkspaceUpdateCallback
-func RegisterWorkspaceUpdateCallback(workspaceID int, callback C.ProvideStringCallback) {
+func RegisterWorkspaceUpdateCallback(workspaceID int32, callback C.ProvideStringCallback) {
 
 	goCallback := func(fileName string) {
 		fileNameSlice := []byte(fileName)
@@ -48,7 +48,7 @@ func RegisterWorkspaceUpdateCallback(workspaceID int, callback C.ProvideStringCa
 }
 
 //export QueueFileParse
-func QueueFileParse(workspaceID int, fileName *byte, count int, snapshot C.Snapshot) {
+func QueueFileParse(workspaceID int32, fileName *byte, count int32, snapshot C.Snapshot) {
 	reader := snapshot.newReader()
 	fileNameString := cToString(fileName, count)
 	languageservice.WorkspaceID(workspaceID).QueueFileParse(fileNameString, reader)
@@ -67,7 +67,7 @@ func GetWorkspaceCompletions(workspaceID int, callback C.ProvideStringCallback) 
 }
 
 //export GetWorkspaceErrors
-func GetWorkspaceErrors(workspaceID int, callback C.ProvideStringCallback) {
+func GetWorkspaceErrors(workspaceID int32, callback C.ProvideStringCallback) {
 	rawErrors := languageservice.WorkspaceID(workspaceID).GetWorkspaceErrors()
 
 	for _, err := range rawErrors {
@@ -78,7 +78,7 @@ func GetWorkspaceErrors(workspaceID int, callback C.ProvideStringCallback) {
 	}
 }
 
-func cToString(bytes *byte, length int) string {
+func cToString(bytes *byte, length int32) string {
 	// TODO: there are 2 copies being made here. Eliminate one.
 	return string(C.GoBytes(unsafe.Pointer(bytes), C.int(length)))
 }
