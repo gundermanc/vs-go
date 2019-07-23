@@ -4,23 +4,28 @@
 // This file's contents demonstrate the extent of GoLang support
 // in Go for Visual Studio Extension.
 
-// Package declarations can be parsed.
 package main
 
-// Can parse import statements.
+// Introduce a typo to see error squiggles.
 import (
 	"fmt"
-	"math"
 )
 
-// Functions with no parameters and no body contents can be too.
-// Outlining works here, so you should see structure guides and outlining regions.
-func main( /* params are not yet supported */ ) {
+// Shows up in completion.
+const ConstantlyOutdoingExpectations int = 4
 
-	/* Type 'notmain' to see it in the completion list. */
+// Also shows up in completion.
+type SoStructural struct {
+
 }
 
-// Can have multiple functions in a file.
-func notmain() {
+// Also shows up in completion.
+type AreWeInterfacing interface {
 
+}
+
+// Outlining works here, so you should see structure guides and outlining regions.
+func main(foo int) {
+
+	fmt.Println("hello world")
 }
