@@ -210,6 +210,38 @@ func (id WorkspaceID) GetCompletions() ([]string, error) {
 	return completions, nil
 }
 
+func (id WorkspaceID) GetQuickInfo(fileName string) (string, string, error) {
+
+	workspace, err := id.getWorkspace()
+	if err != nil {
+		return "", "", *err
+	}
+
+	file, ok := workspace.Files[fileName]
+	// if ok {
+	// 	file.File.
+	// }
+}
+
+func getEncapsulatingNodes(file *ast.File, position int) []ast.Node {
+
+	visitor := PointSearchVisitor{nil}
+
+	ast.Walk(visitor, file)
+
+	if fileNode, ok := file.(ast.Node); ok {
+		Visit(fileNode)
+	}
+}
+
+type PointSearchVisitor struct {
+	EncapsulatingNodes []*ast.Node
+}
+
+func (visitor *PointSearchVisitor) Visit(node ast.Node) (w ast.Visitor) {
+	return nil
+}
+
 func (id WorkspaceID) getWorkspace() (*Workspace, *error) {
 
 	if workspace, ok := manager.Workspaces[id]; ok {
