@@ -41,6 +41,19 @@
             return errors;
         }
 
+        public unsafe IList<string> GetWorkspaceCompletions()
+        {
+            var completions = new List<string>();
+
+            void CompletionsCallback(byte* errorText, int length)
+            {
+                completions.Add(Encoding.UTF8.GetString(errorText, length));
+            }
+
+            GetWorkspaceCompletions(this.workspaceId, CompletionsCallback);
+            return completions;
+        }
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         private unsafe delegate void ProvideStringCallback(byte* fileName, int length);
 
@@ -55,6 +68,9 @@
 
         [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void GetWorkspaceErrors(int workspaceId, ProvideStringCallback callback);
+
+        [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void GetWorkspaceCompletions(int workspaceId, ProvideStringCallback callback);
 
         private unsafe void WorkspaceUpdated(byte* fileName, int length)
         {
