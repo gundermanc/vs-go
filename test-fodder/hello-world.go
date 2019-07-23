@@ -17,7 +17,7 @@ import (
 // Outlining works here, so you should see structure guides and outlining regions.
 func main( /* params are not yet supported */ ) {
 
-	/* Body is not yet supported but smart indent should work in this block */
+	/* Type 'notmain' to see it in the completion list. */
 }
 
 // Can have multiple functions in a file.
