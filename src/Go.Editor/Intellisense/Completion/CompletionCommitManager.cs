@@ -1,4 +1,4 @@
-﻿namespace Go.Editor.Completion
+﻿namespace Go.Editor.Intellisense.Completion
 {
     using System.Collections.Generic;
     using System.Threading;
