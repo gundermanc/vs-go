@@ -20,6 +20,10 @@
     <Copyright>© Christian Gunderman. All rights reserved.</Copyright>
     <Title>Go lang support for Visual Studio</Title>
     <Product>Go lang support for Visual Studio</Product>
+
+    <!-- Define preprocessor symbols -->
+    <DefineConstants Condition="'$(OS)' == 'Windows_NT'">WINDOWS</DefineConstants>
+    <DefineConstants Condition="'$(OS)' != 'Windows_NT'">MAC</DefineConstants>
   </PropertyGroup>
 
   <!-- Standard project references -->

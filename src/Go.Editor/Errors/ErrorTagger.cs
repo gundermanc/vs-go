@@ -3,65 +3,80 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Threading.Tasks;
-    using Go.CodeAnalysis.Workspace;
     using Go.Editor.Common;
+    using Go.Interop;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Tagging;
-    using Microsoft.VisualStudio.Threading;
 
-    internal class ErrorTagger : ITagger<IErrorTag>, IDisposable
+    internal sealed class ErrorTagger : ITagger<IErrorTag>
     {
-        private readonly JoinableTaskContext joinableTaskContext;
-        private readonly WorkspaceDocument<ITextBuffer> document;
-        private ImmutableArray<ITagSpan<IErrorTag>> currentTags = ImmutableArray<ITagSpan<IErrorTag>>.Empty;
+        private readonly GoWorkspace workspace;
+        private readonly ITextBuffer buffer;
+        private ImmutableArray<ITagSpan<IErrorTag>> errorTags = ImmutableArray<ITagSpan<IErrorTag>>.Empty;
 
-        public ErrorTagger(JoinableTaskContext joinableTaskContext, WorkspaceDocument<ITextBuffer> document)
+        public ErrorTagger(GoWorkspace workspace, ITextBuffer buffer)
         {
-            this.joinableTaskContext = joinableTaskContext ?? throw new ArgumentNullException(nameof(joinableTaskContext));
-            this.document = document ?? throw new ArgumentNullException(nameof(document));
+            this.workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
+            this.buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
 
-            this.document.SnapshotUpdated += this.OnDocumentSnapshotUpdated;
+            this.buffer.Changed += this.OnTextBufferChanged;
+            this.workspace.WorkspaceFileUpdated += this.OnWorkspaceFileUpdated;
+
+            this.OnTextBufferChanged(null, null);
         }
 
-        private async void OnDocumentSnapshotUpdated(object sender, EventArgs e)
+        private void OnWorkspaceFileUpdated(object sender, string fileName)
         {
-            var errorsBuilder = ImmutableArray.CreateBuilder<ITagSpan<IErrorTag>>();
+            var snapshot = this.buffer.CurrentSnapshot;
 
-            var documentSnapshot = this.document.CurrentSnapshot;
-
-            foreach (var error in documentSnapshot.Errors)
+            // TODO: only errors for this file.
+            // TODO: get error spans so we can correctly place the error squiggles.
+            // TODO: check which snapshot was used to generate this set of errors.
+            var errorTagsBuilder = ImmutableArray.CreateBuilder<ITagSpan<IErrorTag>>();
+            foreach (var error in this.workspace.GetErrors())
             {
-                // TODO: support other error types.
-                errorsBuilder.Add(new TagSpan<IErrorTag>(error.Extent.ToSnapshotSpan(), new ErrorTag(PredefinedErrorTypeNames.CompilerError, error.Message)));
+                var lineSegments = error.Split(':');
+                if (lineSegments.Length == 3 &&
+                    int.TryParse(lineSegments[0], out var lineNumber) &&
+                    int.TryParse(lineSegments[1], out var column) &&
+                    lineNumber >= 0 &&
+                    lineNumber <= snapshot.LineCount)
+                {
+                    var errorLineStart = snapshot.GetLineFromLineNumber(lineNumber - 1).Start;
+                    var errorSpanStart = errorLineStart.Position + column;
+
+                    // TODO: this won't draw squiggles on the last char in the file.
+                    if (errorSpanStart + 1 < snapshot.Length)
+                    {
+                        // TODO: we can probably pass the span back from Go instead of reading it from the error text.
+                        // TODO: highlight the whole token.
+                        errorTagsBuilder.Add(
+                            new TagSpan<IErrorTag>(
+                                new SnapshotSpan(snapshot, new Span(errorSpanStart, 1)),
+                                new ErrorTag(PredefinedErrorTypeNames.SyntaxError, lineSegments[2])));
+                    }
+
+                }
             }
 
-            this.currentTags = errorsBuilder.ToImmutable();
+            this.errorTags = errorTagsBuilder.ToImmutable();
 
-            // TODO: make this incremental.
-            await this.RaiseTagsChangedOnUIThreadAsync(documentSnapshot.RootNode.Extent.ToSnapshotSpan());
+            this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(new SnapshotPoint(snapshot, 0), snapshot.Length)));
         }
 
-        private async Task RaiseTagsChangedOnUIThreadAsync(SnapshotSpan snapshotSpan)
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
         {
-            await this.joinableTaskContext.Factory.SwitchToMainThreadAsync();
-
-            this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(snapshotSpan));
+            // Ensure we're parsing again.
+            this.workspace.QueueFileParse(
+                "Foo.go", // TODO: file name.
+                GoSnapshot.FromSnapshot(this.buffer.CurrentSnapshot.ToSnapshot()));
         }
 
+#pragma warning disable 0067
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+#pragma warning restore 0067
 
-        public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
-        {
-            // TODO: make this incremental.
-            return this.currentTags;
-        }
-
-        public void Dispose()
-        {
-            this.document.Dispose();
-            this.document.SnapshotUpdated -= this.OnDocumentSnapshotUpdated;
-        }
+        public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans) => this.errorTags;
     }
 }
