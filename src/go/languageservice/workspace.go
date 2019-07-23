@@ -180,70 +180,57 @@ func (id WorkspaceID) GetCompletions(position int) ([]string, error) {
 
 	completions := []string(nil)
     
-	// TODO: support other node types.
+	// TODO: support other kinds of declarations.
 	// TODO: return item type.
 	// TODO: support fetching item description.
 	for _, wd := range workspace.Files {
         codePos := token.Pos(position)
+
         // current position: =  wd.FileSet.Position(codePos).String()
         enclosingPath, _ := astutil.PathEnclosingInterval(wd.File, codePos, codePos+1)
-	    
-        // locals form enslosing scopes, currently only function declarations:
+
 	    for _ , enclosingNode := range(enclosingPath) {
-		    switch x := enclosingNode.(type) {
+		    switch castedNode := enclosingNode.(type) {
 
-                // for function declarations, get all their locals declared before codePos 
-		        case *ast.FuncDecl:
-			        for _, ins := range x.Body.List {
-				        if(ins.Pos() >= codePos) {
-					        continue;
-				        }
-				        switch insCasted := ins.(type) {
-					        case *ast.DeclStmt:
-                                // cast to GenDecl
-						        declCasted := insCasted.Decl.(*ast.GenDecl)
-						        if (declCasted != nil) {		
-							        for _, spec := range declCasted.Specs {
-    							        if valueSpec, ok := spec.(*ast.ValueSpec); ok {
-									        for _, name := range valueSpec.Names {
-										        if name != nil {
-											        completions = append(completions, name.Name)
-										        }
-									        }
-								        }
-							        }
-						        }
-                        }
-				    }
-			}
-		}
-
-        // all global declarations:
-		decls := wd.File.Decls
-		for _, decl := range decls {
-			if funcDecl, ok := decl.(*ast.FuncDecl); ok {
-				completions = append(completions, funcDecl.Name.Name)
-			} else if genDecl, ok := decl.(*ast.GenDecl); ok {
-
-				// TODO: probably a better way to do this via specs.
-				for _, spec := range genDecl.Specs {
-					if importSpec, ok := spec.(*ast.ImportSpec); ok && importSpec.Name != nil {
-						completions = append(completions, importSpec.Name.Name)
-					} else if typeSpec, ok := spec.(*ast.TypeSpec); ok && typeSpec.Name != nil {
-						completions = append(completions, typeSpec.Name.Name)
-					} else if valueSpec, ok := spec.(*ast.ValueSpec); ok {
-						for _, name := range valueSpec.Names {
-							if name != nil {
-								completions = append(completions, name.Name)
-							}
-						}
-					}
-				}
-			}
-        }
+			    // for function declarations, get all their locals declared before codePos 
+			    case *ast.FuncDecl:
+				    var v completionsFindingVisitor = completionsFindingVisitor{codePos, true, &completions}
+				    ast.Walk(v, castedNode.Body)
+			    // for files get all global declarations	
+			    case *ast.File:
+				    var v completionsFindingVisitor = completionsFindingVisitor{codePos, false, &completions}
+				    ast.Walk(v, enclosingNode)	
+		    }
+	    }
 	}
 
 	return completions, nil
+}
+
+type completionsFindingVisitor struct {
+	SourcePos token.Pos
+	PositionSensitive bool
+	Completions *[]string 
+}
+	
+func (v completionsFindingVisitor) Visit(node ast.Node) ast.Visitor {
+	switch nodeCasted := node.(type) { 
+		// don't go deeper
+		case *ast.FuncDecl:
+			return nil
+		case *ast.ValueSpec:
+			if(v.PositionSensitive && node.Pos() >= v.SourcePos) {
+				return nil
+			}
+
+			for _, name := range nodeCasted.Names {
+				if name != nil {
+					*v.Completions = append(*v.Completions, name.Name)
+				}
+			}
+			return nil				
+	}
+	return v
 }
 
 func (id WorkspaceID) getWorkspace() (*Workspace, *error) {
