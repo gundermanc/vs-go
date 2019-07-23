@@ -6,6 +6,7 @@ package languageservice
 import (
 	"errors"
 	"go/ast"
+    "go/token"
 	"io"
 	"sync"
 )
@@ -169,7 +170,7 @@ func (id WorkspaceID) GetWorkspaceErrors() []error {
 	return errors
 }
 
-func (id WorkspaceID) GetCompletions() ([]string, error) {
+func (id WorkspaceID) GetCompletions(position int) ([]string, error) {
 
 	workspace, err := id.getWorkspace()
 	if err != nil {
@@ -178,11 +179,17 @@ func (id WorkspaceID) GetCompletions() ([]string, error) {
 
 	completions := []string(nil)
 
+
+   // completions = append(completions, "something")
+    
 	// TODO: take into account context.
 	// TODO: support locals.
 	// TODO: return item type.
 	// TODO: support fetching item description.
 	for _, wd := range workspace.Files {
+        pos := token.Pos(position)
+        completions = append(completions, "position: " + wd.FileSet.Position(pos).String())
+
 		decls := wd.File.Decls
 		for _, decl := range decls {
 			if funcDecl, ok := decl.(*ast.FuncDecl); ok {

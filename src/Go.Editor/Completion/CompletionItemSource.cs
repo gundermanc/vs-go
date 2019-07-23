@@ -77,9 +77,12 @@
 
         public async Task<CompletionContext> GetCompletionContextAsync(IAsyncCompletionSession session, CompletionTrigger trigger, SnapshotPoint triggerLocation, SnapshotSpan applicableToSpan, CancellationToken token)
         {
+            //var lineNumber = triggerLocation.GetContainingLine().LineNumber;
+            //triggerLocation.Position
+
             var items = ImmutableArray.CreateBuilder<CompletionItem>();
             items.AddRange(keywords);
-            foreach (var item in this.workspace.GetWorkspaceCompletions())
+            foreach (var item in this.workspace.GetWorkspaceCompletions(triggerLocation.Position))
             {
                 items.Add(new CompletionItem(item, this, CompletionItemIcon));
             }
