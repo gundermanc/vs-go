@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Go.Windows.ac741eb7-d37a-471f-9b76-0954a85282f7" Version="1.0" Language="en-US" Publisher="HP Inc." />
-    <DisplayName>Go.Windows</DisplayName>
-    <Description>Empty VSIX Project.</Description>
+    <Identity Id="Go" Version="|%CurrentProject%;GetBuildVersion|" Language="en-US" Publisher="Christian Gunderman" />
+    <DisplayName>Go lang for Visual Studio</DisplayName>
+    <Description>Go lang support for Visual Studio</Description>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />

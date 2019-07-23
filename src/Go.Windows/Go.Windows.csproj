@@ -56,8 +56,10 @@
     <Compile Include="GoBuildCommand.cs" />
     <Compile Include="GoBuildMenuPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VsServiceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="reference.md" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>

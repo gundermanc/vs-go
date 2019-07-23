@@ -1,21 +1,20 @@
 ﻿using System;
-using System.ComponentModel.Design;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
 using Task = System.Threading.Tasks.Task;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio;
 
 namespace Go.Windows
 {
     /// <summary>
     /// Command handler
     /// </summary>
-    public class GoBuildCommand
+    [Export]
+    internal sealed class GoBuildCommand
     {
         /// <summary>
         /// Command ID.
@@ -32,13 +31,16 @@ namespace Go.Windows
         /// </summary>
         private readonly AsyncPackage package;
 
+        [Import]
+        public VsServiceFactory VsServiceFactory { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GoBuildCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
         /// <param name="commandService">Command service to add command to, not null.</param>
-        private GoBuildCommand(AsyncPackage package, OleMenuCommandService commandService)
+        internal GoBuildCommand(AsyncPackage package, OleMenuCommandService commandService)
         {
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
@@ -51,6 +53,7 @@ namespace Go.Windows
         private void BuildGo(object sender, EventArgs e)
         {
             // Try to output something
+            // TODO: refactor this into MEF import.
             var outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
             var generalPaneId = VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid;
             var hr = outputWindow.CreatePane(generalPaneId, "General", 1, 0);
@@ -68,19 +71,9 @@ namespace Go.Windows
             processInfo.Arguments = "build -v";
             processInfo.RedirectStandardError = true;
             processInfo.UseShellExecute = false;
-            System.Diagnostics.Process.Start(processInfo);
+            Process.Start(processInfo);
 
             generalPane.OutputString("===== Build finished =====");
-        }
-
-        private string GetDocumentPath(ITextSnapshot textSnapshot)
-        {
-            ITextDocument textDoc;
-            bool rc = textSnapshot.TextBuffer.Properties.TryGetProperty(
-                typeof(Microsoft.VisualStudio.Text.ITextDocument), out textDoc);
-            if (rc && textDoc != null)
-                return textDoc.FilePath;
-            return null;
         }
 
         /// <summary>
