@@ -6,6 +6,7 @@ package languageservice
 import (
 	"errors"
 	"go/ast"
+	"golang.org/x/tools/go/ast/astutil"
     "go/token"
 	"io"
 	"sync"
@@ -178,18 +179,46 @@ func (id WorkspaceID) GetCompletions(position int) ([]string, error) {
 	}
 
 	completions := []string(nil)
-
-
-   // completions = append(completions, "something")
     
-	// TODO: take into account context.
-	// TODO: support locals.
+	// TODO: support other node types.
 	// TODO: return item type.
 	// TODO: support fetching item description.
 	for _, wd := range workspace.Files {
-        pos := token.Pos(position)
-        completions = append(completions, "position: " + wd.FileSet.Position(pos).String())
+        codePos := token.Pos(position)
+        // current position: =  wd.FileSet.Position(codePos).String()
+        enclosingPath, _ := astutil.PathEnclosingInterval(wd.File, codePos, codePos+1)
+	    
+        // locals form enslosing scopes, currently only function declarations:
+	    for _ , enclosingNode := range(enclosingPath) {
+		    switch x := enclosingNode.(type) {
 
+                // for function declarations, get all their locals declared before codePos 
+		        case *ast.FuncDecl:
+			        for _, ins := range x.Body.List {
+				        if(ins.Pos() >= codePos) {
+					        continue;
+				        }
+				        switch insCasted := ins.(type) {
+					        case *ast.DeclStmt:
+                                // cast to GenDecl
+						        declCasted := insCasted.Decl.(*ast.GenDecl)
+						        if (declCasted != nil) {		
+							        for _, spec := range declCasted.Specs {
+    							        if valueSpec, ok := spec.(*ast.ValueSpec); ok {
+									        for _, name := range valueSpec.Names {
+										        if name != nil {
+											        completions = append(completions, name.Name)
+										        }
+									        }
+								        }
+							        }
+						        }
+                        }
+				    }
+			}
+		}
+
+        // all global declarations:
 		decls := wd.File.Decls
 		for _, decl := range decls {
 			if funcDecl, ok := decl.(*ast.FuncDecl); ok {
@@ -211,7 +240,7 @@ func (id WorkspaceID) GetCompletions(position int) ([]string, error) {
 					}
 				}
 			}
-		}
+        }
 	}
 
 	return completions, nil

@@ -26,6 +26,12 @@ type AreWeInterfacing interface {
 
 // Outlining works here, so you should see structure guides and outlining regions.
 func main(foo int) {
+	const x int = 7 
+	var y int = 8
 
-	fmt.Println("hello world")
+	// x and y are visible here, but z not
+
+	var z int = y
+
+	fmt.Println("hello world", z)
 }
