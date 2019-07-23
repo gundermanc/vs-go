@@ -34,7 +34,6 @@
         {
             // TODO: create singleton property.
             var source = new CompletionSource(this.textStructureNavigatorSelectorService, this.workspace);
-            textView.Options.SetOptionValue(DefaultOptions.NonBlockingCompletionOptionId, true);
 
             return source;
         }
