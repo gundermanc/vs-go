@@ -17,6 +17,9 @@
     {
         private static List<ReadCallback> keepAlive = new List<ReadCallback>();
 
+#if WINDOWS
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+#endif
         public delegate int ReadCallback(
             // VS Mac runs on Mono runtime, which appears to have
             // trouble with the [Out] attribute.
