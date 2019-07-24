@@ -21,7 +21,6 @@
     /// </summary>
     [Export(typeof(ITaggerProvider))]
     [ContentType(GoContentType.Name)]
-    //[TagType(typeof(IClassificationTag))]
     [TagType(typeof(IStructureTag))]
     internal sealed class TextMateStubsTagger : ITaggerProvider
     {

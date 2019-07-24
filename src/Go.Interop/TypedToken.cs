@@ -1,6 +1,5 @@
 ﻿namespace Go.Interop
 {
-
     public struct TypedToken
     {
         public TypedToken(int pos, int end, TokenType type)

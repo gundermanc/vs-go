@@ -63,7 +63,6 @@
                 tokens.Add(new TypedToken(pos, end, (TokenType)type));
             }
 
-            // TODO: file name.
             var fileNameBytes = Encoding.UTF8.GetBytes("foo.go");
 
             GetTokens(this.workspaceId, fileNameBytes, fileNameBytes.Length, TokensCallback);
