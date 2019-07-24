@@ -7,6 +7,7 @@
 package main
 
 // Introduce a typo to see error squiggles.
+// Shows up in completion.
 import (
 	"fmt"
 )

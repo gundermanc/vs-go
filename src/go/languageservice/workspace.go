@@ -238,6 +238,9 @@ func (v completionsFindingVisitor) Visit(node ast.Node) ast.Visitor {
 			if(nodeCasted.Name != nil) {
 				*v.Completions = append(*v.Completions, nodeCasted.Name.Name)
 				return nil
+			} else if(nodeCasted.Path != nil) {
+				*v.Completions = append(*v.Completions, nodeCasted.Path.Value[1:len(nodeCasted.Path.Value)-1])
+				return nil
 			}
 	}
 	return v
