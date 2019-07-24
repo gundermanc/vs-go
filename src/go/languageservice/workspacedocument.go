@@ -18,6 +18,7 @@ type workspaceDocument struct {
 	Mutex          *sync.Mutex // TODO: consider replacing mutex with channel?
 	File           *ast.File
 	Error          []error
+    FileSet         *token.FileSet
 }
 
 func createNewWorkspaceDocument(fileName string) *workspaceDocument {
@@ -80,6 +81,7 @@ func (document *workspaceDocument) reparse(fileName string, reader io.Reader) {
 	}
 
 	document.File = f
+    document.FileSet = fileSet
 
 	// See https://github.com/golang/example/tree/master/gotypes for full example code.
 

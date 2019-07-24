@@ -59,5 +59,68 @@ namespace Go.Windows {
                 resourceCulture = value;
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to open configuration file.
+        /// </summary>
+        internal static string ConfigurationFileReadError {
+            get {
+                return ResourceManager.GetString("ConfigurationFileReadError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; file not found for &apos;{1}&apos; file..
+        /// </summary>
+        internal static string ConfigurationNotFoundFormat {
+            get {
+                return ResourceManager.GetString("ConfigurationNotFoundFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Error: {0}.
+        /// </summary>
+        internal static string ErrorTextFormat {
+            get {
+                return ResourceManager.GetString("ErrorTextFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Exception {0}: {1}.
+        /// </summary>
+        internal static string ExceptionFormat {
+            get {
+                return ResourceManager.GetString("ExceptionFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to ..with inner Exception {0}: {1}.
+        /// </summary>
+        internal static string InnerExceptionFormat {
+            get {
+                return ResourceManager.GetString("InnerExceptionFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Message: {0}.
+        /// </summary>
+        internal static string MessageTextFormat {
+            get {
+                return ResourceManager.GetString("MessageTextFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Contextool.
+        /// </summary>
+        internal static string OutputPaneName {
+            get {
+                return ResourceManager.GetString("OutputPaneName", resourceCulture);
+            }
+        }
     }
 }

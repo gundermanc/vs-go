@@ -56,8 +56,8 @@ func QueueFileParse(workspaceID int32, fileName *byte, count int32, snapshot C.S
 }
 
 //export GetWorkspaceCompletions
-func GetWorkspaceCompletions(workspaceID int, callback C.ProvideStringCallback) {
-	completions, _ := languageservice.WorkspaceID(workspaceID).GetCompletions()
+func GetWorkspaceCompletions(workspaceID int, callback C.ProvideStringCallback, position int) {
+	completions, _ := languageservice.WorkspaceID(workspaceID).GetCompletions(position)
 
 	for _, completion := range completions {
 
