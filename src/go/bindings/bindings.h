@@ -23,11 +23,15 @@ typedef struct tagSnapshot
 // Go can't execute C function pointers, so we have this monstrosity.
 int32_t Read(Snapshot snapshot, uint8_t buffer[], int32_t offset, int32_t count);
 
-// .. and this one too
+// .. and this one too.
 typedef void (*ProvideStringCallback)(uint8_t buffer[], int32_t count);
 
 // .. and this one too.
 void InvokeStringCallback(ProvideStringCallback callback, uint8_t buffer[], int32_t count);
 
+// .. and this one too
+typedef void (*ProvideTokenCallback)(int32_t pos, int32_t end, int32_t type);
+
+void InvokeTokenCallback(ProvideTokenCallback callback, int32_t pos, int32_t end, int32_t type);
 
 #endif

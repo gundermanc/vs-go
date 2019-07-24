@@ -54,8 +54,26 @@
             return completions;
         }
 
+        public IList<TypedToken> GetFileTokens()
+        {
+            var tokens = new List<TypedToken>();
+
+            void TokensCallback(int pos, int end, int type)
+            {
+                tokens.Add(new TypedToken(pos, end, (TokenType)type));
+            }
+
+            var fileNameBytes = Encoding.UTF8.GetBytes("foo.go");
+
+            GetTokens(this.workspaceId, fileNameBytes, fileNameBytes.Length, TokensCallback);
+            return tokens;
+        }
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         private unsafe delegate void ProvideStringCallback(byte* fileName, int length);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private delegate void ProvideTokenCallback(int pos, int end, int type);
 
         [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern int CreateNewWorkspace();
@@ -71,6 +89,9 @@
 
         [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void GetWorkspaceCompletions(int workspaceId, ProvideStringCallback callback, int position);
+
+        [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void GetTokens(int workspaceId, byte[] fileName, int count, ProvideTokenCallback callback);
 
         private unsafe void WorkspaceUpdated(byte* fileName, int length)
         {

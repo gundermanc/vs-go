@@ -66,6 +66,19 @@ func GetWorkspaceCompletions(workspaceID int, callback C.ProvideStringCallback, 
 	}
 }
 
+//export GetTokens
+func GetTokens(workspaceID int32, fileName *byte, count int32, callback C.ProvideTokenCallback) {
+
+	fileNameString := cToString(fileName, count)
+
+	tokens, err := languageservice.WorkspaceID(workspaceID).GetTokens(fileNameString)
+	if err == nil {
+		for _, token := range tokens {
+			C.InvokeTokenCallback(callback, C.int32_t(token.Pos), C.int32_t(token.End), C.int32_t(token.Type))
+		}
+	}
+}
+
 //export GetWorkspaceErrors
 func GetWorkspaceErrors(workspaceID int32, callback C.ProvideStringCallback) {
 	rawErrors := languageservice.WorkspaceID(workspaceID).GetWorkspaceErrors()

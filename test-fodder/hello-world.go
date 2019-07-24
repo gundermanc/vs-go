@@ -17,12 +17,10 @@ const ConstantlyOutdoingExpectations int = 4
 
 // Also shows up in completion.
 type SoStructural struct {
-
 }
 
 // Also shows up in completion.
 type AreWeInterfacing interface {
-
 }
 
 const globalX int = 1

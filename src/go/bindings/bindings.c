@@ -9,3 +9,8 @@ void InvokeStringCallback(ProvideStringCallback callback, uint8_t buffer[], int3
 {
     callback(buffer, count);
 }
+
+void InvokeTokenCallback(ProvideTokenCallback callback, int32_t pos, int32_t end, int32_t type)
+{
+    callback(pos, end, type);
+}
