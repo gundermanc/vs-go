@@ -180,9 +180,6 @@ func (id WorkspaceID) GetCompletions(position int) ([]string, error) {
 
 	completions := []string(nil)
     
-	// TODO: support other kinds of declarations.
-	// TODO: return item type.
-	// TODO: support fetching item description.
 	for _, wd := range workspace.Files {
         codePos := token.Pos(position)
 
@@ -216,7 +213,7 @@ type completionsFindingVisitor struct {
 func (v completionsFindingVisitor) Visit(node ast.Node) ast.Visitor {
 	switch nodeCasted := node.(type) { 
 		case *ast.FuncDecl:
-			*v.Completions = append(*v.Completions, (*nodeCasted.Name).Name)
+			*v.Completions = append(*v.Completions, nodeCasted.Name.Name)
 			return nil // don't go deeper
 		case *ast.ValueSpec:
 			if(v.PositionSensitive && node.Pos() >= v.SourcePos) {
@@ -242,6 +239,16 @@ func (v completionsFindingVisitor) Visit(node ast.Node) ast.Visitor {
 				*v.Completions = append(*v.Completions, nodeCasted.Path.Value[1:len(nodeCasted.Path.Value)-1])
 				return nil
 			}
+		case *ast.AssignStmt:
+			if(v.PositionSensitive && node.Pos() >= v.SourcePos) {
+				return nil
+			}
+			
+			identifier := nodeCasted.Lhs[0].(*ast.Ident)
+			if identifier != nil {
+				*v.Completions = append(*v.Completions, identifier.Name)
+			}
+			return nil
 	}
 	return v
 }
