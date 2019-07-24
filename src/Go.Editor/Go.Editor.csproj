@@ -15,4 +15,7 @@
     <ProjectReference Include="..\Go.Interop\Go.Interop.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Classification\" />
+  </ItemGroup>
 </Project>

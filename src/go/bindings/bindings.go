@@ -6,6 +6,7 @@ import "C"
 import (
 	"go/languageservice"
 	"io"
+	"io/ioutil"
 	"unsafe"
 )
 
@@ -63,6 +64,20 @@ func GetWorkspaceCompletions(workspaceID int, callback C.ProvideStringCallback) 
 		completionText := []byte(completion)
 
 		C.InvokeStringCallback(callback, (*C.uint8_t)(&completionText[0]), C.int(len(completionText)))
+	}
+}
+
+//export GetTokens
+func GetTokens(workspaceID int32, fileName *byte, count int32, callback C.ProvideTokenCallback) {
+
+	ioutil.WriteFile("~/j.txt", []byte(""), 0)
+	fileNameString := cToString(fileName, count)
+
+	tokens, err := languageservice.WorkspaceID(workspaceID).GetTokens(fileNameString)
+	if err == nil {
+		for _, token := range tokens {
+			C.InvokeTokenCallback(callback, C.int32_t(token.Pos), C.int32_t(token.End), C.int32_t(token.Type))
+		}
 	}
 }
 

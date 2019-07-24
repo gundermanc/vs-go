@@ -69,7 +69,7 @@ func (document *workspaceDocument) reparse(fileName string, reader io.Reader) {
 	fileSet := token.NewFileSet()
 
 	// Do parse.
-	f, err := parser.ParseFile(fileSet, "", reader, 0)
+	f, err := parser.ParseFile(fileSet, "", reader, parser.ParseComments)
 
 	// Update document.
 	document.Mutex.Lock()

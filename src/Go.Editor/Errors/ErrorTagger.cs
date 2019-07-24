@@ -69,7 +69,7 @@
         {
             // Ensure we're parsing again.
             this.workspace.QueueFileParse(
-                "Foo.go", // TODO: file name.
+                "foo.go", // TODO: file name.
                 GoSnapshot.FromSnapshot(this.buffer.CurrentSnapshot.ToSnapshot()));
         }
 

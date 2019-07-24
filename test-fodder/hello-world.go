@@ -16,12 +16,10 @@ const ConstantlyOutdoingExpectations int = 4
 
 // Also shows up in completion.
 type SoStructural struct {
-
 }
 
 // Also shows up in completion.
 type AreWeInterfacing interface {
-
 }
 
 // Outlining works here, so you should see structure guides and outlining regions.
