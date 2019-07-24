@@ -14,12 +14,12 @@ import (
 // Shows up in completion.
 const ConstantlyOutdoingExpectations int = 4
 
-// Also shows up in completion. <- currently not supported
+// Also shows up in completion.
 type SoStructural struct {
 
 }
 
-// Also shows up in completion. <- currently not supported
+// Also shows up in completion.
 type AreWeInterfacing interface {
 
 }

@@ -215,9 +215,9 @@ type completionsFindingVisitor struct {
 	
 func (v completionsFindingVisitor) Visit(node ast.Node) ast.Visitor {
 	switch nodeCasted := node.(type) { 
-		// don't go deeper
 		case *ast.FuncDecl:
-			return nil
+			*v.Completions = append(*v.Completions, (*nodeCasted.Name).Name)
+			return nil // don't go deeper
 		case *ast.ValueSpec:
 			if(v.PositionSensitive && node.Pos() >= v.SourcePos) {
 				return nil
@@ -228,7 +228,17 @@ func (v completionsFindingVisitor) Visit(node ast.Node) ast.Visitor {
 					*v.Completions = append(*v.Completions, name.Name)
 				}
 			}
-			return nil				
+			return nil
+		case *ast.TypeSpec:
+			if(nodeCasted.Name != nil) {
+				*v.Completions = append(*v.Completions, nodeCasted.Name.Name)
+				return nil
+			}
+		case *ast.ImportSpec:
+			if(nodeCasted.Name != nil) {
+				*v.Completions = append(*v.Completions, nodeCasted.Name.Name)
+				return nil
+			}
 	}
 	return v
 }
