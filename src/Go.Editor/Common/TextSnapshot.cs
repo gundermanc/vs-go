@@ -1,7 +1,7 @@
 ﻿namespace Go.Editor.Common
 {
     using System;
-    using Go.CodeAnalysis.Text;
+    using Go.Interop.Text;
     using Microsoft.VisualStudio.Text;
 
     internal sealed class TextSnapshot : SnapshotBase

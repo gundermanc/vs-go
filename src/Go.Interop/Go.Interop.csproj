@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Work-around for https://github.com/dotnet/project-system/issues/2832 -->
+    <TargetFramework>$(TargetFramework)</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GoArch Condition="'$(OS)' == 'Windows_NT'">386</GoArch>
+    <GoArch Condition="'$(OS)' != 'Windows_NT'">amd64</GoArch>
+    <LibExtension Condition="'$(OS)' == 'Windows_NT'">dll</LibExtension>
+    <LibExtension Condition="'$(OS)' != 'Windows_NT'">so</LibExtension>
+    <GoBinPath Condition="'$(GoBinPath)' == '' and '$(OS)' == 'Windows_NT'">C:\Go\bin\</GoBinPath>
+    <GoBinPath Condition="'$(GoBinPath)' == ''">/usr/local/go/bin/</GoBinPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\go\**\*.*" LinkBase="GoLibrary" />
+  </ItemGroup>
+
+  <!-- Disable Go build in the CI until we figure out how to install MinGW and Go on the machines. -->
+  <Target Name="BuildGoSources" AfterTargets="Build" Condition="'$(isCIBuild)' != 'true'">
+    <Exec Command="$(GoBinPath)go build -i -o $(TargetDir)golib.$(LibExtension) -buildmode=c-shared -gccgoflags=&quot;-I$(TargetDir)&quot;" WorkingDirectory="$(RepoRoot)src\go\bindings" EnvironmentVariables="GOPATH=$(RepoRoot);CGO_ENABLED=1;GOARCH=$(GoArch)" LogStandardErrorAsError="true" />
+  </Target>
+
+</Project>

@@ -1,9 +1,7 @@
 ﻿namespace Go.Editor.Common
 {
     using System;
-    using Go.CodeAnalysis.Lex;
-    using Go.CodeAnalysis.Text;
-    using Microsoft.VisualStudio.Language.StandardClassification;
+    using Go.Interop.Text;
     using Microsoft.VisualStudio.Text;
 
     internal static class SnapshotExtensions
@@ -28,30 +26,6 @@
         public static SnapshotSpan ToSnapshotSpan(this SnapshotSegment segment)
         {
             return new SnapshotSpan(segment.Snapshot.ToTextSnapshot(), segment.Start, segment.Length);
-        }
-
-        public static string ToClassificationTypeName(this LexemeType type)
-        {
-            switch (type)
-            {
-                case LexemeType.LineComment:
-                    return PredefinedClassificationTypeNames.Comment;
-                case LexemeType.GeneralComment:
-                    return PredefinedClassificationTypeNames.Comment;
-                case LexemeType.Identifier:
-                    return PredefinedClassificationTypeNames.Identifier;
-                case LexemeType.Keyword:
-                    return PredefinedClassificationTypeNames.Keyword;
-                case LexemeType.String:
-                    return PredefinedClassificationTypeNames.String;
-                case LexemeType.Semicolon:
-                case LexemeType.Operator:
-                    return PredefinedClassificationTypeNames.Operator;
-                case LexemeType.Integer:
-                    return PredefinedClassificationTypeNames.Literal;
-            }
-
-            return PredefinedClassificationTypeNames.Other;
         }
     }
 }

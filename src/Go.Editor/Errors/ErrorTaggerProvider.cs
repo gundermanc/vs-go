@@ -2,10 +2,8 @@
 {
     using System;
     using System.ComponentModel.Composition;
-    using Go.Editor.Workspace;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Tagging;
-    using Microsoft.VisualStudio.Threading;
     using Microsoft.VisualStudio.Utilities;
 
     [Export(typeof(ITaggerProvider))]
@@ -13,23 +11,18 @@
     [TagType(typeof(IErrorTag))]
     internal sealed class ErrorTaggerProvider : ITaggerProvider
     {
-        private readonly JoinableTaskContext joinableTaskContext;
-        private readonly WorkspaceService workspace;
+        private readonly GoWorkspace workspace;
 
         [ImportingConstructor]
-        public ErrorTaggerProvider(
-            JoinableTaskContext joinableTaskContext,
-            WorkspaceService workspace)
+        public ErrorTaggerProvider(GoWorkspace workspace)
         {
-            this.joinableTaskContext = joinableTaskContext ?? throw new ArgumentNullException(nameof(joinableTaskContext));
-            this.workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
+            this.workspace = workspace
+                ?? throw new ArgumentNullException(nameof(workspace));
         }
 
-        public ITagger<T> CreateTagger<T>(ITextBuffer textBuffer) where T : ITag
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            var document = this.workspace.GetOrCreateDocument(textBuffer);
-
-            return new ErrorTagger(this.joinableTaskContext, document) as ITagger<T>;
+            return new ErrorTagger(this.workspace, buffer) as ITagger<T>;
         }
     }
 }
