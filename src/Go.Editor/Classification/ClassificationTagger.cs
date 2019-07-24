@@ -13,7 +13,7 @@
         private readonly GoWorkspace workspace;
         private readonly IClassificationTypeRegistryService classificationTypeRegistry;
         private readonly ITextBuffer textBuffer;
-        private ImmutableArray<ITagSpan<IClassificationTag>> classificationTags;
+        private ImmutableArray<ITagSpan<IClassificationTag>> classificationTags = ImmutableArray<ITagSpan<IClassificationTag>>.Empty;
 
         public ClassificationTagger(
             GoWorkspace workspace,
@@ -31,7 +31,7 @@
         {
             var snapshot = this.textBuffer.CurrentSnapshot;
 
-            // TODO: only errors for this file.
+            // TODO: only tags for this file.
             var tokensBuilder = ImmutableArray.CreateBuilder<ITagSpan<IClassificationTag>>();
             foreach (var token in this.workspace.GetFileTokens())
             {
@@ -39,16 +39,12 @@
                 var classificationType = this.classificationTypeRegistry.GetClassificationType(token.Type.ToClassificationTypeName());
                 var tag = new ClassificationTag(classificationType);
 
-                // TODO: not sure what's going on here..??
-                if (token.Pos < snapshot.Length)
-                {
-                    // TODO: ensure correct snapshot.
-                    tokensBuilder.Add(
-                        new TagSpan<IClassificationTag>(new SnapshotSpan(
-                            snapshot,
-                            Span.FromBounds(token.Pos - 1, token.End)),
-                            tag));
-                }
+                // TODO: ensure correct snapshot.
+                tokensBuilder.Add(
+                    new TagSpan<IClassificationTag>(new SnapshotSpan(
+                        snapshot,
+                        Span.FromBounds(Math.Max(0, token.Pos - 1), token.End)),
+                        tag));
             }
 
             this.classificationTags = tokensBuilder.ToImmutable();
