@@ -1,22 +1,13 @@
 ﻿namespace Go.Interop
 {
-    using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using System.Text;
     using Go.Interop.Text;
 
-    public static class Utils
-    {
-        [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern void PrintSnapshot(GoSnapshot snapshot);
-    }
-
     // Here be dragons...
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public unsafe struct GoSnapshot
+    internal unsafe struct InteropSnapshot
     {
-        private static List<ReadCallback> keepAlive = new List<ReadCallback>();
-
 #if WINDOWS
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
@@ -30,7 +21,7 @@
             int offset,
             int count);
 
-        public GoSnapshot(ReadCallback readCallback, int length)
+        public InteropSnapshot(ReadCallback readCallback, int length)
         {
             this.readCallback = readCallback;
             this.length = length;
@@ -41,7 +32,7 @@
         // TODO: on 64 bit, this needs to marshal as the word size.
         public readonly int length;
 
-        public static GoSnapshot FromSnapshot(SnapshotBase snapshotBase)
+        public static InteropSnapshot FromSnapshot(SnapshotBase snapshotBase)
         {
             // TODO: can this memory alternatively be addressed with Memory<T>?
             unsafe int CopyChars(byte* buffer, int offset, int count)
@@ -57,11 +48,13 @@
                 return Encoding.UTF8.GetBytes(chars, count, buffer, count);
             }
 
-            // HACK: keep the delegates rooted so they aren't GC-ed.
-            // Eventually this should be managed as part of the snapshot life-cycle.
-            keepAlive.Add(CopyChars);
+            ReadCallback callback = CopyChars;
 
-            return new GoSnapshot(CopyChars, snapshotBase.Length);
+            // Ensure that the callback can't be GC-ed.
+            // TODO: free?
+            GCHandle.Alloc(callback);
+
+            return new InteropSnapshot(callback, snapshotBase.Length);
         }
     }
 }

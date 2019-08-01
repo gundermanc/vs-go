@@ -39,24 +39,27 @@ func CreateNewWorkspace() int32 {
 //export RegisterWorkspaceUpdateCallback
 func RegisterWorkspaceUpdateCallback(workspaceID int32, callback C.ProvideStringCallback) {
 
-	goCallback := func(fileName string) {
+	goCallback := func(fileName string, versionId uintptr) {
 		fileNameSlice := []byte(fileName)
-		C.InvokeStringCallback(callback, (*C.uint8_t)(&fileNameSlice[0]), C.int(len(fileNameSlice)))
+		versionIdPointer := unsafe.Pointer(versionId)
+		C.InvokeWorkspaceUpdatedCallback(callback, (*C.uint8_t)(&fileNameSlice[0]), C.int(len(fileNameSlice)), versionIdPointer)
 	}
 
 	languageservice.WorkspaceID(workspaceID).RegisterWorkspaceUpdateCallback(goCallback)
 }
 
 //export QueueFileParse
-func QueueFileParse(workspaceID int32, fileName *byte, count int32, snapshot C.Snapshot) {
+func QueueFileParse(workspaceID int32, fileName *byte, count int32, snapshot C.Snapshot, versionId uintptr) {
 	reader := snapshot.newReader()
 	fileNameString := cToString(fileName, count)
-	languageservice.WorkspaceID(workspaceID).QueueFileParse(fileNameString, reader)
+	languageservice.WorkspaceID(workspaceID).QueueFileParse(fileNameString, reader, versionId)
 }
 
-//export GetWorkspaceCompletions
-func GetWorkspaceCompletions(workspaceID int, callback C.ProvideStringCallback, position int) {
-	completions, _ := languageservice.WorkspaceID(workspaceID).GetCompletions(position)
+//export GetCompletions
+func GetCompletions(workspaceID int, fileName *byte, count int32, callback C.ProvideStringCallback, position int) {
+	fileNameString := cToString(fileName, count)
+
+	completions, _ := languageservice.WorkspaceID(workspaceID).GetCompletions(fileNameString, position)
 
 	for _, completion := range completions {
 
@@ -79,9 +82,12 @@ func GetTokens(workspaceID int32, fileName *byte, count int32, callback C.Provid
 	}
 }
 
-//export GetWorkspaceErrors
-func GetWorkspaceErrors(workspaceID int32, callback C.ProvideStringCallback) {
-	rawErrors := languageservice.WorkspaceID(workspaceID).GetWorkspaceErrors()
+//export GetErrors
+func GetErrors(workspaceID int32, fileName *byte, count int32, callback C.ProvideStringCallback) {
+
+	fileNameString := cToString(fileName, count)
+
+	rawErrors := languageservice.WorkspaceID(workspaceID).GetErrors(fileNameString)
 
 	for _, err := range rawErrors {
 

@@ -18,7 +18,7 @@ type workspaceDocument struct {
 	Mutex          *sync.Mutex // TODO: consider replacing mutex with channel?
 	File           *ast.File
 	Error          []error
-    FileSet         *token.FileSet
+	FileSet        *token.FileSet
 }
 
 func createNewWorkspaceDocument(fileName string) *workspaceDocument {
@@ -30,7 +30,7 @@ func createNewWorkspaceDocument(fileName string) *workspaceDocument {
 	}
 }
 
-func (document *workspaceDocument) queueReparse(fileName string, reader io.Reader, callback WorkspaceUpdateCallback) {
+func (document *workspaceDocument) queueReparse(fileName string, reader io.Reader, callback WorkspaceUpdateCallback, versionId uintptr) {
 
 	document.Mutex.Lock()
 	document.QueuedReparses++
@@ -38,11 +38,11 @@ func (document *workspaceDocument) queueReparse(fileName string, reader io.Reade
 	document.Mutex.Unlock()
 
 	if oldQueuedReparses == 1 {
-		go document.reparseAll(fileName, reader, callback)
+		go document.reparseAll(fileName, reader, callback, versionId)
 	}
 }
 
-func (document *workspaceDocument) reparseAll(fileName string, reader io.Reader, callback WorkspaceUpdateCallback) {
+func (document *workspaceDocument) reparseAll(fileName string, reader io.Reader, callback WorkspaceUpdateCallback, versionId uintptr) {
 	for true {
 
 		document.Mutex.Lock()
@@ -55,7 +55,7 @@ func (document *workspaceDocument) reparseAll(fileName string, reader io.Reader,
 		// TODO: consider swapping the mutex for atomic/interlocked operations or channel?
 		if oldQueuedReparses > 0 {
 			document.reparse(fileName, reader)
-			callback(fileName)
+			callback(fileName, versionId)
 		} else {
 			return
 		}
@@ -81,7 +81,7 @@ func (document *workspaceDocument) reparse(fileName string, reader io.Reader) {
 	}
 
 	document.File = f
-    document.FileSet = fileSet
+	document.FileSet = fileSet
 
 	// See https://github.com/golang/example/tree/master/gotypes for full example code.
 

@@ -1,4 +1,6 @@
-﻿namespace Go.Interop.Text
+﻿using System.Runtime.InteropServices;
+
+namespace Go.Interop.Text
 {
     /// <summary>
     /// Abstract representation of an immutable text segment.
