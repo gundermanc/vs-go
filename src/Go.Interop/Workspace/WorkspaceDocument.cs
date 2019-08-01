@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.InteropServices;
     using System.Text;
     using System.Threading;
     using Go.Interop.Text;
@@ -44,7 +45,10 @@
 
             var currentSnapshot = this.workspace.GetCurrentSnapshot(this);
 
-            NativeMethods.QueueFileParse(this.workspace.WorkspaceId, utf8Key, utf8Key.Length, InteropSnapshot.FromSnapshot(currentSnapshot), currentSnapshot);
+            // TODO: free?
+            var snapHandle = GCHandle.Alloc(currentSnapshot);
+
+            NativeMethods.QueueFileParse(this.workspace.WorkspaceId, utf8Key, utf8Key.Length, InteropSnapshot.FromSnapshot(currentSnapshot), GCHandle.ToIntPtr(snapHandle));
         }
 
         public unsafe IList<string> GetCompletions(int position)

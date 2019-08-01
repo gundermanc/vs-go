@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Immutable;
+    using System.Runtime.InteropServices;
     using System.Text;
     using Go.Interop.Text;
 
@@ -54,11 +55,13 @@
 
         internal bool TryRemoveDocument(TKey key) => ImmutableInterlocked.TryRemove(ref this.documents, key, out _);
 
-        private unsafe void WorkspaceUpdated(byte* fileName, int length, SnapshotBase snapshot)
+        private unsafe void WorkspaceUpdated(byte* fileName, int length, IntPtr snapshot)
         {
             var fileNameString = Encoding.UTF8.GetString(fileName, length);
 
-            this.WorkspaceFileUpdated?.Invoke(this, new WorkspaceDocumentUpdatedEventArgs<TKey>(fileNameString, snapshot));
+            // TODO: free.
+            var handle = GCHandle.FromIntPtr(snapshot);
+            this.WorkspaceFileUpdated?.Invoke(this, new WorkspaceDocumentUpdatedEventArgs<TKey>(fileNameString, (SnapshotBase)handle.Target));
         }
     }
 }
