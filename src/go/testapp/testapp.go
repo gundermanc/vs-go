@@ -18,7 +18,7 @@ func main() {
 	`)
 
 	finished := false
-	callback := func(fileName string) {
+	callback := func(fileName string, versionId uintptr) {
 		fmt.Println("Finished!")
 		finished = true
 	}
@@ -30,14 +30,14 @@ func main() {
 	// for the test app. In VS, we're a UI app, so we'll stay alive anyways.
 	workspace.RegisterWorkspaceUpdateCallback(callback)
 
-	err := workspace.QueueFileParse("foo.go", reader)
+	err := workspace.QueueFileParse("foo.go", reader, uintptr(0))
 
 	for !finished {
 		// It'd be better to use channels to await this but this is a hacky test only app.
 	}
 
 	if err == nil {
-		for _, workspaceErr := range workspace.GetWorkspaceErrors() {
+		for _, workspaceErr := range workspace.GetErrors("foo.go") {
 			fmt.Println(workspaceErr.Error())
 		}
 	} else {

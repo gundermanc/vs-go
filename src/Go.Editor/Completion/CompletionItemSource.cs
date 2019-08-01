@@ -4,6 +4,7 @@
     using System.Collections.Immutable;
     using System.Threading;
     using System.Threading.Tasks;
+    using Go.Interop.Workspace;
     using Microsoft.VisualStudio.Core.Imaging;
     using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
     using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
@@ -18,12 +19,12 @@
             = new ImageElement(new ImageId(new Guid("ae27a6b0-e345-4288-96df-5eaf394ee369"), 3335), "Hello Icon");
         private readonly ImmutableArray<CompletionItem> keywords;
         private readonly ITextStructureNavigatorSelectorService navigatorSelectorService;
-        private readonly GoWorkspace workspace;
+        private readonly WorkspaceDocument<ITextBuffer> document;
 
-        public CompletionSource(ITextStructureNavigatorSelectorService navigatorSelectorService, GoWorkspace workspace)
+        public CompletionSource(ITextStructureNavigatorSelectorService navigatorSelectorService, WorkspaceDocument<ITextBuffer> document)
         {
             this.navigatorSelectorService = navigatorSelectorService;
-            this.workspace = workspace;
+            this.document = document;
 
             this.keywords = ImmutableArray.Create(
                 new CompletionItem("break", this, CompletionItemIcon),
@@ -79,7 +80,7 @@
         {
             var items = ImmutableArray.CreateBuilder<CompletionItem>();
             items.AddRange(keywords);
-            foreach (var item in this.workspace.GetWorkspaceCompletions(triggerLocation.Position))
+            foreach (var item in this.document.GetCompletions(triggerLocation.Position))
             {
                 items.Add(new CompletionItem(item, this, CompletionItemIcon));
             }
