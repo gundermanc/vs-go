@@ -14,3 +14,8 @@ void InvokeTokenCallback(ProvideTokenCallback callback, int32_t pos, int32_t end
 {
     callback(pos, end, type);
 }
+
+void InvokeWorkspaceUpdatedCallback(WorkspaceUpdatedCallback callback, uint8_t buffer[], int32_t count, void* versionId)
+{
+    callback(buffer, count, versionId);
+}

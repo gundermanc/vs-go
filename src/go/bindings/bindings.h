@@ -26,6 +26,8 @@ int32_t Read(Snapshot snapshot, uint8_t buffer[], int32_t offset, int32_t count)
 // .. and this one too.
 typedef void (*ProvideStringCallback)(uint8_t buffer[], int32_t count);
 
+typedef void (*WorkspaceUpdatedCallback)(uint8_t buffer[], int32_t count, void* versionId);
+
 // .. and this one too.
 void InvokeStringCallback(ProvideStringCallback callback, uint8_t buffer[], int32_t count);
 
@@ -33,5 +35,7 @@ void InvokeStringCallback(ProvideStringCallback callback, uint8_t buffer[], int3
 typedef void (*ProvideTokenCallback)(int32_t pos, int32_t end, int32_t type);
 
 void InvokeTokenCallback(ProvideTokenCallback callback, int32_t pos, int32_t end, int32_t type);
+
+void InvokeWorkspaceUpdatedCallback(WorkspaceUpdatedCallback callback, uint8_t buffer[], int32_t count, void* versionId);
 
 #endif

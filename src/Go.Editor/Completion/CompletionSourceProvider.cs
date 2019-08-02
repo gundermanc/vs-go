@@ -32,8 +32,11 @@
 
         private IAsyncCompletionSource CreateAndConfigureCompletionSource(ITextView textView)
         {
-            // TODO: create singleton property.
-            var source = new CompletionSource(this.textStructureNavigatorSelectorService, this.workspace);
+            var document = this.workspace.GetOrCreateDocument(textView.TextBuffer);
+
+            textView.Closed += (sender, e) => document.Dispose();
+
+            var source = new CompletionSource(this.textStructureNavigatorSelectorService, document);
 
             return source;
         }
