@@ -32,7 +32,7 @@ func (id WorkspaceID) GetTokens(fileName string) ([]TypedToken, error) {
 
 	workspace, err := id.getWorkspace()
 	if err != nil {
-		return nil, *err
+		return nil, err
 	}
 
 	tokens := []TypedToken(nil)

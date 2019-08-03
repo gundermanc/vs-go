@@ -107,6 +107,18 @@ func GetQuickInfo(workspaceID int32, fileName *byte, count int32, offset int32, 
 	}
 }
 
+//export GetPositionOfCloseBraceOfEnclosingBlock
+func GetPositionOfCloseBraceOfEnclosingBlock(workspaceID int32, fileName *byte, count int32, offset int32) int32 {
+	fileNameString := cToString(fileName, count)
+
+	pos, err := languageservice.WorkspaceID(workspaceID).GetPositionOfCloseBraceOfEnclosingBlock(fileNameString, int(offset))
+	if err != nil {
+		return -1
+	}
+
+	return int32(pos)
+}
+
 func cToString(bytes *byte, length int32) string {
 	// TODO: there are 2 copies being made here. Eliminate one.
 	return string(C.GoBytes(unsafe.Pointer(bytes), C.int(length)))

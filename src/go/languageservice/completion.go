@@ -17,7 +17,7 @@ func (id WorkspaceID) GetCompletions(fileName string, position int) ([]string, e
 
 	workspace, err := id.getWorkspace()
 	if err != nil {
-		return nil, *err
+		return nil, err
 	}
 
 	completions := []string(nil)

@@ -34,5 +34,8 @@
 
         [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void GetTokens(int workspaceId, byte[] fileName, int count, ProvideTokenCallback callback);
+
+        [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int GetPositionOfCloseBraceOfEnclosingBlock(int workspaceId, byte[] fileName, int count, int offset);
     }
 }

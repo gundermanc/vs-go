@@ -17,7 +17,7 @@ func (id WorkspaceID) GetQuickInfo(fileName string, position int) (string, error
 
 	workspace, err := id.getWorkspace()
 	if err != nil {
-		return "", *err
+		return "", err
 	}
 
 	codePos := token.Pos(position)

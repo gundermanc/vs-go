@@ -102,6 +102,15 @@
             return quickInfo;
         }
 
+        public int GetPositionOfCloseBraceOfEnclosingBlock(int offset)
+        {
+            return NativeMethods.GetPositionOfCloseBraceOfEnclosingBlock(
+                this.workspace.WorkspaceId,
+                this.utf8Key,
+                this.utf8Key.Length,
+                offset);
+        }
+
         internal void RaiseDocumentUpdated(SnapshotBase snapshot)
         {
             this.CurrentSnapshot = snapshot;
