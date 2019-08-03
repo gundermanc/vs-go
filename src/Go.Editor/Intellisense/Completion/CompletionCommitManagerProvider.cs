@@ -1,4 +1,4 @@
-﻿namespace Go.Editor.Completion
+﻿namespace Go.Editor.Intellisense.Completion
 {
     using System.ComponentModel.Composition;
     using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;

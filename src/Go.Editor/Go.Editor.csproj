@@ -15,4 +15,9 @@
     <ProjectReference Include="..\Go.Interop\Go.Interop.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Intellisense\" />
+    <Folder Include="Intellisense\Completion\" />
+    <Folder Include="Intellisense\QuickInfo\" />
+  </ItemGroup>
 </Project>

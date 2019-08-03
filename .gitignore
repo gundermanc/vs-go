@@ -3,8 +3,17 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+
+
+###### Customizations:
 # Mac files
 .DS_Store
+# Go dependencies. This is hacky but works for now..
+pkg/
+*.com/
+*.org/
+
+
 
 # User-specific files
 *.suo

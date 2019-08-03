@@ -1,4 +1,4 @@
-﻿namespace Go.Editor.Completion
+﻿namespace Go.Editor.Intellisense.Completion
 {
     using System.Collections.Generic;
     using System.Threading;
@@ -8,10 +8,6 @@
 
     internal sealed class CompletionCommitManager : IAsyncCompletionCommitManager
     {
-        public CompletionCommitManager()
-        {
-        }
-
         public IEnumerable<char> PotentialCommitCharacters => new char [] { ' ' };
 
         public bool ShouldCommitCompletion(IAsyncCompletionSession session, SnapshotPoint location, char typedChar, CancellationToken token) => true;

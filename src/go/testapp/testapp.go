@@ -11,8 +11,13 @@ func main() {
 
 	package main
 
+	// main is a test function
 	func main() {
 
+	}
+
+	func notmain() {
+		main()
 	}
 	
 	`)
@@ -35,6 +40,9 @@ func main() {
 	for !finished {
 		// It'd be better to use channels to await this but this is a hacky test only app.
 	}
+
+	str, _ := workspace.GetQuickInfo("foo.go", 87)
+	fmt.Print(str)
 
 	if err == nil {
 		for _, workspaceErr := range workspace.GetErrors("foo.go") {
