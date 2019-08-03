@@ -27,6 +27,9 @@
         internal static extern void GetErrors(int workspaceId, byte[] fileName, int count, ProvideStringCallback callback);
 
         [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void GetQuickInfo(int workspaceId, byte[] fileName, int count, int offset, ProvideStringCallback callback);
+
+        [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void GetCompletions(int workspaceId, byte[] fileName, int count, ProvideStringCallback callback, int position);
 
         [DllImport(GoLib.LibName, CallingConvention = CallingConvention.Cdecl)]

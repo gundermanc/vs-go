@@ -97,6 +97,16 @@ func GetErrors(workspaceID int32, fileName *byte, count int32, callback C.Provid
 	}
 }
 
+//export GetQuickInfo
+func GetQuickInfo(workspaceID int32, fileName *byte, count int32, offset int32, callback C.ProvideStringCallback) {
+	fileNameString := cToString(fileName, count)
+
+	if str, err := languageservice.WorkspaceID(workspaceID).GetQuickInfo(fileNameString, int(offset)); err == nil {
+		strBytes := []byte(str)
+		C.InvokeStringCallback(callback, (*C.uint8_t)(&strBytes[0]), C.int(len(strBytes)))
+	}
+}
+
 func cToString(bytes *byte, length int32) string {
 	// TODO: there are 2 copies being made here. Eliminate one.
 	return string(C.GoBytes(unsafe.Pointer(bytes), C.int(length)))

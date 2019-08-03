@@ -90,6 +90,18 @@
             return errors;
         }
 
+        public unsafe string GetQuickInfo(int offset)
+        {
+            string quickInfo = string.Empty;
+            void QuickInfoCallback(byte* quickInfoText, int length)
+            {
+                quickInfo = Encoding.UTF8.GetString(quickInfoText, length);
+            }
+
+            NativeMethods.GetQuickInfo(this.workspace.WorkspaceId, this.utf8Key, this.utf8Key.Length, offset, QuickInfoCallback);
+            return quickInfo;
+        }
+
         internal void RaiseDocumentUpdated(SnapshotBase snapshot)
         {
             this.CurrentSnapshot = snapshot;
