@@ -6,6 +6,10 @@ import "C"
 import (
 	"go/languageservice"
 	"io"
+	"io/ioutil"
+	"os"
+	"runtime/debug"
+	"strings"
 	"unsafe"
 )
 
@@ -20,6 +24,7 @@ func (snapshot C.Snapshot) newReader() *snapshotReader {
 
 // Read reads bytes from a snapshotReader into a buffer.
 func (reader *snapshotReader) Read(buffer []byte) (n int, err error) {
+	defer logPanics()
 
 	if reader.Offset >= int(reader.Snapshot.length) {
 		return 0, io.EOF
@@ -33,11 +38,13 @@ func (reader *snapshotReader) Read(buffer []byte) (n int, err error) {
 
 //export CreateNewWorkspace
 func CreateNewWorkspace() int32 {
+	defer logPanics()
 	return int32(languageservice.CreateNewWorkspace())
 }
 
 //export RegisterWorkspaceUpdateCallback
 func RegisterWorkspaceUpdateCallback(workspaceID int32, callback C.ProvideStringCallback) {
+	defer logPanics()
 
 	goCallback := func(fileName string, versionId uintptr) {
 		fileNameSlice := []byte(fileName)
@@ -50,6 +57,7 @@ func RegisterWorkspaceUpdateCallback(workspaceID int32, callback C.ProvideString
 
 //export QueueFileParse
 func QueueFileParse(workspaceID int32, fileName *byte, count int32, snapshot C.Snapshot, versionId uintptr) {
+	defer logPanics()
 	reader := snapshot.newReader()
 	fileNameString := cToString(fileName, count)
 	languageservice.WorkspaceID(workspaceID).QueueFileParse(fileNameString, reader, versionId)
@@ -57,6 +65,7 @@ func QueueFileParse(workspaceID int32, fileName *byte, count int32, snapshot C.S
 
 //export GetCompletions
 func GetCompletions(workspaceID int, fileName *byte, count int32, callback C.ProvideStringCallback, position int) {
+	defer logPanics()
 	fileNameString := cToString(fileName, count)
 
 	completions, _ := languageservice.WorkspaceID(workspaceID).GetCompletions(fileNameString, position)
@@ -71,6 +80,7 @@ func GetCompletions(workspaceID int, fileName *byte, count int32, callback C.Pro
 
 //export GetTokens
 func GetTokens(workspaceID int32, fileName *byte, count int32, callback C.ProvideTokenCallback) {
+	defer logPanics()
 
 	fileNameString := cToString(fileName, count)
 
@@ -84,6 +94,7 @@ func GetTokens(workspaceID int32, fileName *byte, count int32, callback C.Provid
 
 //export GetErrors
 func GetErrors(workspaceID int32, fileName *byte, count int32, callback C.ProvideStringCallback) {
+	defer logPanics()
 
 	fileNameString := cToString(fileName, count)
 
@@ -99,6 +110,8 @@ func GetErrors(workspaceID int32, fileName *byte, count int32, callback C.Provid
 
 //export GetQuickInfo
 func GetQuickInfo(workspaceID int32, fileName *byte, count int32, offset int32, callback C.ProvideStringCallback) {
+	defer logPanics()
+
 	fileNameString := cToString(fileName, count)
 
 	if str, err := languageservice.WorkspaceID(workspaceID).GetQuickInfo(fileNameString, int(offset)); err == nil {
@@ -110,6 +123,45 @@ func GetQuickInfo(workspaceID int32, fileName *byte, count int32, offset int32, 
 func cToString(bytes *byte, length int32) string {
 	// TODO: there are 2 copies being made here. Eliminate one.
 	return string(C.GoBytes(unsafe.Pointer(bytes), C.int(length)))
+}
+
+// Another unfortunately unavoidable singleton.
+var logFile *os.File
+
+// TODO: post-back log entries to the IDE output pane.
+func log(message string) {
+	if logFile == nil {
+		logDir := os.TempDir()
+		tempFile, err := ioutil.TempFile(logDir, "VS-Go*.log")
+
+		if err != nil {
+			panic("Failed to generate log file path")
+		}
+
+		logFile = tempFile
+	}
+
+	messageBytes := []byte(message)
+
+	if !strings.HasSuffix(message, "\r") && !strings.HasSuffix(message, "\n") {
+		messageBytes = append(messageBytes, []byte("\r\n")...)
+	}
+
+	if _, err := logFile.WriteString(string(messageBytes)); err != nil {
+		panic("Failed to write to log")
+	}
+}
+
+func logPanics() {
+
+	if r := recover(); r != nil {
+		if err := r.(error); r != nil {
+			log(err.Error())
+			log(string(debug.Stack()))
+		} else {
+			log("Unknown panic type")
+		}
+	}
 }
 
 // Note: The "C" library requires there to be main
