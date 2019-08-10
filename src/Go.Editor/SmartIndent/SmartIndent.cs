@@ -26,15 +26,33 @@
             if (closeBracePosition != -1)
             {
                 var closeBraceSnapshotPoint = new SnapshotPoint(snapshot, closeBracePosition);
-                var closeBraceIndent = closeBraceSnapshotPoint.Position - closeBraceSnapshotPoint.GetContainingLine().Start.Position;
-                var indentSize = this.options.GetOptionValue(DefaultOptions.ConvertTabsToSpacesOptionId) ?
-                    this.options.GetOptionValue(DefaultOptions.TabSizeOptionId) :
-                    1;
+                var tabSize = this.options.GetOptionValue(DefaultOptions.TabSizeOptionId);
 
-                return closeBraceIndent + indentSize;
+                return this.ComputeIndent(closeBraceSnapshotPoint.GetContainingLine(), tabSize) + tabSize;
             }
 
             return null;
+        }
+
+        private int ComputeIndent(ITextSnapshotLine snapshotLine, int tabSize)
+        {
+            int indent = 0;
+
+            for (int i = snapshotLine.Start; i < snapshotLine.End && char.IsWhiteSpace(snapshotLine.Snapshot[i]); i++)
+            {
+                var c = snapshotLine.Snapshot[i];
+                if (c == ' ')
+                {
+                    indent++;
+                }
+                else if (c == '\t')
+                {
+                    // TODO: not strictly correct, tabs are 'stops' that can shrink when preceded by non-whitespace.
+                    indent += tabSize;
+                }
+            }
+
+            return indent;
         }
     }
 }

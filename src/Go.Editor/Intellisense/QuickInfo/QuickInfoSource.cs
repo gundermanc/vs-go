@@ -34,7 +34,7 @@
                 }
             }
 
-            return null;
+            return Task.FromResult<QuickInfoItem>(null);
         }
     }
 }
