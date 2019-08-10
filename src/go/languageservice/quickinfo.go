@@ -34,12 +34,12 @@ func (id WorkspaceID) GetQuickInfo(fileName string, position int) (string, error
 					if concrete.Doc != nil {
 						return concrete.Doc.Text(), nil
 					}
-				case *ast.CallExpr:
-					if identNode, ok := concrete.Fun.(*ast.Ident); ok {
-						if identNode.Obj != nil && identNode.Obj.Decl != nil {
-							if declNode, ok := identNode.Obj.Decl.(*ast.FuncDecl); ok {
-								return fmt.Sprintf("%v\n\n%v", declNode.Name.String(), declNode.Doc.Text()), nil
-							}
+				case *ast.Ident:
+					if concrete.Obj != nil {
+						if declNode, ok := concrete.Obj.Decl.(*ast.FuncDecl); ok {
+							return fmt.Sprintf("%v\n\n%v", declNode.Name.String(), declNode.Doc.Text()), nil
+						} else if declNode, ok := concrete.Obj.Decl.(*ast.TypeSpec); ok {
+							return fmt.Sprintf("%v\n\n%v", declNode.Name.String(), declNode.Doc.Text()), nil
 						}
 					}
 				}

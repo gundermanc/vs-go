@@ -34,7 +34,7 @@
                 tokensBuilder.Add(
                     new TagSpan<IClassificationTag>(new SnapshotSpan(
                         textSnapshot,
-                        Span.FromBounds(Math.Max(0, token.Pos - 1), token.End)),
+                        Span.FromBounds(Math.Max(0, token.Pos - 1), Math.Min(token.End, textSnapshot.Length))),
                         tag));
             }
 

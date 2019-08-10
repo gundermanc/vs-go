@@ -11,13 +11,21 @@ func main() {
 
 	package main
 
+	import "fmt"
+
 	// main is a test function
 	func main() {
-
+		if true {
+			if true {
+				fmt.Println(1)
+			}
+		x := Fooooooooooooooooooooooooooooooooo{}
+		}
 	}
 
-	func notmain() {
-		main()
+	// Fooooooooooooooooooooooooooooooooo Println123 Hello!
+	type Fooooooooooooooooooooooooooooooooo struct {
+
 	}
 	
 	`)
@@ -41,7 +49,7 @@ func main() {
 		// It'd be better to use channels to await this but this is a hacky test only app.
 	}
 
-	str, _ := workspace.GetQuickInfo("foo.go", 87)
+	str, _ := workspace.GetQuickInfo("foo.go", 136)
 	fmt.Print(str)
 
 	if err == nil {
@@ -49,7 +57,7 @@ func main() {
 			fmt.Println(workspaceErr.Error())
 		}
 	} else {
-		fmt.Println((*err).Error())
+		fmt.Println(err.Error())
 	}
 
 	workspace.CloseWorkspace()

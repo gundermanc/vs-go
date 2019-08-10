@@ -25,12 +25,19 @@ type AreWeInterfacing interface {
 
 const globalX int = 1
 
+// My function comment
+func notmain() {
+	
+}
+
 // Outlining works here, so you should see structure guides and outlining regions.
 func main(foo int) {
 	const x int = 7 
 	var y int = 8
+	fmt.Println()
+	hello := "Hello"
 
-    hello := "Hello"
+	fmt.Println()
 	
 	// globalX, globalY, x and y are visible here, but z not
 	// hello visible here, world not
