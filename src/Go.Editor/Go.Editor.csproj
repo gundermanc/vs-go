@@ -19,5 +19,7 @@
     <Folder Include="Intellisense\" />
     <Folder Include="Intellisense\Completion\" />
     <Folder Include="Intellisense\QuickInfo\" />
+    <Folder Include="SmartIndent\" />
+    <Folder Include="ViewConfiguration\" />
   </ItemGroup>
 </Project>

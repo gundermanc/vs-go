@@ -7,6 +7,10 @@ root = true
 [*]
 indent_style = space
 
+# ..Except in Go Lang, which seems to prefer tabs.
+[*.go]
+indent_style = tab
+
 # (Please don't specify an indent_size here; that has too many unintended consequences.)
 
 # Code files

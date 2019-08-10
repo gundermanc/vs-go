@@ -17,7 +17,7 @@ func (id WorkspaceID) GetQuickInfo(fileName string, position int) (string, error
 
 	workspace, err := id.getWorkspace()
 	if err != nil {
-		return "", *err
+		return "", err
 	}
 
 	codePos := token.Pos(position)
@@ -31,11 +31,15 @@ func (id WorkspaceID) GetQuickInfo(fileName string, position int) (string, error
 					return fmt.Sprintf("%v\n\n%v", concrete.Name.String(), concrete.Doc.Text()), nil
 				case *ast.GenDecl:
 					// TODO: name/signature/
-					return concrete.Doc.Text(), nil
+					if concrete.Doc != nil {
+						return concrete.Doc.Text(), nil
+					}
 				case *ast.CallExpr:
 					if identNode, ok := concrete.Fun.(*ast.Ident); ok {
-						if declNode, ok := identNode.Obj.Decl.(*ast.FuncDecl); ok {
-							return fmt.Sprintf("%v\n\n%v", declNode.Name.String(), declNode.Doc.Text()), nil
+						if identNode.Obj != nil && identNode.Obj.Decl != nil {
+							if declNode, ok := identNode.Obj.Decl.(*ast.FuncDecl); ok {
+								return fmt.Sprintf("%v\n\n%v", declNode.Name.String(), declNode.Doc.Text()), nil
+							}
 						}
 					}
 				}

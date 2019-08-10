@@ -78,6 +78,20 @@ func (ws *Workspace) GetWorkspaceDocument(key string) (*workspaceDocument, error
 	return document, nil
 }
 
+func (id WorkspaceID) getWorkspaceDocument(key string) (*workspaceDocument, error) {
+	workspace, err := id.getWorkspace()
+	if err != nil {
+		return nil, err
+	}
+
+	doc, err := workspace.GetWorkspaceDocument(key)
+	if err != nil {
+		return nil, err
+	}
+
+	return doc, nil
+}
+
 func (ws *Workspace) DeleteWorkspaceDocument(key string) {
 	ws.l.Lock()
 	defer ws.l.Unlock()
@@ -110,7 +124,7 @@ func (id WorkspaceID) CloseWorkspace() {
 
 // QueueFileParse queues the reparse of a file. Reparse is signaled to the caller
 // via a WorkspaceUpdateCallback.
-func (id WorkspaceID) QueueFileParse(fileName string, reader io.Reader, versionId uintptr) *error {
+func (id WorkspaceID) QueueFileParse(fileName string, reader io.Reader, versionId uintptr) error {
 	if reader == nil {
 		panic("reader cannot be nil")
 	}
@@ -142,7 +156,7 @@ func (id WorkspaceID) QueueFileParse(fileName string, reader io.Reader, versionI
 
 // RegisterWorkspaceUpdateCallback registers a method that is invoked on the completion of
 // a change to a file in the workspace.
-func (id WorkspaceID) RegisterWorkspaceUpdateCallback(callback WorkspaceUpdateCallback) *error {
+func (id WorkspaceID) RegisterWorkspaceUpdateCallback(callback WorkspaceUpdateCallback) error {
 
 	workspace, err := id.getWorkspace()
 	if err != nil {
@@ -158,7 +172,7 @@ func (id WorkspaceID) GetErrors(fileName string) []error {
 
 	workspace, err := id.getWorkspace()
 	if err != nil {
-		return append([]error(nil), *err)
+		return append([]error(nil), err)
 	}
 
 	errs := make([]error, 0)
@@ -171,12 +185,11 @@ func (id WorkspaceID) GetErrors(fileName string) []error {
 	return errs
 }
 
-func (id WorkspaceID) getWorkspace() (*Workspace, *error) {
+func (id WorkspaceID) getWorkspace() (*Workspace, error) {
 
 	if workspace, ok := manager.Workspaces[id]; ok {
 		return workspace, nil
 	}
 
-	err := errors.New("Unknown workspace")
-	return nil, &err
+	return nil, errors.New("Unknown workspace")
 }
