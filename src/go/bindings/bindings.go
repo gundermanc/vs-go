@@ -114,7 +114,8 @@ func GetQuickInfo(workspaceID int32, fileName *byte, count int32, offset int32, 
 
 	fileNameString := cToString(fileName, count)
 
-	if str, err := languageservice.WorkspaceID(workspaceID).GetQuickInfo(fileNameString, int(offset)); err == nil {
+    // Must length check to avoid an array out of bounds error if there is no quick info at this point.
+	if str, err := languageservice.WorkspaceID(workspaceID).GetQuickInfo(fileNameString, int(offset)); err == nil && len(str) > 0 {
 		strBytes := []byte(str)
 		C.InvokeStringCallback(callback, (*C.uint8_t)(&strBytes[0]), C.int(len(strBytes)))
 	}
