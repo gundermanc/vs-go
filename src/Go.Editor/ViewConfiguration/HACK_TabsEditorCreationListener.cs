@@ -11,6 +11,8 @@
     /// </summary>
     [Export(typeof(ITextViewCreationListener))]
     [ContentType(GoContentType.Name)]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
+    [TextViewRole(PredefinedTextViewRoles.PrimaryDocument)]
     internal sealed class HACK_TabsEditorCreationListener : ITextViewCreationListener
     {
         public void TextViewCreated(ITextView textView)
