@@ -1,7 +1,7 @@
 ﻿# Go lang Support for Visual Studio for Windows and Mac
 [![Build Status](https://gunderman.visualstudio.com/vs-go/_apis/build/status/gundermanc.vs-go?branchName=master)](https://gunderman.visualstudio.com/vs-go/_build/latest?definitionId=1&branchName=master)
 
-In progress Go language service for Visual Studio for Windows and Mac.
+Hackathon project proof-of-concept for a x plat Go language service. Now abandoned.
 
 ![image](https://user-images.githubusercontent.com/5387680/60867836-91a88f00-a1e0-11e9-9dfe-49d95c269a0c.png)
 
